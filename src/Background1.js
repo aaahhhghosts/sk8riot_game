@@ -18,7 +18,7 @@ export default class Ground1 extends Sprite {
           ticksPerFrame: 1,
           frames: 1
       });
-      this.ticksPerRow = 15;
+      this.ticksPerRow = 20;
   }
 
   resize(context) {
