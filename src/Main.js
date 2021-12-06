@@ -23,7 +23,7 @@ const game = {
         game.loader = loader;
         game.loader.init();
 
-        this.sk8r = new Sk8r(10, 75, game.context, loader.images.sk8r);
+        this.sk8r = new Sk8r(10, 71, game.context, loader.images.sk8r);
         this.ground1 = new Ground1(0, 111, game.context, loader.images.ground1);
         this.background1 = new Background1(0, 1, game.context, loader.images.background1);
         this.cityscape = new Cityscape(0, 0, game.context, loader.images.cityscape);
@@ -63,6 +63,13 @@ const game = {
         }
     },
 };
+
+// event = keyup or keydown
+document.addEventListener('keyup', event => {
+  if (event.code === 'Space') {
+    game.sk8r.jump();
+  }
+});
 
 const loader = {
     count: 0,
