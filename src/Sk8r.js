@@ -41,7 +41,7 @@ export default class Sk8r extends Sprite {
 
   animate_jump() {
     this.row = 1;
-    this.frames = 1;
+    this.frames = 2;
     this.frameIndex = 0;
   }
 
