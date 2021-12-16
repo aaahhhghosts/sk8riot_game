@@ -10,7 +10,7 @@ export default class Cityscape extends Sprite {
           image: image,
           x: x,
           y: y,
-          width: 800,
+          width: 400,
           height: 110,
           frameIndex: 0,
           row: 0,
@@ -21,15 +21,11 @@ export default class Cityscape extends Sprite {
       this.ticksPerRow = 5;
   }
 
-  resize(context) {
-    super.context = context;
-  }
-
   update() {
       this.tickCount += 1;
 
       this.x -= 1;
-      if (this.x < - (600)) {
+      if (this.x < - (200)) {
         this.x = 0;
       }
   }

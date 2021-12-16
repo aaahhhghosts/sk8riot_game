@@ -22,9 +22,20 @@ body {
 }
 
 #mini_canvas{
-
   object-fit: fill;
   background-color: grey;
+}
 
+@font-face {
+    font-family: 'Arcade';
+    src: url("../fonts/KarmaticArcade.ttf");
+    font-smooth: never;
+    webkit-font-smoothing: none;
+}
 
+@font-face {
+    font-family: 'Arcade_BG';
+    src: url("../fonts/KarmaticArcade_BG.ttf");
+    font-smooth: never;
+    webkit-font-smoothing: none;
 }

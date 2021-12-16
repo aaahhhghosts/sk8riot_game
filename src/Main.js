@@ -1,76 +1,115 @@
 import Sk8r from '/src/Sk8r.js';
-import Ground1 from '/src/Ground1.js';
-import Background1 from '/src/background1.js';
-import Cityscape from '/src/cityscape.js';
+import Road from '/src/Road.js';
+import Downtown from '/src/Downtown.js';
+import Cityscape from '/src/Cityscape.js';
+import Crate from '/src/Crate.js';
+import Textbox from '/src/Textbox.js';
 
 const game = {
+
+    // Game running.
     isRunning: true,
 
+    // Initialize game.
     init() {
 
-        game.trueCanvas = document.getElementById("canvas");
-        game.trueContext = game.trueCanvas.getContext("2d");
+        // True canvas to display game at full size.
+        this.trueCanvas = document.getElementById("canvas");
+        this.trueContext = this.trueCanvas.getContext("2d");
+        this.trueCanvas.width = 400;
+        this.trueCanvas.height = 250;
 
-        game.trueCanvas.width = 400;
-        game.trueCanvas.height = 250;
+        // Smaller canvas to draw game onto and resize later.
+        this.canvas = document.getElementById("mini_canvas");
+        this.canvas.width = this.trueCanvas.width / 2;
+        this.canvas.height = this.trueCanvas.height / 2;
+        this.context = this.canvas.getContext("2d");
 
-        game.canvas = document.getElementById("mini_canvas");
-        game.canvas.width = game.trueCanvas.width / 2;
-        game.canvas.height = game.trueCanvas.height / 2;
+        // Score textbox
+        this.scorebox = new Textbox(155.5, 10.5, this.context, 100, 50, "Ayooo");
+        this.score = 0;
 
-        game.context = game.canvas.getContext("2d");
+        // Load all image resources.
+        this.loader = loader;
+        this.loader.init();
 
-        game.loader = loader;
-        game.loader.init();
+        // Create game background.
+        this.downtown = new Downtown(0, 3, this.context, loader.images.downtown);
+        this.cityscape = new Cityscape(0, 0, this.context, loader.images.cityscape);
 
-        this.sk8r = new Sk8r(10, 71, game.context, loader.images.sk8r);
-        this.ground1 = new Ground1(0, 111, game.context, loader.images.ground1);
-        this.background1 = new Background1(0, 1, game.context, loader.images.background1);
-        this.cityscape = new Cityscape(0, 0, game.context, loader.images.cityscape);
+        // Create game floor.
+        this.road = new Road(0, 111, this.context, loader.images.road);
+
+        // Create player.
+        this.sk8r = new Sk8r(10, 71, this.context, loader.images.sk8r);
+
+        // Test - create crate obstacle.
+        this.crate = new Crate(100, 100, this.context, loader.images.wooden_crate);
 
         // Start game
         game.drawingLoop();
     },
 
-    drawingLoop() {
+    // Add point to score counter.
+    increment_scorebox() {
+      this.score += 1;
+      this.scorebox.setText(this.score);
+    },
+
+    // Main animating loop.
+    async drawingLoop() {
 
         // Clear canvas
         game.context.clearRect(0, 0, game.canvas.width, game.canvas.height);
         game.trueContext.clearRect(0, 0, game.trueCanvas.width, game.trueCanvas.height);
 
+        // Game true canvas size.
         var scale_width = game.trueCanvas.width;
         var scale_height = game.trueCanvas.height;
 
-        // Draw and update frame index
+        // Draw background.
         game.cityscape.render();
         game.cityscape.update();
+        game.downtown.render();
+        game.downtown.update();
 
-        game.background1.render();
-        game.background1.update();
+        // Draw floor.
+        game.road.render();
+        game.road.update();
 
+        // Draw player.
         game.sk8r.render();
         game.sk8r.update();
 
-        game.ground1.render();
-        game.ground1.update();
+        // Draw test obstacle.
+        game.crate.render();
+        game.crate.update();
 
+        // Add point to score and draw.
+        game.increment_scorebox();
+        game.scorebox.update();
 
-
+        // Draw game frame to true canvas.
         game.trueContext.drawImage(game.canvas, 0, 0, game.canvas.width, game.canvas.height, 0, 0, scale_width, scale_height);
 
+
+        //await new Promise(r => setTimeout(r, 180));
+
+        // As long as game is still running, create next game frame.
         if (game.isRunning) {
             requestAnimationFrame(game.drawingLoop);
         }
     },
 };
 
-// event = keyup or keydown
+// Add space key listener for jumping.
 document.addEventListener('keyup', event => {
   if (event.code === 'Space') {
     game.sk8r.jump();
   }
 });
 
+// Image resource loader.
 const loader = {
     count: 0,
     images: {},
@@ -84,12 +123,35 @@ const loader = {
 
     init() {
         loader.add('sk8r', Sk8r.src);
-        loader.add('ground1', Ground1.src);
-        loader.add('background1', Background1.src);
+        loader.add('road', Road.src);
+        loader.add('downtown', Downtown.src);
         loader.add('cityscape', Cityscape.src);
+        loader.add('wooden_crate', Crate.src);
     }
 };
 
+// Framerate calculator for testing.
+let i = 0;
+const start = Date.now();
+const stop = start + 5000;
+
+function raf() {
+  requestAnimationFrame(() => {
+    const now = Date.now();
+    if (now < stop){
+      i++;
+      raf();
+    }else{
+      const elapsedSeconds = (now - start) / 1000;
+      console.log('Frame rate is: %f fps', i / elapsedSeconds);
+    }
+  });
+}
+
+console.log('Testing frame rate...')
+raf();
+
+// Resize mini drawing canvas to fit true canvas.
 function resizeGame() {
     var gameArea = document.getElementById('canvas');
     var widthToHeight = 4 / 2.5;
@@ -119,9 +181,12 @@ function resizeGame() {
     game.trueContext.mozImageSmoothingEnabled = false;
     game.trueContext.imageSmoothingEnabled = false;
 }
+
+// Resize game as browser size changes.
 window.addEventListener('resize', resizeGame, false);
 window.addEventListener('orientationchange', resizeGame, false);
 
+// On page load, start game.
 window.addEventListener("load", () => {
     game.init();
     resizeGame();

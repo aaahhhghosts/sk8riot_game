@@ -14,6 +14,10 @@ constructor(options) {
     this.tickCount = options.tickCount; // How much time has passed
 }
 
+resize(context) {
+    context = context;
+}
+
 update() {
     this.tickCount += 1;
     if (this.tickCount > this.ticksPerFrame) {

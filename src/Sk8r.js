@@ -11,7 +11,7 @@ export default class Sk8r extends Sprite {
           x: x,
           y: y,
           width: 27,
-          height: 41,
+          height: 45,
           frameIndex: 0,
           row: 0,
           tickCount: 0,
@@ -21,16 +21,10 @@ export default class Sk8r extends Sprite {
 
       this.floor_height = y;
       this.isGrounded = true;
-      this.gravity = 0.2;
+      this.gravity = 0.3;
       this.velocity_y = 0.0;
-      this.acceleration_y = 0.2;
-      this.jump_y_max = 2.0;
 
       this.timeSinceJump = 0.0;
-  }
-
-  resize(context) {
-    super.context = context;
   }
 
   animate_ride() {
@@ -49,8 +43,9 @@ export default class Sk8r extends Sprite {
       if (this.isGrounded) {
         this.isGrounded = false;
         this.animate_jump();
-        this.velocity_y = 3.0;
-        console.log('Space pressed ' + this.isGrounded);
+        this.velocity_y = 4;
+        this.y = this.floor_height - 3;
+        // console.log('Space pressed ' + this.isGrounded);
       }
   }
 
@@ -63,16 +58,7 @@ export default class Sk8r extends Sprite {
           var now = this.timeSinceJump;
           var jump_y = -(this.y - this.floor_height);
 
-          console.log('jumping ' + jump_y);
-
-
-          /*if (jump_y < this.jump_y_max) {
-              console.log('up ' + this.velocity_y);
-              this.velocity_y += (
-                  this.acceleration_y *
-                  (Math.pow(now, 2) / 2)
-              );
-          }*/
+          //console.log('jumping ' + jump_y);
 
           this.y -= (
               ((this.velocity_y * now)
@@ -80,15 +66,18 @@ export default class Sk8r extends Sprite {
               / 10
           );
 
+          if (this.y >= this.floor_height-2) {
+              this.isGrounded = true;
+          }
+
           if (this.y >= this.floor_height) {
               this.y = this.floor_height;
-              this.isGrounded = true;
+
               this.animate_ride();
               this.timeSinceJump = 0.0;
               this.velocity_y = 0.0;
           }
       }
-
 
       this.tickCount += 1;
       if (this.tickCount > this.ticksPerFrame) {
@@ -100,25 +89,4 @@ export default class Sk8r extends Sprite {
           }
       }
   }
-
-  /*walk() {
-      this.frames = 1;
-      this.frameIndex = 0;
-      this.row = 1;
-      this.ticksPerFrame = 4;
-  }
-
-  run() {
-      this.frames = 1;
-      this.frameIndex = 0;
-      this.row = 2;
-      this.ticksPerFrame = 2;
-  }
-
-  idle() {
-      this.frames = 1;
-      this.frameIndex = 0;
-      this.row = 0;
-      this.ticksPerFrame = 12;
-  }*/
 }
