@@ -82,7 +82,7 @@ const game = {
         // Check for crate collisions.
         game.wood_crates.forEach((crate, j) => {
 
-            var hitCrate = (crate.x >= zippy.x && crate.x <= (zippy.x + crate.width) &&
+            var hitCrate = (crate.x >= zippy.x && crate.x <= (zippy.x + crate.width+5) &&
                             zippy.y >= (crate.y - crate.height) && zippy.y <= crate.y-5);
 
             // Explode collided crate.

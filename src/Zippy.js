@@ -22,7 +22,7 @@ export default class Zippy extends Sprite {
       this.isFlying = true;
       this.hasExploded = false;
 
-      this.floor_height = 100;
+      this.floor_height = 105;
       this.gravity = 0.2;
       this.velocity_y = 2.0;
       this.timeSinceThrow = 0.0;
