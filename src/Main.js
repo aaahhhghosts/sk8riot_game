@@ -4,6 +4,8 @@ import Downtown from '/src/Downtown.js';
 import Cityscape from '/src/Cityscape.js';
 import Crate from '/src/Crate.js';
 import Textbox from '/src/Textbox.js';
+import Zippy from '/src/Zippy.js';
+import { getRandomInt } from '/src/common.js';
 
 const game = {
 
@@ -43,17 +45,60 @@ const game = {
         // Create player.
         this.sk8r = new Sk8r(10, 71, this.context, loader.images.sk8r);
 
-        // Test - create crate obstacle.
-        this.crate = new Crate(100, 100, this.context, loader.images.wooden_crate);
+        this.zippies = [];
+        this.timeSinceLastZippy = 0;
+        this.zippyCoolDown = 10;
+
+        this.wood_crates = [];
 
         // Start game
-        game.drawingLoop();
+        this.drawingLoop();
     },
 
     // Add point to score counter.
     increment_scorebox() {
       this.score += 1;
       this.scorebox.setText(this.score);
+    },
+
+    spawn_crate() {
+      game.wood_crates.push(new Crate(this.canvas.width, 100, game.wood_crates, this.context, loader.images.wooden_crate));
+    },
+
+    despawn_crates() {
+
+      game.wood_crates.forEach((crate, i) => {
+          if (crate.x < 0 - crate.width) {
+            // If crate leaves map, despawn.
+            var i = this.wood_crates.indexOf(crate);
+            this.wood_crates.splice(i, 1);
+          }
+      });
+    },
+
+    explode_zippies() {
+      game.zippies.forEach((zippy, i) => {
+
+        // Check for crate collisions.
+        game.wood_crates.forEach((crate, j) => {
+
+            var hitCrate = (crate.x >= zippy.x && crate.x <= (zippy.x + crate.width) &&
+                            zippy.y >= (crate.y - crate.height) && zippy.y <= crate.y-5);
+
+            // Explode collided crate.
+            if (hitCrate && zippy.isFlying) {
+              zippy.y = zippy.floor_height-5;
+              zippy.explode();
+              crate.break();
+            }
+        });
+
+          // If zippy has finished exploding, despawn.
+          if (zippy.hasExploded) {
+              var i = this.zippies.indexOf(zippy);
+              this.zippies.splice(i, 1);
+          }
+      });
     },
 
     // Main animating loop.
@@ -81,9 +126,31 @@ const game = {
         game.sk8r.render();
         game.sk8r.update();
 
-        // Draw test obstacle.
-        game.crate.render();
-        game.crate.update();
+        // Check if zippies has collided with any objects.
+        if (game.zippies.length > 0) {
+          game.explode_zippies();
+
+          // Draw zippies
+          game.zippies.forEach((zippy, i) => {
+              zippy.render();
+              zippy.update();
+          });
+        }
+
+        // Calculate zippy cooldown clock.
+        if (game.timeSinceLastZippy > 0) {
+            game.timeSinceLastZippy += 1;
+
+            if (game.timeSinceLastZippy == game.zippyCoolDown) {
+                game.timeSinceLastZippy = 0;
+            }
+        }
+
+        // Draw wooden crates.
+        game.wood_crates.forEach((crate, i) => {
+            crate.render();
+            crate.update();
+        });
 
         // Add point to score and draw.
         game.increment_scorebox();
@@ -93,7 +160,13 @@ const game = {
         game.trueContext.drawImage(game.canvas, 0, 0, game.canvas.width, game.canvas.height, 0, 0, scale_width, scale_height);
 
 
-        //await new Promise(r => setTimeout(r, 180));
+      //  await new Promise(r => setTimeout(r, 180));
+        if (getRandomInt(1, 40) == 1) {
+            game.spawn_crate();
+        }
+        game.despawn_crates();
+
+
 
         // As long as game is still running, create next game frame.
         if (game.isRunning) {
@@ -102,10 +175,27 @@ const game = {
     },
 };
 
-// Add space key listener for jumping.
-document.addEventListener('keyup', event => {
+
+document.addEventListener('keydown', event => {
+
+  // Add space key listener for jumping.
   if (event.code === 'Space') {
     game.sk8r.jump();
+  }
+
+  // Add right arrow key listener for zippies.
+  if (event.code === 'ArrowRight') {
+
+      if (game.timeSinceLastZippy <= 0) {
+
+          // Spawn zippy.
+          var index = game.zippies.length - 1;
+          game.zippies.push(new Zippy(game.sk8r.x+20, game.sk8r.y+7, game.zippies,
+                            game.context, loader.images.zippy));
+
+          // Begin zippy cooldown.
+          game.timeSinceLastZippy = 1;
+      }
   }
 });
 
@@ -127,6 +217,7 @@ const loader = {
         loader.add('downtown', Downtown.src);
         loader.add('cityscape', Cityscape.src);
         loader.add('wooden_crate', Crate.src);
+        loader.add('zippy', Zippy.src);
     }
 };
 

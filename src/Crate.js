@@ -4,7 +4,7 @@ export default class Crate extends Sprite {
 
   static src = '/sprites/wooden_crate.png';
 
-  constructor(x, y, context, image) {
+  constructor(x, y, wood_crates, context, image) {
       super({
           context: context,
           image: image,
@@ -18,15 +18,20 @@ export default class Crate extends Sprite {
           ticksPerFrame: 1,
           frames: 1
       });
+
+      this.wood_crates = wood_crates;
+
+      this.isBroken = false;
+  }
+
+  break () {
+      this.isBroken = true;
+      this.row = 1;
   }
 
   update() {
 
-      if (this.x > 0 - this.width) {
-          this.x -= 2;
-      } else {
-        this.x = 200;
-      }
+      this.x -= 2;
 
       this.tickCount += 1;
       if (this.tickCount > this.ticksPerFrame) {
