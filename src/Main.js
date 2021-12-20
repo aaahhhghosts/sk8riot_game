@@ -84,7 +84,7 @@ const game = {
     },
 
     spawn_triple_crate() {
-      
+
       var bottomCrate = new WoodCrate(this.canvas.width, 100, game.wood_crates, this.context, loader.images.wood_crate);
       var middleCrate = new WoodCrate(this.canvas.width, 100-game.crate_height, game.wood_crates, this.context, loader.images.wood_crate);
       var topCrate = new WoodCrate(this.canvas.width, 100-(2*game.crate_height), game.wood_crates, this.context, loader.images.wood_crate);
@@ -122,6 +122,12 @@ const game = {
     explode_zippies() {
       game.zippies.forEach((zippy, i) => {
 
+        // If zippy has finished exploding, despawn.
+        if (zippy.hasExploded) {
+            var i = this.zippies.indexOf(zippy);
+            this.zippies.splice(i, 1);
+        }
+
         // Check for crate collisions.
         game.wood_crates.forEach((crate, j) => {
 
@@ -136,11 +142,17 @@ const game = {
             }
         });
 
-          // If zippy has finished exploding, despawn.
-          if (zippy.hasExploded) {
-              var i = this.zippies.indexOf(zippy);
-              this.zippies.splice(i, 1);
-          }
+        game.steel_crates.forEach((crate, j) => {
+
+            var hitCrate = (crate.x >= zippy.x && crate.x <= (zippy.x + crate.width+5) &&
+                            zippy.y >= (crate.y - crate.height) && zippy.y <= crate.y-5);
+
+            // Explode on collided crate.
+            if (hitCrate && zippy.isFlying) {
+              zippy.y = crate.y-5;
+              zippy.explode();
+            }
+        });
       });
     },
 
