@@ -1,10 +1,10 @@
 import Sprite from '/src/Sprite.js';
 
-export default class Crate extends Sprite {
+export default class SteelCrate extends Sprite {
 
-  static src = '/sprites/wooden_crate.png';
+  static src = '/sprites/steel_crate.png';
 
-  constructor(x, y, wood_crates, context, image) {
+  constructor(x, y, steel_crates, context, image) {
       super({
           context: context,
           image: image,
@@ -19,14 +19,8 @@ export default class Crate extends Sprite {
           frames: 1
       });
 
-      this.wood_crates = wood_crates;
-
+      this.steel_crates = steel_crates;
       this.isBroken = false;
-  }
-
-  break () {
-      this.isBroken = true;
-      this.row = 1;
   }
 
   update() {
