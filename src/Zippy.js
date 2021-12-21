@@ -1,4 +1,5 @@
 import Sprite from '/src/Sprite.js';
+import { getRandomInt } from '/src/common.js';
 
 export default class Zippy extends Sprite {
 
@@ -7,7 +8,7 @@ export default class Zippy extends Sprite {
   constructor(x, y, zippies, context, image) {
       super({
           context: context,
-          image: image,
+          image: image[0],
           x: x,
           y: y,
           width: 9,
@@ -81,6 +82,8 @@ export default class Zippy extends Sprite {
 
           // If zippy hits ground, explode.
           if (this.y >= this.floor_height) {
+
+            this.y = this.floor_height + getRandomInt(0, 7);
             this.explode();
           }
      }

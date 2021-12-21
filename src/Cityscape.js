@@ -7,7 +7,7 @@ export default class Cityscape extends Sprite {
   constructor(x, y, context, image) {
       super({
           context: context,
-          image: image,
+          image: image[0],
           x: x,
           y: y,
           width: 400,

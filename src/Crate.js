@@ -1,13 +1,15 @@
 import Sprite from '/src/Sprite.js';
 
-export default class WoodCrate extends Sprite {
+export default class Crate extends Sprite {
 
-  static src = '/sprites/wood_crate.png';
+  static src_0 = '/sprites/wood_crate.png';
+  static src_1 = '/sprites/steel_crate.png';
 
-  constructor(x, y, wood_crates, context, image) {
+  constructor(x, y, context, image, type) {
+
       super({
           context: context,
-          image: image,
+          image: image[type],
           x: x,
           y: y,
           width: 15,
@@ -19,17 +21,24 @@ export default class WoodCrate extends Sprite {
           frames: 1
       });
 
+      this.type = type;
+
       this.stackedOn = [];
-
-      this.wood_crates = wood_crates;
-
       this.isBroken = false;
 
-
       this.floor_height = 100;
-      this.stacked_height = this.y;
+      this.stacked_height = this.floor_height;
       this.gravity = 0.2;
       this.timeSinceFall = 0;
+  }
+
+  // Stack list of crates below this crate.
+  stackOn(crates) {
+      crates.forEach((crate, i) => {
+          this.stackedOn.push(crate);
+          this.stacked_height -= (crate.height-1);
+          this.y = this.stacked_height;
+      });
   }
 
   break () {

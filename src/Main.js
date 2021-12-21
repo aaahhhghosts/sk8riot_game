@@ -2,11 +2,11 @@ import Sk8r from '/src/Sk8r.js';
 import Road from '/src/Road.js';
 import Downtown from '/src/Downtown.js';
 import Cityscape from '/src/Cityscape.js';
-import WoodCrate from '/src/WoodCrate.js';
-import SteelCrate from '/src/SteelCrate.js';
+import Crate from '/src/Crate.js';
 import Textbox from '/src/Textbox.js';
 import Zippy from '/src/Zippy.js';
 import { getRandomInt } from '/src/common.js';
+import { add } from '/src/common.js';
 
 const game = {
 
@@ -50,9 +50,7 @@ const game = {
         this.timeSinceLastZippy = 0;
         this.zippyCoolDown = 10;
 
-        this.wood_crates = [];
-        this.steel_crates = [];
-        this.crate_height = 14;
+        this.crates = [];
 
         // Start game
         this.drawingLoop();
@@ -64,96 +62,92 @@ const game = {
       this.scorebox.setText(this.score);
     },
 
-    spawn_wood_crate() {
-      game.wood_crates.push(new WoodCrate(this.canvas.width, 100, game.wood_crates, this.context, loader.images.wood_crate));
-    },
+    spawn_crates(count) {
 
-    spawn_steel_crate() {
-      game.steel_crates.push(new SteelCrate(this.canvas.width, 100, game.steel_crates, this.context, loader.images.steel_crate));
-    },
+        // Do nothing if illegal input.
+        switch(count) {
+          case 1: case 2: case 3: case 4:
+              break;
+          default:
+              return;
+        }
 
-    spawn_double_crate() {
+        // Generate crate stack types
+        var crate_types = Array.from({length: count}, () => {return (getRandomInt(0, 4) == 4) ? 1 : 0;});
 
-      var bottomCrate = new WoodCrate(this.canvas.width, 100, game.wood_crates, this.context, loader.images.wood_crate);
-      var topCrate = new WoodCrate(this.canvas.width, 100-game.crate_height, game.wood_crates, this.context, loader.images.wood_crate);
+        // Prevent stack of four steel crates
+        if (count == 4) {
+            while (crate_types.reduce(add, 0) === 4) {
+                crate_types = Array.from({length: count}, () => {return (getRandomInt(0, 4) == 0) ? 1 : 0;});
+            }
+        }
 
-      topCrate.stackedOn.push(bottomCrate);
+        // Spawn one crate
+        var crate_1 = new Crate(this.canvas.width, 100, this.context, loader.images.crates, crate_types[0]);
+        game.crates.push(crate_1);
 
-      game.wood_crates.push(bottomCrate);
-      game.wood_crates.push(topCrate);
-    },
+        if (count == 1) return;
 
-    spawn_triple_crate() {
+        // Spawn 2nd crate on top of last one
+        var crate_2 = new Crate(this.canvas.width, 100, this.context, loader.images.crates, crate_types[1]);
+        crate_2.stackOn([crate_1]);
+        game.crates.push(crate_2);
 
-      var bottomCrate = new WoodCrate(this.canvas.width, 100, game.wood_crates, this.context, loader.images.wood_crate);
-      var middleCrate = new WoodCrate(this.canvas.width, 100-game.crate_height, game.wood_crates, this.context, loader.images.wood_crate);
-      var topCrate = new WoodCrate(this.canvas.width, 100-(2*game.crate_height), game.wood_crates, this.context, loader.images.wood_crate);
-      middleCrate.stackedOn.push(bottomCrate);
+        if (count == 2) return;
 
-      topCrate.stackedOn.push(bottomCrate);
-      topCrate.stackedOn.push(middleCrate);
+        // Spawn 3rd crate on top of the last two
+        var crate_3 = new Crate(this.canvas.width, 100, this.context, loader.images.crates, crate_types[2]);
+        crate_3.stackOn([crate_1, crate_2]);
+        game.crates.push(crate_3);
 
-      game.wood_crates.push(bottomCrate);
-      game.wood_crates.push(middleCrate);
-      game.wood_crates.push(topCrate);
+        if (count == 3) return;
+
+        // Spawn 4th crate on top of the last three.
+        var crate_4 = new Crate(this.canvas.width, 100, this.context, loader.images.crates, crate_types[3]);
+        crate_4.stackOn([crate_1, crate_2, crate_3]);
+        game.crates.push(crate_4);
     },
 
     despawn_crates() {
-
-      game.wood_crates.forEach((crate, i) => {
+      game.crates.forEach((crate, i) => {
           if (crate.x < 0 - crate.width) {
 
             // If crate leaves map, despawn.
-            var i = this.wood_crates.indexOf(crate);
-            this.wood_crates.splice(i, 1);
-          }
-      });
-
-      game.steel_crates.forEach((crate, i) => {
-          if (crate.x < 0 - crate.width) {
-
-            // If crate leaves map, despawn.
-            var i = this.steel_crates.indexOf(crate);
-            this.steel_crates.splice(i, 1);
+            var i = this.crates.indexOf(crate);
+            this.crates.splice(i, 1);
           }
       });
     },
 
     explode_zippies() {
-      game.zippies.forEach((zippy, i) => {
+        game.zippies.forEach((zippy, i) => {
 
-        // If zippy has finished exploding, despawn.
-        if (zippy.hasExploded) {
-            var i = this.zippies.indexOf(zippy);
-            this.zippies.splice(i, 1);
-        }
-
-        // Check for crate collisions.
-        game.wood_crates.forEach((crate, j) => {
-
-            var hitCrate = (crate.x >= zippy.x && crate.x <= (zippy.x + crate.width+5) &&
-                            zippy.y >= (crate.y - crate.height) && zippy.y <= crate.y-5);
-
-            // Explode collided crate.
-            if (hitCrate && zippy.isFlying) {
-              zippy.y = crate.y-5;
-              zippy.explode();
-              crate.break();
+            // If zippy has finished exploding, despawn.
+            if (zippy.hasExploded) {
+                var i = this.zippies.indexOf(zippy);
+                this.zippies.splice(i, 1);
             }
+
+            // Check for crate collisions.
+            game.crates.forEach((crate, j) => {
+
+                var hitCrate = (crate.x >= zippy.x && crate.x <= (zippy.x + crate.width+5) &&
+                                zippy.y >= (crate.y - crate.height) && zippy.y <= crate.y-3);
+
+                // If zippy collided with crate.
+                if (hitCrate && zippy.isFlying) {
+                    zippy.y = crate.y-5;
+
+                    // Explode on collided crate.
+                    zippy.explode();
+
+                    // If crate is wooden, break.
+                    if (crate.type == 0) {
+                        crate.break();
+                    }
+                }
+            });
         });
-
-        game.steel_crates.forEach((crate, j) => {
-
-            var hitCrate = (crate.x >= zippy.x && crate.x <= (zippy.x + crate.width+5) &&
-                            zippy.y >= (crate.y - crate.height) && zippy.y <= crate.y-5);
-
-            // Explode on collided crate.
-            if (hitCrate && zippy.isFlying) {
-              zippy.y = crate.y-5;
-              zippy.explode();
-            }
-        });
-      });
     },
 
     // Main animating loop.
@@ -181,20 +175,11 @@ const game = {
         game.sk8r.render();
         game.sk8r.update();
 
-
-
-        // Draw wood crates.
-        game.wood_crates.forEach((crate, i) => {
+        // Draw crates.
+        game.crates.forEach((crate, i) => {
             crate.render();
             crate.update();
         });
-
-        // Draw steel crates.
-        game.steel_crates.forEach((crate, i) => {
-            crate.render();
-            crate.update();
-        });
-
 
         // Check if zippies has collided with any objects.
         if (game.zippies.length > 0) {
@@ -223,24 +208,21 @@ const game = {
         // Draw game frame to true canvas.
         game.trueContext.drawImage(game.canvas, 0, 0, game.canvas.width, game.canvas.height, 0, 0, scale_width, scale_height);
 
-
         // Await new Promise(r => setTimeout(r, 180));
         var randInt = getRandomInt(1, 500);
-        //console.log(randInt);
-        if (randInt < 5) {
+        var numCrates = 0;
 
-          game.spawn_wood_crate();
-        } else if (randInt < 10) {
+        if (randInt < 10) {numCrates = 1;}
+        else if (randInt < 13) {numCrates = 2;}
+        else if (randInt < 15) {numCrates = 3;}
+        else if (randInt < 17) {numCrates = 4;}
 
-          game.spawn_steel_crate();
-        } else if (randInt < 13) {
-
-          game.spawn_double_crate();
-        } else if (randInt < 15) {
-
-          game.spawn_triple_crate();
+        // Spawn crates if any.
+        if (numCrates > 0) {
+            game.spawn_crates(numCrates);
         }
 
+        // Remove crates that leave screen.
         game.despawn_crates();
 
         // As long as game is still running, create next game frame.
@@ -278,22 +260,29 @@ document.addEventListener('keydown', event => {
 const loader = {
     count: 0,
     images: {},
+    crates: {},
 
-    add(title, src) {
-        const image = new Image();
-        image.src = src;
-        this.images[title] = image;
-        this.count++;
+    add(title, src_list) {
+
+        var img_list = [];
+
+        src_list.forEach((src, i) => {
+            const image = new Image();
+            image.src = src;
+            img_list.push(image);
+            this.count++;
+        });
+
+        this.images[title] = img_list;
     },
 
     init() {
-        loader.add('sk8r', Sk8r.src);
-        loader.add('road', Road.src);
-        loader.add('downtown', Downtown.src);
-        loader.add('cityscape', Cityscape.src);
-        loader.add('wood_crate', WoodCrate.src);
-        loader.add('steel_crate', SteelCrate.src);
-        loader.add('zippy', Zippy.src);
+        loader.add('sk8r', [Sk8r.src]);
+        loader.add('road', [Road.src]);
+        loader.add('downtown', [Downtown.src]);
+        loader.add('cityscape', [Cityscape.src]);
+        loader.add('crates', [Crate.src_0, Crate.src_1]);
+        loader.add('zippy', [Zippy.src]);
     }
 };
 
