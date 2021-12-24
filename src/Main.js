@@ -51,6 +51,8 @@ const game = {
         this.zippyCoolDown = 10;
 
         this.crates = [];
+        this.timeSinceLastCrate = 0;
+        this.crateCoolDown = 40;
 
         // Start game
         this.drawingLoop();
@@ -209,17 +211,31 @@ const game = {
         game.trueContext.drawImage(game.canvas, 0, 0, game.canvas.width, game.canvas.height, 0, 0, scale_width, scale_height);
 
         // Await new Promise(r => setTimeout(r, 180));
-        var randInt = getRandomInt(1, 500);
         var numCrates = 0;
 
-        if (randInt < 10) {numCrates = 1;}
-        else if (randInt < 13) {numCrates = 2;}
-        else if (randInt < 15) {numCrates = 3;}
-        else if (randInt < 17) {numCrates = 4;}
+        if (game.timeSinceLastCrate > 0) {
+            game.timeSinceLastCrate += 1;
 
-        // Spawn crates if any.
-        if (numCrates > 0) {
-            game.spawn_crates(numCrates);
+            if (game.timeSinceLastCrate == game.crateCoolDown) {
+                game.timeSinceLastCrate = 0;
+            }
+        }
+
+        // If cooldown has ended since last crate spawn, try to spawn another.
+        if (game.timeSinceLastCrate == 0) {
+
+            var randInt = getRandomInt(1, 500);
+
+            if (randInt < 10) {numCrates = 1;}
+            else if (randInt < 13) {numCrates = 2;}
+            else if (randInt < 15) {numCrates = 3;}
+            else if (randInt < 17) {numCrates = 4;}
+
+            // Spawn crates if any.
+            if (numCrates > 0) {
+                game.spawn_crates(numCrates);
+                game.timeSinceLastCrate = 1;
+            }
         }
 
         // Remove crates that leave screen.
