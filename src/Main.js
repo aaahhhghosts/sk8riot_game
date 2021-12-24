@@ -177,7 +177,7 @@ const game = {
         // Draw player.
         game.sk8r.set_floor(sk8r_floor);
 
-        //game.isGrounded = false;
+        game.isGrounded = false;
         game.crates.forEach((crate, i) => {
 
             if (!crate.isBroken) {

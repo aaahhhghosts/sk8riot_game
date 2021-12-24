@@ -52,8 +52,7 @@ export default class Sk8r extends Sprite {
         this.isGrounded = false;
         this.animate_jump();
         this.velocity_y = 4;
-        this.y = this.crate_floor + 3;
-        // console.log('Space pressed ' + this.isGrounded);
+        this.y += 3;
       }
   }
 
@@ -69,7 +68,7 @@ export default class Sk8r extends Sprite {
               - (this.gravity * (Math.pow(now, 2) / 2))) / 10
           );
 
-          if (this.y <= this.crate_floor+2) {
+          if (this.y <= this.crate_floor-1) {
               this.isGrounded = true;
           }
 
