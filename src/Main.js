@@ -7,6 +7,12 @@ import Textbox from '/src/Textbox.js';
 import Zippy from '/src/Zippy.js';
 import { getRandomInt } from '/src/common.js';
 import { add } from '/src/common.js';
+import { floor, sk8r_floor } from '/src/constants.js';
+
+
+export function get_canvas_height() {
+        return game.canvas.height;
+}
 
 const game = {
 
@@ -37,14 +43,11 @@ const game = {
         this.loader.init();
 
         // Create game background.
-        this.downtown = new Downtown(0, 1, this.context, loader.images.downtown);
+        this.downtown = new Downtown(0, 0, this.context, loader.images.downtown);
         this.cityscape = new Cityscape(0, 0, this.context, loader.images.cityscape);
 
         // Create game floor.
-        this.road = new Road(0, 111, this.context, loader.images.road);
-
-        // Create player.
-        this.sk8r = new Sk8r(10, 71, this.context, loader.images.sk8r);
+        this.road = new Road(0, 0, this.context, loader.images.road);
 
         this.zippies = [];
         this.timeSinceLastZippy = 0;
@@ -53,6 +56,9 @@ const game = {
         this.crates = [];
         this.timeSinceLastCrate = 0;
         this.crateCoolDown = 40;
+
+        // Create player.
+        this.sk8r = new Sk8r(10, sk8r_floor, this.context, loader.images.sk8r);
 
         // Start game
         this.drawingLoop();
@@ -85,27 +91,27 @@ const game = {
         }
 
         // Spawn one crate
-        var crate_1 = new Crate(this.canvas.width, 100, this.context, loader.images.crates, crate_types[0]);
+        var crate_1 = new Crate(this.canvas.width, floor, this.context, loader.images.crates, crate_types[0]);
         game.crates.push(crate_1);
 
         if (count == 1) return;
 
         // Spawn 2nd crate on top of last one
-        var crate_2 = new Crate(this.canvas.width, 100, this.context, loader.images.crates, crate_types[1]);
+        var crate_2 = new Crate(this.canvas.width, floor, this.context, loader.images.crates, crate_types[1]);
         crate_2.stackOn([crate_1]);
         game.crates.push(crate_2);
 
         if (count == 2) return;
 
         // Spawn 3rd crate on top of the last two
-        var crate_3 = new Crate(this.canvas.width, 100, this.context, loader.images.crates, crate_types[2]);
+        var crate_3 = new Crate(this.canvas.width, floor, this.context, loader.images.crates, crate_types[2]);
         crate_3.stackOn([crate_1, crate_2]);
         game.crates.push(crate_3);
 
         if (count == 3) return;
 
         // Spawn 4th crate on top of the last three.
-        var crate_4 = new Crate(this.canvas.width, 100, this.context, loader.images.crates, crate_types[3]);
+        var crate_4 = new Crate(this.canvas.width, floor, this.context, loader.images.crates, crate_types[3]);
         crate_4.stackOn([crate_1, crate_2, crate_3]);
         game.crates.push(crate_4);
     },
@@ -121,6 +127,20 @@ const game = {
       });
     },
 
+    throw_zippy() {
+
+        if (game.timeSinceLastZippy <= 0) {
+
+            // Spawn zippy.
+            var index = game.zippies.length - 1;
+            game.zippies.push(new Zippy(game.sk8r.x+20, game.sk8r.y+24, game.zippies,
+                              game.context, loader.images.zippy));
+
+            // Begin zippy cooldown.
+            game.timeSinceLastZippy = 1;
+        }
+    },
+
     explode_zippies() {
         game.zippies.forEach((zippy, i) => {
 
@@ -134,11 +154,11 @@ const game = {
             game.crates.forEach((crate, j) => {
 
                 var hitCrate = (crate.x >= zippy.x && crate.x <= (zippy.x + crate.width+5) &&
-                                zippy.y >= (crate.y - crate.height) && zippy.y <= crate.y-3);
+                                zippy.y >= (crate.y) && zippy.y <= crate.y+crate.height);
 
                 // If zippy collided with crate.
                 if (hitCrate && zippy.isFlying) {
-                    zippy.y = crate.y-5;
+                    zippy.y = crate.y+5;
 
                     // Explode on collided crate.
                     zippy.explode();
@@ -150,6 +170,37 @@ const game = {
                 }
             });
         });
+    },
+
+    update_player() {
+
+        // Draw player.
+        game.sk8r.set_floor(sk8r_floor);
+
+        //game.isGrounded = false;
+        game.crates.forEach((crate, i) => {
+
+            if (!crate.isBroken) {
+
+                // If crate height is higher that
+                if (game.sk8r.x >= crate.x-crate.width*2 && game.sk8r.x <= crate.x+crate.width/2) {
+
+                    var top_of_crate = crate.y+(crate.height-1);
+
+                    if (game.sk8r.get_floor() < top_of_crate) {
+                        game.sk8r.set_floor(top_of_crate);
+                    }
+
+                    console.log("sk8r y " + game.sk8r.y);
+                    console.log("crate y " + crate.y);
+                    if (game.sk8r.y < top_of_crate-2 && game.sk8r.x-3 >= crate.x-crate.width*2) {
+                        game.isRunning = false;
+                    }
+                }
+            }
+        });
+        game.sk8r.render();
+        game.sk8r.update();
     },
 
     // Main animating loop.
@@ -173,9 +224,7 @@ const game = {
         game.road.render();
         game.road.update();
 
-        // Draw player.
-        game.sk8r.render();
-        game.sk8r.update();
+        game.update_player();
 
         // Draw crates.
         game.crates.forEach((crate, i) => {
@@ -259,16 +308,7 @@ document.addEventListener('keydown', event => {
   // Add right arrow key listener for zippies.
   if (event.code === 'ArrowRight') {
 
-      if (game.timeSinceLastZippy <= 0) {
-
-          // Spawn zippy.
-          var index = game.zippies.length - 1;
-          game.zippies.push(new Zippy(game.sk8r.x+20, game.sk8r.y+7, game.zippies,
-                            game.context, loader.images.zippy));
-
-          // Begin zippy cooldown.
-          game.timeSinceLastZippy = 1;
-      }
+      game.throw_zippy();
   }
 });
 

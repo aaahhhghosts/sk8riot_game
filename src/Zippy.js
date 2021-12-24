@@ -1,5 +1,6 @@
 import Sprite from '/src/Sprite.js';
 import { getRandomInt } from '/src/common.js';
+import { floor } from '/src/constants.js';
 
 export default class Zippy extends Sprite {
 
@@ -23,7 +24,6 @@ export default class Zippy extends Sprite {
       this.isFlying = true;
       this.hasExploded = false;
 
-      this.floor_height = 105;
       this.gravity = 0.2;
       this.velocity_y = 2.0;
       this.timeSinceThrow = 0.0;
@@ -70,20 +70,19 @@ export default class Zippy extends Sprite {
 
           this.timeSinceThrow += 1;
           var now = this.timeSinceThrow;
-          var jump_y = -(this.y - this.floor_height);
+          var jump_y = -(this.y - floor);
 
           // Apply gravity.
-          this.y -= (
+          this.y += (
               ((this.velocity_y * now)
-              - (this.gravity * (Math.pow(now, 2) / 2)))
-              / 10
+              - (this.gravity * (Math.pow(now, 2) / 2))) / 10
           );
           this.x += 1.5;
 
           // If zippy hits ground, explode.
-          if (this.y >= this.floor_height) {
+          if (this.y <= floor) {
 
-            this.y = this.floor_height + getRandomInt(0, 7);
+            this.y = floor - getRandomInt(0, 7);
             this.explode();
           }
      }

@@ -1,4 +1,5 @@
 import Sprite from '/src/Sprite.js';
+import { floor } from '/src/constants.js';
 
 export default class Crate extends Sprite {
 
@@ -26,8 +27,7 @@ export default class Crate extends Sprite {
       this.stackedOn = [];
       this.isBroken = false;
 
-      this.floor_height = 100;
-      this.stacked_height = this.floor_height;
+      this.stacked_height = floor;
       this.gravity = 0.2;
       this.timeSinceFall = 0;
   }
@@ -36,7 +36,7 @@ export default class Crate extends Sprite {
   stackOn(crates) {
       crates.forEach((crate, i) => {
           this.stackedOn.push(crate);
-          this.stacked_height -= (crate.height-1);
+          this.stacked_height += (crate.height-1);
           this.y = this.stacked_height;
       });
   }
@@ -73,24 +73,24 @@ export default class Crate extends Sprite {
               this.stackedOn.splice(i, 1);
 
               // Set new current floor to height below crate.
-              this.stacked_height += (crate.height-1);
+              this.stacked_height -= (crate.height-1);
             }
         });
       }
 
       // If higher than current floor height, apply gravity.
-      if (this.y < this.stacked_height) {
+      if (this.y > this.stacked_height) {
 
-        this.timeSinceFall += 1;
-        var now = this.timeSinceFall;
-        this.y += (this.gravity * (Math.pow(now, 2) / 2) / 10);
+          this.timeSinceFall += 1;
+          var now = this.timeSinceFall;
+          this.y -= (this.gravity * (Math.pow(now, 2) / 2) / 10);
 
-        // If gravity has dropped crate to the current
-        // floor height, stop fall and reset fall clock.
-        if (this.y >= this.stacked_height) {
-          this.timeSinceFall = 0;
-          this.y = this.stacked_height;
-        }
+          // If gravity has dropped crate to the current
+          // floor height, stop fall and reset fall clock.
+          if (this.y <= this.stacked_height) {
+              this.timeSinceFall = 0;
+              this.y = this.stacked_height;
+          }
       }
   }
 }

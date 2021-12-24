@@ -11,7 +11,7 @@ export default class Cityscape extends Sprite {
           x: x,
           y: y,
           width: 400,
-          height: 110,
+          height: 125,
           frameIndex: 0,
           row: 0,
           tickCount: 0,

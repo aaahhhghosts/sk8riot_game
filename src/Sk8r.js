@@ -11,7 +11,7 @@ export default class Sk8r extends Sprite {
           x: x,
           y: y,
           width: 27,
-          height: 45,
+          height: 41,
           frameIndex: 0,
           row: 0,
           tickCount: 0,
@@ -19,12 +19,20 @@ export default class Sk8r extends Sprite {
           frames: 6
       });
 
-      this.floor_height = y;
+      this.crate_floor = y;
       this.isGrounded = true;
       this.gravity = 0.3;
       this.velocity_y = 0.0;
 
       this.timeSinceJump = 0.0;
+  }
+
+  get_floor() {
+      return this.crate_floor;
+  }
+
+  set_floor(floor) {
+      this.crate_floor = floor;
   }
 
   animate_ride() {
@@ -44,34 +52,29 @@ export default class Sk8r extends Sprite {
         this.isGrounded = false;
         this.animate_jump();
         this.velocity_y = 4;
-        this.y = this.floor_height - 3;
+        this.y = this.crate_floor + 3;
         // console.log('Space pressed ' + this.isGrounded);
       }
   }
 
   update() {
 
-      if (!this.isGrounded) {
-
+      if (this.y > this.crate_floor) {
 
           this.timeSinceJump += 1;
           var now = this.timeSinceJump;
-          var jump_y = -(this.y - this.floor_height);
 
-          //console.log('jumping ' + jump_y);
-
-          this.y -= (
+          this.y += (
               ((this.velocity_y * now)
-              - (this.gravity * (Math.pow(now, 2) / 2)))
-              / 10
+              - (this.gravity * (Math.pow(now, 2) / 2))) / 10
           );
 
-          if (this.y >= this.floor_height-2) {
+          if (this.y <= this.crate_floor+2) {
               this.isGrounded = true;
           }
 
-          if (this.y >= this.floor_height) {
-              this.y = this.floor_height;
+          if (this.y <= this.crate_floor) {
+              this.y = this.crate_floor;
 
               this.animate_ride();
               this.timeSinceJump = 0.0;

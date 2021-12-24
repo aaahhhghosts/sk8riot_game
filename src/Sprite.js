@@ -1,3 +1,5 @@
+import { get_canvas_height } from '/src/Main.js';
+
 export default class Sprite {
 
 constructor(options) {
@@ -30,7 +32,13 @@ update() {
     }
 }
 
+
+
 render() {
+  //console.log("draw height " + get_canvas_height() - 10);
+    var canvas_height = get_canvas_height();
+    console.log("draw height " + (get_canvas_height() - (this.y+this.height)));
+
     this.context.drawImage(
         this.image,
         this.frameIndex * this.width, // The x-axis coordinate of the top left corner
@@ -38,7 +46,7 @@ render() {
         this.width, // The width of the sub-rectangle
         this.height, // The height of the sub-rectangle
         this.x, // The x coordinate
-        this.y,// The y coordinate
+        get_canvas_height() - (this.y+this.height),// The y coordinate
         this.width, // The width to draw the image
         this.height // The width to draw the image
     );
