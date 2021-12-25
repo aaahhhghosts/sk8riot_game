@@ -80,9 +80,9 @@ export default class Zippy extends Sprite {
           this.x += 1.5;
 
           // If zippy hits ground, explode.
-          if (this.y <= floor) {
+          if (this.y < floor) {
 
-            this.y = floor - getRandomInt(0, 7);
+            this.y = floor - getRandomInt(0, 5);
             this.explode();
           }
      }

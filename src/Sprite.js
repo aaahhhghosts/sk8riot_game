@@ -32,12 +32,9 @@ update() {
     }
 }
 
-
-
 render() {
   //console.log("draw height " + get_canvas_height() - 10);
     var canvas_height = get_canvas_height();
-    console.log("draw height " + (get_canvas_height() - (this.y+this.height)));
 
     this.context.drawImage(
         this.image,

@@ -6,12 +6,16 @@ import Crate from '/src/Crate.js';
 import Textbox from '/src/Textbox.js';
 import Zippy from '/src/Zippy.js';
 import { getRandomInt } from '/src/common.js';
-import { add } from '/src/common.js';
 import { floor, sk8r_floor } from '/src/constants.js';
+import { spawn_crates } from '/src/Crate.js';
 
 
 export function get_canvas_height() {
         return game.canvas.height;
+}
+
+export function get_canvas_width() {
+        return game.canvas.width;
 }
 
 const game = {
@@ -70,53 +74,9 @@ const game = {
       this.scorebox.setText(this.score);
     },
 
-    spawn_crates(count) {
 
-        // Do nothing if illegal input.
-        switch(count) {
-          case 1: case 2: case 3: case 4:
-              break;
-          default:
-              return;
-        }
 
-        // Generate crate stack types
-        var crate_types = Array.from({length: count}, () => {return (getRandomInt(0, 4) == 4) ? 1 : 0;});
-
-        // Prevent stack of four steel crates
-        if (count == 4) {
-            while (crate_types.reduce(add, 0) === 4) {
-                crate_types = Array.from({length: count}, () => {return (getRandomInt(0, 4) == 0) ? 1 : 0;});
-            }
-        }
-
-        // Spawn one crate
-        var crate_1 = new Crate(this.canvas.width, floor, this.context, loader.images.crates, crate_types[0]);
-        game.crates.push(crate_1);
-
-        if (count == 1) return;
-
-        // Spawn 2nd crate on top of last one
-        var crate_2 = new Crate(this.canvas.width, floor, this.context, loader.images.crates, crate_types[1]);
-        crate_2.stackOn([crate_1]);
-        game.crates.push(crate_2);
-
-        if (count == 2) return;
-
-        // Spawn 3rd crate on top of the last two
-        var crate_3 = new Crate(this.canvas.width, floor, this.context, loader.images.crates, crate_types[2]);
-        crate_3.stackOn([crate_1, crate_2]);
-        game.crates.push(crate_3);
-
-        if (count == 3) return;
-
-        // Spawn 4th crate on top of the last three.
-        var crate_4 = new Crate(this.canvas.width, floor, this.context, loader.images.crates, crate_types[3]);
-        crate_4.stackOn([crate_1, crate_2, crate_3]);
-        game.crates.push(crate_4);
-    },
-
-    despawn_crates() {
+    despawn_crates(crates) {
       game.crates.forEach((crate, i) => {
           if (crate.x < 0 - crate.width) {
 
@@ -153,12 +113,12 @@ const game = {
             // Check for crate collisions.
             game.crates.forEach((crate, j) => {
 
-                var hitCrate = (crate.x >= zippy.x && crate.x <= (zippy.x + crate.width+5) &&
-                                zippy.y >= (crate.y) && zippy.y <= crate.y+crate.height);
+                var hitCrate = zippy.x >= crate.x-5 && (zippy.x <= (crate.x+crate.width) &&
+                               zippy.y >= (crate.y-5) && zippy.y <= crate.y+crate.height);
 
                 // If zippy collided with crate.
                 if (hitCrate && zippy.isFlying) {
-                    zippy.y = crate.y+5;
+                    zippy.y = crate.y+crate.height-5;
 
                     // Explode on collided crate.
                     zippy.explode();
@@ -177,7 +137,6 @@ const game = {
         // Draw player.
         game.sk8r.set_floor(sk8r_floor);
 
-        game.isGrounded = false;
         game.crates.forEach((crate, i) => {
 
             if (!crate.isBroken) {
@@ -191,8 +150,6 @@ const game = {
                         game.sk8r.set_floor(top_of_crate);
                     }
 
-                    console.log("sk8r y " + game.sk8r.y);
-                    console.log("crate y " + crate.y);
                     if (game.sk8r.y < top_of_crate-2 && game.sk8r.x-3 >= crate.x-crate.width*2) {
                         game.isRunning = false;
                     }
@@ -282,7 +239,7 @@ const game = {
 
             // Spawn crates if any.
             if (numCrates > 0) {
-                game.spawn_crates(numCrates);
+                spawn_crates(game.context, loader.images.crates, game.crates, numCrates);
                 game.timeSinceLastCrate = 1;
             }
         }

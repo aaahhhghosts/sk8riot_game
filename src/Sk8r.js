@@ -1,4 +1,5 @@
 import Sprite from '/src/Sprite.js';
+import { sk8r_floor } from '/src/constants.js';
 
 export default class Sk8r extends Sprite {
 
@@ -58,7 +59,7 @@ export default class Sk8r extends Sprite {
 
   update() {
 
-      if (this.y > this.crate_floor) {
+      if (this.y > this.crate_floor-2 && this.y > sk8r_floor) {
 
           this.timeSinceJump += 1;
           var now = this.timeSinceJump;
@@ -68,16 +69,16 @@ export default class Sk8r extends Sprite {
               - (this.gravity * (Math.pow(now, 2) / 2))) / 10
           );
 
-          if (this.y <= this.crate_floor-1) {
+          if (this.y <= this.crate_floor+2) {
               this.isGrounded = true;
+              this.animate_ride();
           }
 
           if (this.y <= this.crate_floor) {
               this.y = this.crate_floor;
 
-              this.animate_ride();
-              this.timeSinceJump = 0.0;
-              this.velocity_y = 0.0;
+              this.timeSinceJump = 0;
+              this.velocity_y = 0;
           }
       }
 
