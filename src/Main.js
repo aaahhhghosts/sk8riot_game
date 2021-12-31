@@ -1,14 +1,17 @@
-import Sk8r from '/src/Sk8r.js';
-import Road from '/src/Road.js';
-import Downtown from '/src/Downtown.js';
-import Cityscape from '/src/Cityscape.js';
-import Crate from '/src/Crate.js';
+import Sk8r from '/src/classes/Sk8r.js';
+import Road from '/src/classes/Road.js';
+import Downtown from '/src/classes/Downtown.js';
+import Cityscape from '/src/classes/Cityscape.js';
+import Crate from '/src/classes/Crate.js';
+import Zippy from '/src/classes/Zippy.js';
 import Textbox from '/src/Textbox.js';
-import Zippy from '/src/Zippy.js';
-import { getRandomInt } from '/src/common.js';
-import { floor, sk8r_floor } from '/src/constants.js';
-import { spawn_crates } from '/src/Crate.js';
+import { loader } from '/src/img_loader.js';
+import { spawn_crates, despawn_crates } from '/src/classes/Crate.js';
+import { explode_zippies, despawn_zippies } from '/src/classes/Zippy.js';
 
+import { getRandomInt, raf } from '/src/common.js';
+import { floor, sk8r_floor } from '/src/constants.js';
+import { create_key_listener } from '/src/key_listener.js';
 
 export function get_canvas_height() {
         return game.canvas.height;
@@ -74,94 +77,31 @@ const game = {
       this.scorebox.setText(this.score);
     },
 
+    update_background() {
 
-
-    despawn_crates(crates) {
-      game.crates.forEach((crate, i) => {
-          if (crate.x < 0 - crate.width) {
-
-            // If crate leaves map, despawn.
-            var i = this.crates.indexOf(crate);
-            this.crates.splice(i, 1);
-          }
-      });
+        // Draw background.
+        game.cityscape.render();
+        game.cityscape.update_cityscape();
+        game.downtown.render();
+        game.downtown.update_downtown();
     },
 
-    throw_zippy() {
-
-        if (game.timeSinceLastZippy <= 0) {
-
-            // Spawn zippy.
-            var index = game.zippies.length - 1;
-            game.zippies.push(new Zippy(game.sk8r.x+20, game.sk8r.y+24, game.zippies,
-                              game.context, loader.images.zippy));
-
-            // Begin zippy cooldown.
-            game.timeSinceLastZippy = 1;
-        }
-    },
-
-    explode_zippies() {
-        game.zippies.forEach((zippy, i) => {
-
-            // If zippy has finished exploding, despawn.
-            if (zippy.hasExploded) {
-                var i = this.zippies.indexOf(zippy);
-                this.zippies.splice(i, 1);
-            }
-
-            // Check for crate collisions.
-            game.crates.forEach((crate, j) => {
-
-                var hitCrate = zippy.x >= crate.x-5 && (zippy.x <= (crate.x+crate.width) &&
-                               zippy.y >= (crate.y-5) && zippy.y <= crate.y+crate.height);
-
-                // If zippy collided with crate.
-                if (hitCrate && zippy.isFlying) {
-                    zippy.y = crate.y+crate.height-5;
-
-                    // Explode on collided crate.
-                    zippy.explode();
-
-                    // If crate is wooden, break.
-                    if (crate.type == 0) {
-                        crate.break();
-                    }
-                }
-            });
-        });
-    },
-
-    update_player() {
-
-        // Draw player.
-        game.sk8r.set_floor(sk8r_floor);
+    end_game() {
+        game.downtown.stop_scroll();
+        game.cityscape.stop_scroll();
+        game.road.stop_scroll();
 
         game.crates.forEach((crate, i) => {
-
-            if (!crate.isBroken) {
-
-                // If crate height is higher that
-                if (game.sk8r.x >= crate.x-crate.width*2 && game.sk8r.x <= crate.x+crate.width/2) {
-
-                    var top_of_crate = crate.y+(crate.height-1);
-
-                    if (game.sk8r.get_floor() < top_of_crate) {
-                        game.sk8r.set_floor(top_of_crate);
-                    }
-
-                    if (game.sk8r.y < top_of_crate-2 && game.sk8r.x-3 >= crate.x-crate.width*2) {
-                        game.isRunning = false;
-                    }
-                }
-            }
+            crate.moving = false;
         });
-        game.sk8r.render();
-        game.sk8r.update();
     },
 
     // Main animating loop.
     async drawingLoop() {
+
+        if (game.sk8r.isAlive === false) {
+            game.end_game();
+        }
 
         // Clear canvas
         game.context.clearRect(0, 0, game.canvas.width, game.canvas.height);
@@ -171,32 +111,33 @@ const game = {
         var scale_width = game.trueCanvas.width;
         var scale_height = game.trueCanvas.height;
 
-        // Draw background.
-        game.cityscape.render();
-        game.cityscape.update();
-        game.downtown.render();
-        game.downtown.update();
+
+        game.update_background();
 
         // Draw floor.
         game.road.render();
-        game.road.update();
-
-        game.update_player();
+        game.road.update_road();
 
         // Draw crates.
         game.crates.forEach((crate, i) => {
             crate.render();
-            crate.update();
+            crate.update_crate();
         });
+
+        game.sk8r.render();
+        game.sk8r.update_sk8r(game.crates);
 
         // Check if zippies has collided with any objects.
         if (game.zippies.length > 0) {
-          game.explode_zippies();
+
+          despawn_zippies(game.zippies);
+
+          explode_zippies(game.zippies, game.crates);
 
           // Draw zippies
           game.zippies.forEach((zippy, i) => {
               zippy.render();
-              zippy.update();
+              zippy.update_zippy();
           });
         }
 
@@ -210,42 +151,49 @@ const game = {
         }
 
         // Add point to score and draw.
-        game.increment_scorebox();
         game.scorebox.update();
+        if (game.sk8r.isAlive) {
+            game.increment_scorebox();
+        }
 
         // Draw game frame to true canvas.
         game.trueContext.drawImage(game.canvas, 0, 0, game.canvas.width, game.canvas.height, 0, 0, scale_width, scale_height);
 
         // Await new Promise(r => setTimeout(r, 180));
-        var numCrates = 0;
 
-        if (game.timeSinceLastCrate > 0) {
-            game.timeSinceLastCrate += 1;
+        // If player is still alive, continue spawning new crates.
+        if (game.sk8r.isAlive) {
 
-            if (game.timeSinceLastCrate == game.crateCoolDown) {
-                game.timeSinceLastCrate = 0;
+            var numCrates = 0;
+
+            if (game.timeSinceLastCrate > 0) {
+                game.timeSinceLastCrate += 1;
+
+                if (game.timeSinceLastCrate == game.crateCoolDown) {
+                    game.timeSinceLastCrate = 0;
+                }
             }
-        }
 
-        // If cooldown has ended since last crate spawn, try to spawn another.
-        if (game.timeSinceLastCrate == 0) {
+            // If cooldown has ended since last crate spawn, try to spawn another.
+            if (game.timeSinceLastCrate == 0) {
 
-            var randInt = getRandomInt(1, 500);
+                var randInt = getRandomInt(1, 500);
 
-            if (randInt < 10) {numCrates = 1;}
-            else if (randInt < 13) {numCrates = 2;}
-            else if (randInt < 15) {numCrates = 3;}
-            else if (randInt < 17) {numCrates = 4;}
+                if (randInt < 10) {numCrates = 1;}
+                else if (randInt < 13) {numCrates = 2;}
+                else if (randInt < 15) {numCrates = 3;}
+                else if (randInt < 17) {numCrates = 4;}
 
-            // Spawn crates if any.
-            if (numCrates > 0) {
-                spawn_crates(game.context, loader.images.crates, game.crates, numCrates);
-                game.timeSinceLastCrate = 1;
+                // Spawn crates if any.
+                if (numCrates > 0) {
+                    spawn_crates(game.context, loader.images.crates, game.crates, numCrates);
+                    game.timeSinceLastCrate = 1;
+                }
             }
-        }
 
-        // Remove crates that leave screen.
-        game.despawn_crates();
+            // Remove crates that leave screen.
+            despawn_crates(game.crates);
+        }
 
         // As long as game is still running, create next game frame.
         if (game.isRunning) {
@@ -253,72 +201,6 @@ const game = {
         }
     },
 };
-
-
-document.addEventListener('keydown', event => {
-
-  // Add space key listener for jumping.
-  if (event.code === 'Space') {
-    game.sk8r.jump();
-  }
-
-  // Add right arrow key listener for zippies.
-  if (event.code === 'ArrowRight') {
-
-      game.throw_zippy();
-  }
-});
-
-// Image resource loader.
-const loader = {
-    count: 0,
-    images: {},
-    crates: {},
-
-    add(title, src_list) {
-
-        var img_list = [];
-
-        src_list.forEach((src, i) => {
-            const image = new Image();
-            image.src = src;
-            img_list.push(image);
-            this.count++;
-        });
-
-        this.images[title] = img_list;
-    },
-
-    init() {
-        loader.add('sk8r', [Sk8r.src]);
-        loader.add('road', [Road.src]);
-        loader.add('downtown', [Downtown.src]);
-        loader.add('cityscape', [Cityscape.src]);
-        loader.add('crates', [Crate.src_0, Crate.src_1]);
-        loader.add('zippy', [Zippy.src]);
-    }
-};
-
-// Framerate calculator for testing.
-let i = 0;
-const start = Date.now();
-const stop = start + 5000;
-
-function raf() {
-  requestAnimationFrame(() => {
-    const now = Date.now();
-    if (now < stop){
-      i++;
-      raf();
-    }else{
-      const elapsedSeconds = (now - start) / 1000;
-      console.log('Frame rate is: %f fps', i / elapsedSeconds);
-    }
-  });
-}
-
-console.log('Testing frame rate...')
-raf();
 
 // Resize mini drawing canvas to fit true canvas.
 function resizeGame() {
@@ -358,5 +240,9 @@ window.addEventListener('orientationchange', resizeGame, false);
 // On page load, start game.
 window.addEventListener("load", () => {
     game.init();
+    create_key_listener(game);
     resizeGame();
+
+    console.log('Testing frame rate...')
+    raf();
 });

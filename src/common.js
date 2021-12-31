@@ -14,3 +14,23 @@ export function getRandomInt(min, max) {
 export function add(accumulator, a) {
   return accumulator + a;
 }
+
+
+let i = 0;
+const start = Date.now();
+const stop = start + 5000;
+
+// Framerate calculator for testing.
+export function raf() {
+
+  requestAnimationFrame(() => {
+    const now = Date.now();
+    if (now < stop){
+      i++;
+      raf();
+    }else{
+      const elapsedSeconds = (now - start) / 1000;
+      console.log('Frame rate is: %f fps', i / elapsedSeconds);
+    }
+  });
+}
