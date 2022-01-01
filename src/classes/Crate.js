@@ -102,9 +102,9 @@ export function spawn_crates(context, img_list, crates, stack_width) {
         var stack_height = 1;
         var randInt = getRandomInt(1, 20);
 
-        if (randInt < 5) {stack_height = 2;}
-        else if (randInt < 3) {stack_height = 3;}
-        else if (randInt < 2) {stack_height = 4;}
+        if (randInt < 7) {stack_height = 2;}
+        else if (randInt < 10) {stack_height = 3;}
+        else if (randInt < 11) {stack_height = 4;}
 
         // Generate crate stack types
         var crate_types = Array.from({length: stack_height}, () => {return (getRandomInt(0, 4) == 4) ? 1 : 0;});
