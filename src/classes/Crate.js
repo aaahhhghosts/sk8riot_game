@@ -73,7 +73,6 @@ export default class Crate extends Sprite {
 
                   // Set new current floor to height below crate.
                   this.floor -= (crate.height-1);
-                  console.log("new floor " + this.floor + " curr y " + this.y);
               }
           });
       }
@@ -92,50 +91,56 @@ export function despawn_crates(crates) {
 }
 
 // Method for spawning in a given number of stacked crates.
-export function spawn_crates(context, img_list, crates, count) {
+export function spawn_crates(context, img_list, crates, stack_width) {
 
-    // Do nothing if illegal input.
-    switch(count) {
-      case 1: case 2: case 3: case 4:
-          break;
-      default:
-          return;
-    }
+    var next_xpos = get_canvas_width();
 
-    // Generate crate stack types
-    var crate_types = Array.from({length: count}, () => {return (getRandomInt(0, 4) == 4) ? 1 : 0;});
+    for (let i = 0; i < stack_width; i++) {
 
-    // Prevent stack of four steel crates
-    if (count == 4) {
-        while (crate_types.reduce(add, 0) === 4) {
-            crate_types = Array.from({length: count}, () => {return (getRandomInt(0, 4) == 0) ? 1 : 0;});
+        var xpos = next_xpos;
+
+        var stack_height = 1;
+        var randInt = getRandomInt(1, 20);
+
+        if (randInt < 5) {stack_height = 2;}
+        else if (randInt < 3) {stack_height = 3;}
+        else if (randInt < 2) {stack_height = 4;}
+
+        // Generate crate stack types
+        var crate_types = Array.from({length: stack_height}, () => {return (getRandomInt(0, 4) == 4) ? 1 : 0;});
+
+        // Prevent stack of four steel crates
+        if (stack_height == 4) {
+            while (crate_types.reduce(add, 0) === 4) {
+                crate_types = Array.from({length: stack_height}, () => {return (getRandomInt(0, 4) == 0) ? 1 : 0;});
+            }
         }
+
+        // Spawn one crate
+        var crate_1 = new Crate(xpos, floor, context, img_list, crate_types[0]);
+        crates.push(crate_1);
+
+        next_xpos += crate_1.width;
+
+        if (stack_height == 1) continue;
+
+        // Spawn 2nd crate on top of last one
+        var crate_2 = new Crate(xpos, floor, context, img_list, crate_types[1]);
+        crate_2.stackOn([crate_1]);
+        crates.push(crate_2);
+
+        if (stack_height == 2) continue;
+
+        // Spawn 3rd crate on top of the last two
+        var crate_3 = new Crate(xpos, floor, context, img_list, crate_types[2]);
+        crate_3.stackOn([crate_1, crate_2]);
+        crates.push(crate_3);
+
+        if (stack_height == 3) continue;
+
+        // Spawn 4th crate on top of the last three.
+        var crate_4 = new Crate(xpos, floor, context, img_list, crate_types[3]);
+        crate_4.stackOn([crate_1, crate_2, crate_3]);
+        crates.push(crate_4);
     }
-
-    var canvas_width = get_canvas_width();
-
-    // Spawn one crate
-    var crate_1 = new Crate(canvas_width, floor, context, img_list, crate_types[0]);
-    crates.push(crate_1);
-
-    if (count == 1) return;
-
-    // Spawn 2nd crate on top of last one
-    var crate_2 = new Crate(canvas_width, floor, context, img_list, crate_types[1]);
-    crate_2.stackOn([crate_1]);
-    crates.push(crate_2);
-
-    if (count == 2) return;
-
-    // Spawn 3rd crate on top of the last two
-    var crate_3 = new Crate(canvas_width, floor, context, img_list, crate_types[2]);
-    crate_3.stackOn([crate_1, crate_2]);
-    crates.push(crate_3);
-
-    if (count == 3) return;
-
-    // Spawn 4th crate on top of the last three.
-    var crate_4 = new Crate(canvas_width, floor, context, img_list, crate_types[3]);
-    crate_4.stackOn([crate_1, crate_2, crate_3]);
-    crates.push(crate_4);
 }

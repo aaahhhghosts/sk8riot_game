@@ -4,6 +4,7 @@ import Downtown from '/src/classes/Downtown.js';
 import Cityscape from '/src/classes/Cityscape.js';
 import Crate from '/src/classes/Crate.js';
 import Zippy from '/src/classes/Zippy.js';
+
 import Textbox from '/src/Textbox.js';
 import { loader } from '/src/img_loader.js';
 import { spawn_crates, despawn_crates } from '/src/classes/Crate.js';
@@ -164,8 +165,6 @@ const game = {
         // If player is still alive, continue spawning new crates.
         if (game.sk8r.isAlive) {
 
-            var numCrates = 0;
-
             if (game.timeSinceLastCrate > 0) {
                 game.timeSinceLastCrate += 1;
 
@@ -177,16 +176,17 @@ const game = {
             // If cooldown has ended since last crate spawn, try to spawn another.
             if (game.timeSinceLastCrate == 0) {
 
-                var randInt = getRandomInt(1, 500);
+                var stack_width = 0;
 
-                if (randInt < 10) {numCrates = 1;}
-                else if (randInt < 13) {numCrates = 2;}
-                else if (randInt < 15) {numCrates = 3;}
-                else if (randInt < 17) {numCrates = 4;}
+                var randInt = getRandomInt(1, 700);
+                if (randInt < 17) {stack_width = 1;}
+                else if (randInt < 19) {stack_width = 2;}
+                else if (randInt < 21) {stack_width = 3;}
+                else if (randInt < 22) {stack_width = 4;}
 
                 // Spawn crates if any.
-                if (numCrates > 0) {
-                    spawn_crates(game.context, loader.images.crates, game.crates, numCrates);
+                if (stack_width > 0) {
+                    spawn_crates(game.context, loader.images.crates, game.crates, stack_width);
                     game.timeSinceLastCrate = 1;
                 }
             }
