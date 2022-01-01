@@ -120,7 +120,7 @@ export function spawn_crates(context, img_list, crates, stack_width) {
         var crate_1 = new Crate(xpos, floor, context, img_list, crate_types[0]);
         crates.push(crate_1);
 
-        next_xpos += crate_1.width;
+        next_xpos += crate_1.width-1;
 
         if (stack_height == 1) continue;
 
