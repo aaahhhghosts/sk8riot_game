@@ -50,6 +50,14 @@ export default class Sk8r extends Sprite {
     this.frameIndex = 0;
   }
 
+  animate_death() {
+      this.width = 32;
+      this.row = 2;
+      this.frames = 2;
+      this.frameIndex = 0;
+      this.ticksPerFrame = 12;
+  }
+
   jump() {
       if (this.isGrounded && this.isAlive) {
         this.isGrounded = false;
@@ -66,10 +74,12 @@ export default class Sk8r extends Sprite {
 
   kill() {
       this.isAlive = false;
+      this.animate_death();
   }
 
   update_sk8r(crates) {
       super.update();
+      //console.log("tick: " + this.tickCount + " frame index " + this.frameIndex + " calc: " + this.frameIndex*this.width);
       this.update_floor(crates);
   }
 
@@ -115,7 +125,9 @@ export default class Sk8r extends Sprite {
               }
 
               if (this.y < top_of_crate-2 && this.x-3 >= crate.x-crate.width*2) {
-                  this.kill();
+                  if (this.isAlive) {
+                      this.kill();
+                  }
               }
           }
       });
