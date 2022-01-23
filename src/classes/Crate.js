@@ -21,15 +21,15 @@ export default class Crate extends Sprite {
           row: 0,
           tickCount: 0,
           ticksPerFrame: 1,
-          frames: 1
+          frames: 1,
+          loop_animation: true,
+          hasGravity: true,
       });
 
       this.type = type;
 
       this.stackedOn = [];
       this.isBroken = false;
-
-      this.hasGravity = true;
 
       this.moving = true;
   }

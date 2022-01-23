@@ -18,10 +18,10 @@ export default class Board extends Sprite {
           tickCount: 0,
           ticksPerFrame: 6,
           frames: 5,
+          loop_animation: false,
+          hasGravity: true
       });
 
-      this.loop_animation = false;
-      this.hasGravity = true;
       this.floor = sk8r_floor;
       this.velocity_y = 1;
 

@@ -29,4 +29,9 @@ export default class Downtown extends Scenery {
     update_downtown() {
         super.update();
     }
+
+    reset_downtown() {
+        super.reset();
+        this.set_scroll(true, 1, true, 600);
+    }
 }

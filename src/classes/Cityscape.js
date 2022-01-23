@@ -26,4 +26,9 @@ export default class Cityscape extends Scenery {
   update_cityscape() {
       super.update();
   }
+
+  reset_cityscape() {
+      super.reset();
+      this.set_scroll(true, 1, true, 200);
+  }
 }

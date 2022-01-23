@@ -19,10 +19,10 @@ export default class Sk8r extends Sprite {
           row: 0,
           tickCount: 0,
           ticksPerFrame: 6,
-          frames: 6
+          frames: 6,
+          loop_animation: true,
+          hasGravity: true
       });
-
-      this.hasGravity = true;
 
       this.isGrounded = true;
       this.gravity = 0.3;
@@ -168,5 +168,15 @@ export default class Sk8r extends Sprite {
               }
           }
       });
+  }
+
+  reset_sk8r() {
+      super.reset();
+
+      this.isAlive = true;
+      this.isGrounded = true;
+      this.velocity_y = 0;
+      this.velocity_x = 0;
+      this.timeSinceJump = 0;
   }
 }

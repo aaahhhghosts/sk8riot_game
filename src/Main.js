@@ -7,6 +7,7 @@ import Zippy from '/src/classes/Zippy.js';
 import Board from '/src/classes/Board.js';
 
 import Textbox from '/src/Textbox.js';
+import Button from '/src/Button.js';
 import { loader } from '/src/img_loader.js';
 import { spawn_crates, despawn_crates } from '/src/classes/Crate.js';
 import { explode_zippies, despawn_zippies } from '/src/classes/Zippy.js';
@@ -14,6 +15,7 @@ import { explode_zippies, despawn_zippies } from '/src/classes/Zippy.js';
 import { getRandomInt, raf } from '/src/common.js';
 import { floor, sk8r_floor } from '/src/constants.js';
 import { create_key_listener } from '/src/key_listener.js';
+import { create_click_listener } from '/src/click_listener.js';
 
 export function get_canvas_height() {
         return game.canvas.height;
@@ -47,9 +49,11 @@ const game = {
         this.scorebox = new Textbox(155.5, 10.5, this.context, 100, 50, "Ayooo");
         this.score = 0;
 
+        this.buttons = [];
+        this.showing_restart_menu = false;
+
         // Load all image resources.
-        this.loader = loader;
-        this.loader.init();
+        loader.init();
 
         // Create game background.
         this.downtown = new Downtown(0, 0, this.context, loader.images.downtown);
@@ -158,8 +162,6 @@ const game = {
             game.increment_scorebox();
         }
 
-
-
         // Await new Promise(r => setTimeout(r, 180));
 
         // If player is still alive, continue spawning new crates.
@@ -198,15 +200,20 @@ const game = {
         if (!game.sk8r.isAlive) {
 
             if (game.board == null) {
-
-              game.board = new Board(game.crates, 10, game.sk8r.y, game.context, loader.images.board, 0);
-
+                game.board = new Board(game.crates, 10, game.sk8r.y, game.context, loader.images.board, 0);
             } else {
-                console.log("updating drawing board");
                 game.board.render();
                 game.board.update_board();
             }
+
+            if (game.sk8r.velocity_x == 0 && !game.showing_restart_menu) {
+                game.show_restart_menu();
+            }
         }
+
+        game.buttons.forEach((button, i) => {
+            button.update();
+        });
 
         // Draw game frame to true canvas.
         game.trueContext.drawImage(game.canvas, 0, 0, game.canvas.width, game.canvas.height, 0, 0, scale_width, scale_height);
@@ -216,7 +223,50 @@ const game = {
             requestAnimationFrame(game.drawingLoop);
         }
     },
+
+    show_restart_menu() {
+
+        game.showing_restart_menu = true;
+        game.buttons.push(new Button(get_canvas_width()/2-25, get_canvas_height()/2-10, game.context, 50, 20, "Restart"));
+    }
 };
+
+function start_game() {
+
+    game.init();
+    create_key_listener(game);
+    create_click_listener(game);
+    resizeGame();
+
+    console.log('Testing frame rate...')
+    raf();
+}
+
+export function restart_game() {
+
+  game.score = 0;
+
+  game.buttons = [];
+  game.showing_restart_menu = false;
+
+  // Create game background.
+  game.downtown.reset_downtown();
+  game.cityscape.reset_cityscape();
+
+  // Create game floor.
+  game.road.reset_road();
+
+  game.zippies = [];
+  game.timeSinceLastZippy = 0;
+  game.zippyCoolDown = 10;
+
+  game.crates = [];
+  game.timeSinceLastCrate = 0;
+  game.crateCoolDown = 40;
+
+  // Create player.
+  game.sk8r.reset_sk8r();
+}
 
 // Resize mini drawing canvas to fit true canvas.
 function resizeGame() {
@@ -255,10 +305,5 @@ window.addEventListener('orientationchange', resizeGame, false);
 
 // On page load, start game.
 window.addEventListener("load", () => {
-    game.init();
-    create_key_listener(game);
-    resizeGame();
-
-    console.log('Testing frame rate...')
-    raf();
+    start_game();
 });

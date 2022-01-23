@@ -19,6 +19,8 @@ export default class Zippy extends Sprite {
           tickCount: 0,
           ticksPerFrame: 0,
           frames: 20,
+          loop_animation: true,
+          hasGravity: true
       });
 
       this.floor = floor;
@@ -26,7 +28,6 @@ export default class Zippy extends Sprite {
       this.doneExploding = false;
       this.brokeCrate = false;
 
-      this.hasGravity = true;
       this.isAirborn = true;
 
       this.velocity_y = 1;

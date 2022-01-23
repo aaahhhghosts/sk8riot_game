@@ -25,4 +25,9 @@ export default class Road extends Scenery {
     update_road() {
         super.update();
     }
+
+    reset_road() {
+        super.reset();
+        this.set_scroll(true, 2, true, 200);
+    }
 }

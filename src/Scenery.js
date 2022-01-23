@@ -20,8 +20,9 @@ constructor(options) {
     this.scroll_reset = false;
     this.scroll_reset_x = 0;
 
-
     this.loop_animation = true;
+
+    this.init_options = options;
 }
 
 resize(context) {
@@ -88,5 +89,18 @@ render() {
         this.width, // The width to draw the image
         this.height // The width to draw the image
     );
+  }
+
+  reset() {
+
+      this.x = this.init_options.x; // Coordinates on canvas
+      this.y = this.init_options.y;
+      this.width = this.init_options.width; // Size of sprite frame
+      this.height = this.init_options.height;
+      this.frames = this.init_options.frames; // Number of frames in a row
+      this.frameIndex = this.init_options.frameIndex; // Current frame
+      this.row = this.init_options.row; // Row of sprites
+      this.ticksPerFrame = this.init_options.ticksPerFrame; // Speed of animation
+      this.tickCount = this.init_options.tickCount; // How much time has passed
   }
 }

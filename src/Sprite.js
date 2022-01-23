@@ -15,15 +15,16 @@ constructor(options) {
     this.row = options.row; // Row of sprites
     this.ticksPerFrame = options.ticksPerFrame; // Speed of animation
     this.tickCount = options.tickCount; // How much time has passed
+    this.loop_animation = options.loop_animation;
+    this.hasGravity = options.hasGravity;
 
-    this.hasGravity = false;
     this.gravity = gravity;
     this.velocity_y = 0;
     this.floor = options.y;
     this.isAirborn = false;
     this.timeSinceAirborn = 0;
 
-    this.loop_animation = true;
+    this.init_options = options;
 }
 
 resize(context) {
@@ -104,5 +105,26 @@ render() {
         this.width, // The width to draw the image
         this.height // The width to draw the image
     );
-  }
+}
+
+reset() {
+
+    this.x = this.init_options.x; // Coordinates on canvas
+    this.y = this.init_options.y;
+    this.width = this.init_options.width; // Size of sprite frame
+    this.height = this.init_options.height;
+    this.frames = this.init_options.frames; // Number of frames in a row
+    this.frameIndex = this.init_options.frameIndex; // Current frame
+    this.row = this.init_options.row; // Row of sprites
+    this.ticksPerFrame = this.init_options.ticksPerFrame; // Speed of animation
+    this.tickCount = this.init_options.tickCount; // How much time has passed
+    this.loop_animation = this.init_options.loop_animation;
+    this.hasGravity = this.init_options.hasGravity;
+
+    this.velocity_y = 0;
+    this.floor = this.init_options.y;
+    this.isAirborn = false;
+    this.timeSinceAirborn = 0;
+}
+
 }
