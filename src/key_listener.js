@@ -12,7 +12,7 @@ export function create_key_listener(game) {
       // Add right arrow key listener for zippies.
       if (event.code === 'ArrowRight') {
 
-          if (game.timeSinceLastZippy <= 0) {
+          if (game.timeSinceLastZippy <= 0 && game.sk8r.isAlive) {
 
               // Spawn zippy.
               throw_zippy(game.sk8r.x+20, game.sk8r.y+26, game.context,

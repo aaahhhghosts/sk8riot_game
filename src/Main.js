@@ -4,6 +4,7 @@ import Downtown from '/src/classes/Downtown.js';
 import Cityscape from '/src/classes/Cityscape.js';
 import Crate from '/src/classes/Crate.js';
 import Zippy from '/src/classes/Zippy.js';
+import Board from '/src/classes/Board.js';
 
 import Textbox from '/src/Textbox.js';
 import { loader } from '/src/img_loader.js';
@@ -157,8 +158,7 @@ const game = {
             game.increment_scorebox();
         }
 
-        // Draw game frame to true canvas.
-        game.trueContext.drawImage(game.canvas, 0, 0, game.canvas.width, game.canvas.height, 0, 0, scale_width, scale_height);
+
 
         // Await new Promise(r => setTimeout(r, 180));
 
@@ -194,6 +194,22 @@ const game = {
             // Remove crates that leave screen.
             despawn_crates(game.crates);
         }
+
+        if (!game.sk8r.isAlive) {
+
+            if (game.board == null) {
+
+              game.board = new Board(10, game.sk8r.y, game.context, loader.images.board, 0);
+
+            } else {
+                console.log("updating drawing board");
+                game.board.render();
+                game.board.update_board();
+            }
+        }
+
+        // Draw game frame to true canvas.
+        game.trueContext.drawImage(game.canvas, 0, 0, game.canvas.width, game.canvas.height, 0, 0, scale_width, scale_height);
 
         // As long as game is still running, create next game frame.
         if (game.isRunning) {

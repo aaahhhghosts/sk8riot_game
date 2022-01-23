@@ -4,8 +4,10 @@ import { sk8r_floor } from '/src/constants.js';
 export default class Sk8r extends Sprite {
 
   static src = '/sprites/sk8r.png';
+  static board_src = '/sprites/board.png';
 
-  constructor(x, y, context, image) {
+
+  constructor(x, y, context, image, board_image) {
       super({
           context: context,
           image: image[0],
@@ -25,8 +27,10 @@ export default class Sk8r extends Sprite {
       this.isGrounded = true;
       this.gravity = 0.3;
       this.velocity_y = 0;
+      this.velocity_x = 0;
 
       this.isAlive = true;
+      this.board_image = board_image;
       this.timeSinceJump = 0;
   }
 
@@ -53,9 +57,10 @@ export default class Sk8r extends Sprite {
   animate_death() {
       this.width = 32;
       this.row = 2;
-      this.frames = 2;
+      this.frames = 4;
       this.frameIndex = 0;
       this.ticksPerFrame = 12;
+      this.loop_animation = false;
   }
 
   jump() {
@@ -67,25 +72,51 @@ export default class Sk8r extends Sprite {
       }
   }
 
-  animate_land() {
-      this.isGrounded = true;
-      this.animate_ride();
-  }
-
   kill() {
       this.isAlive = false;
       this.animate_death();
+      this.throw_off_board();
+  }
+
+  throw_off_board() {
+
+    // Send sk8r's body flying.
+    this.set_floor(sk8r_floor-12);
+    this.isGrounded = false;
+    this.velocity_y = 4;
+    this.y += 3;
+    this.velocity_x = 1.5;
+  }
+
+  draw_board() {
+
+    var canvas_height = get_canvas_height();
+
+    this.context.drawImage(
+        this.board_image,
+        this.frameIndex * this.width, // The x-axis coordinate of the top left corner
+        this.row * this.height, // The y-axis coordinate of the top left corner
+        this.width, // The width of the sub-rectangle
+        this.height, // The height of the sub-rectangle
+        this.x, // The x coordinate
+        get_canvas_height() - (this.y+this.height),// The y coordinate
+        this.width, // The width to draw the image
+        this.height // The width to draw the image
+    );
   }
 
   update_sk8r(crates) {
       super.update();
-      //console.log("tick: " + this.tickCount + " frame index " + this.frameIndex + " calc: " + this.frameIndex*this.width);
-      this.update_floor(crates);
+
+      // Update current floor as long as player is alive.
+      if (this.isAlive) {
+          this.update_floor(crates);
+      }
   }
 
   apply_gravity() {
 
-      if (this.y > this.floor-2 && this.y > sk8r_floor) {
+      if (this.y > this.floor-2 && (this.y > sk8r_floor || !this.isAlive)) {
 
           this.timeSinceJump += 1;
           var now = this.timeSinceJump;
@@ -95,8 +126,14 @@ export default class Sk8r extends Sprite {
               - (this.gravity * (Math.pow(now, 2) / 2))) / 10
           );
 
+          // If sk8r is alive, return to skating animation on landing.
           if (this.y <= this.floor+2) {
-              this.animate_land();
+
+              this.isGrounded = true;
+
+              if (this.isAlive) {
+                  this.animate_ride();
+              }
           }
 
           if (this.y <= this.floor) {
@@ -106,28 +143,45 @@ export default class Sk8r extends Sprite {
               this.velocity_y = 0;
           }
       }
+
+      // If sk8r is dead, move body forwards.
+      if (!this.isAlive && this.velocity_x > 0) {
+
+          this.x += this.velocity_x;
+          if (this.y <= sk8r_floor-12) {
+              this.velocity_x -= this.velocity_x / 30;
+
+              if (this.velocity_x < 0.1) {
+                  this.velocity_x = 0;
+              }
+          }
+      }
   }
 
   update_floor(crates) {
 
-      // Draw player.
+      // Reset floor.
       this.set_floor(sk8r_floor);
 
-      crates.filter(crate => !crate.isBroken).forEach((crate, j) => {
+      // Loop through all creates.
+      crates.filter(crate => !crate.isBroken).some((crate, j) => {
 
           // If crate is at the same place as sk8r
           if (this.x >= crate.x-crate.width*2 && this.x <= crate.x+crate.width/2) {
 
+              // Get y coord of the top of this crate.
               var top_of_crate = crate.y+(crate.height-1);
 
-              if (this.get_floor() < top_of_crate) {
-                  this.set_floor(top_of_crate);
+              // If sk8r is below the top of crate, they have hit a wall.
+              // Kill sk8r and break out of loop.
+              if (this.y < top_of_crate-2 && this.x-3 >= crate.x-crate.width*2) {
+                  this.kill();
+                  return true;
               }
 
-              if (this.y < top_of_crate-2 && this.x-3 >= crate.x-crate.width*2) {
-                  if (this.isAlive) {
-                      this.kill();
-                  }
+              // Else if sk8r clears the top of crate, update the current floor.
+              if (this.get_floor() < top_of_crate) {
+                  this.set_floor(top_of_crate);
               }
           }
       });

@@ -90,7 +90,7 @@ update() {
 }
 
 render() {
-  //console.log("draw height " + get_canvas_height() - 10);
+
     var canvas_height = get_canvas_height();
 
     this.context.drawImage(
