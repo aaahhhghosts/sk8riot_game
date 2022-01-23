@@ -88,23 +88,6 @@ export default class Sk8r extends Sprite {
     this.velocity_x = 1.5;
   }
 
-  draw_board() {
-
-    var canvas_height = get_canvas_height();
-
-    this.context.drawImage(
-        this.board_image,
-        this.frameIndex * this.width, // The x-axis coordinate of the top left corner
-        this.row * this.height, // The y-axis coordinate of the top left corner
-        this.width, // The width of the sub-rectangle
-        this.height, // The height of the sub-rectangle
-        this.x, // The x coordinate
-        get_canvas_height() - (this.y+this.height),// The y coordinate
-        this.width, // The width to draw the image
-        this.height // The width to draw the image
-    );
-  }
-
   update_sk8r(crates) {
       super.update();
 

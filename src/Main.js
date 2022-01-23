@@ -199,7 +199,7 @@ const game = {
 
             if (game.board == null) {
 
-              game.board = new Board(10, game.sk8r.y, game.context, loader.images.board, 0);
+              game.board = new Board(game.crates, 10, game.sk8r.y, game.context, loader.images.board, 0);
 
             } else {
                 console.log("updating drawing board");
