@@ -5,7 +5,6 @@ export function create_click_listener(game) {
     document.addEventListener('click', function(evt) {
         var mousePos = getMousePos(game.trueCanvas, evt);
 
-        //console.log("x: " + pos.x + " y: " + pos.y);
         game.buttons.forEach((button, i) => {
 
             if (button.isInside(mousePos)) {

@@ -227,7 +227,7 @@ const game = {
     show_restart_menu() {
 
         game.showing_restart_menu = true;
-        game.buttons.push(new Button(get_canvas_width()/2-25, get_canvas_height()/2-10, game.context, 50, 20, "Restart"));
+        game.buttons.push(new Button(get_canvas_width()/2, get_canvas_height()/2, game.context, "Restart"));
     }
 };
 
