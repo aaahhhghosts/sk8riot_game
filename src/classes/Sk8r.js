@@ -110,7 +110,7 @@ export default class Sk8r extends Sprite {
           );
 
           // If sk8r is alive, return to skating animation on landing.
-          if (this.y <= this.floor+2) {
+          if (this.y <= this.floor+2 && !this.isGrounded) {
 
               this.isGrounded = true;
 

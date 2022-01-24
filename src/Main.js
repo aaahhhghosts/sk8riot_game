@@ -266,6 +266,7 @@ export function restart_game() {
 
   // Create player.
   game.sk8r.reset_sk8r();
+  game.board = null;
 }
 
 // Resize mini drawing canvas to fit true canvas.
