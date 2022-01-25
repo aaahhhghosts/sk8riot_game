@@ -5,6 +5,7 @@ import Cityscape from '/src/classes/Cityscape.js';
 import Crate from '/src/classes/Crate.js';
 import Zippy from '/src/classes/Zippy.js';
 import Board from '/src/classes/Board.js';
+import Button from '/src/Button.js'
 
 // Image resource loader.
 export const loader = {
@@ -34,5 +35,6 @@ export const loader = {
         loader.add('crates', [Crate.src_0, Crate.src_1]);
         loader.add('zippy', [Zippy.src]);
         loader.add('board', [Board.src]);
+        loader.add('button', [Button.src]);
     }
 };

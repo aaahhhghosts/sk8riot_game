@@ -212,7 +212,7 @@ const game = {
         }
 
         game.buttons.forEach((button, i) => {
-            button.update();
+            button.render();
         });
 
         // Draw game frame to true canvas.
@@ -227,7 +227,7 @@ const game = {
     show_restart_menu() {
 
         game.showing_restart_menu = true;
-        game.buttons.push(new Button(get_canvas_width()/2, get_canvas_height()/2, game.context, "Restart"));
+        game.buttons.push(new Button(get_canvas_width()/2, get_canvas_height()*2/3, game.context, loader.images.button, "Restart"));
     }
 };
 
