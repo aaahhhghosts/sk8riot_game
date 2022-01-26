@@ -8,6 +8,7 @@ import Board from '/src/classes/Board.js';
 
 import Textbox from '/src/Textbox.js';
 import Button from '/src/Button.js';
+import Logo from '/src/Logo.js';
 import { loader } from '/src/img_loader.js';
 import { spawn_crates, despawn_crates } from '/src/classes/Crate.js';
 import { explode_zippies, despawn_zippies } from '/src/classes/Zippy.js';
@@ -72,6 +73,8 @@ const game = {
 
         // Create player.
         this.sk8r = new Sk8r(10, sk8r_floor, this.context, loader.images.sk8r);
+
+        this.logo = new Logo(get_canvas_width()/2, get_canvas_height()*3/4, game.context, loader.images.logo);
 
         // Start game
         this.drawingLoop();
@@ -214,6 +217,12 @@ const game = {
         game.buttons.forEach((button, i) => {
             button.render();
         });
+
+        if (game.score < 100 && game.logo != null) {
+            game.logo.render();
+        } else if (game.logo != null) {
+            game.logo = null;
+        }
 
         // Draw game frame to true canvas.
         game.trueContext.drawImage(game.canvas, 0, 0, game.canvas.width, game.canvas.height, 0, 0, scale_width, scale_height);

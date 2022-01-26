@@ -6,6 +6,7 @@ import Crate from '/src/classes/Crate.js';
 import Zippy from '/src/classes/Zippy.js';
 import Board from '/src/classes/Board.js';
 import Button from '/src/Button.js'
+import Logo from '/src/Logo.js'
 
 // Image resource loader.
 export const loader = {
@@ -36,5 +37,6 @@ export const loader = {
         loader.add('zippy', [Zippy.src]);
         loader.add('board', [Board.src]);
         loader.add('button', [Button.src]);
+        loader.add('logo', [Logo.src]);
     }
 };

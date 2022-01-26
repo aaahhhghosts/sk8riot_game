@@ -9,6 +9,7 @@ export default class Button {
 
     this.width = 82;
     this.height = 24;
+    this.height = 24;
 
     this.x = x - this.width/2;
     this.y = y - this.height/2;
