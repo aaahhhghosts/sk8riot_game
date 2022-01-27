@@ -5,10 +5,9 @@ export default class Button {
 
   static src = '/sprites/button.png';
 
-  constructor (x, y, context, image, text) {
+  constructor (x, y, context, image, text, action, remove_on_fire) {
 
     this.width = 82;
-    this.height = 24;
     this.height = 24;
 
     this.x = x - this.width/2;
@@ -20,11 +19,15 @@ export default class Button {
 
     this.text = text;
 
-    let x_buffer = (this.width-this.ctx.measureText(this.text).width)/2;
+    let letter_width = 8.5;
+    let x_buffer = (this.width-this.text.length*letter_width)/2;
     this.text_x = this.x + x_buffer;
     this.text_y = this.y+10;
 
     this.is_highlighted = false;
+
+    this.fire = action;
+    this.remove_on_fire = remove_on_fire;
   }
 
   hightlight() {this.is_highlighted = true; this.row = 1; this.text_y-=1;}
@@ -32,10 +35,10 @@ export default class Button {
 
   //Function to check whether a point is inside a rectangle
   isInside (pos) {
-      // console.log("x: " + pos.x + " y: " + pos.y);
-      // console.log(pos.y + " > " + (this.y-40) + " && " + pos.y + " < " + (this.y-20))
+     //console.log("x: " + pos.x + " y: " + pos.y);
+      //console.log(pos.y + " > " + (this.y+2) + " && " + pos.y + " < " + (this.y+this.height))
       let within_x_bounds = pos.x > this.x && pos.x < this.x+this.width;
-      let within_y_bounds = pos.y > this.y-40 && pos.y < this.y-20;
+      let within_y_bounds = pos.y > this.y+2 && pos.y < this.y+this.height;
       return (within_x_bounds && within_y_bounds);
   }
 

@@ -12,7 +12,6 @@ import Logo from '/src/Logo.js'
 export const loader = {
     count: 0,
     images: {},
-    crates: {},
 
     add(title, src_list) {
 

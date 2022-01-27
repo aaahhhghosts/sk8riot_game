@@ -75,13 +75,13 @@ export function throw_zippy(x, y, context, img, zippies) {
 // Despawn exploded zippies.
 export function despawn_zippies(zippies) {
 
-    zippies.forEach((zippy, i) => {
+    zippies.some((zippy, i) => {
 
         // If zippy has finished exploding, despawn.
         if (zippy.doneExploding) {
-            var i = zippies.indexOf(zippy);
+            let i = zippies.indexOf(zippy);
             zippies.splice(i, 1);
-            return;
+            return true;
         }
     });
 }

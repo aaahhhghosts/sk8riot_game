@@ -1,4 +1,4 @@
-import { get_canvas_width, get_canvas_height, restart_game } from '/src/Main.js';
+import { get_canvas_width, get_canvas_height } from '/src/Main.js';
 
 export function create_click_listener(game) {
 
@@ -7,9 +7,15 @@ export function create_click_listener(game) {
         if (game.buttons.length > 0) {
             let mousePos = getMousePos(game.trueCanvas, evt);
 
-            game.buttons.forEach((button, i) => {
+            game.buttons.some((button, i) => {
                 if (button.isInside(mousePos)) {
-                    restart_game();
+                    button.fire();
+
+                    if (button.remove_on_fire) {
+                        let i = game.buttons.indexOf(button);
+                        game.buttons.splice(i, 1);
+                        return true;
+                    }
                 }
             });
         }
@@ -40,6 +46,6 @@ function getMousePos(canvas, event) {
     var rect = canvas.getBoundingClientRect();
     return {
         x: (event.clientX - rect.left) * (get_canvas_width() / rect.width),
-        y: (event.clientY - rect.top) * (get_canvas_height() / rect.height)
+        y: get_canvas_height() - (event.clientY - rect.top) * (get_canvas_height() / rect.height)
     };
 }

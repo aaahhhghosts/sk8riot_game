@@ -16,6 +16,16 @@ export default class Button {
     this.ctx = context;
     this.image = image[0];
     this.row = 0;
+
+    this.off_screen = false;
+  }
+
+  nudge_off_screen() {
+      if (this.y < get_canvas_height()) {
+          this.y += 1;
+      } else {
+          this.off_screen = true;
+      }
   }
 
   render() {
