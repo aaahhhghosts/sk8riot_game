@@ -8,7 +8,7 @@ export default class Button {
   constructor (x, y, context, image) {
 
     this.width = 175;
-    this.height = 31;
+    this.height = 50;
 
     this.x = x - this.width/2;
     this.y = y - this.height/2;
