@@ -50,7 +50,7 @@ const game = {
         loader.init();
 
         // Score textbox
-        this.scorebox = new Textbox(155.5, 10.5, this.context, 100, 50, "Ayooo");
+        this.scorebox = new Textbox(155.5, 10.5, this.context, 100, 50, "");
         this.score = 0;
 
         // Opening title art
