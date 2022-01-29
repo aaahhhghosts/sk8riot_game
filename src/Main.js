@@ -9,11 +9,12 @@ import Board from '/src/classes/Board.js';
 import Textbox from '/src/Textbox.js';
 import Button from '/src/Button.js';
 import Logo from '/src/Logo.js';
+import Leaderboard from '/src/Leaderboard.js';
 import { loader } from '/src/img_loader.js';
 import { spawn_crates, despawn_crates } from '/src/classes/Crate.js';
 import { explode_zippies, despawn_zippies } from '/src/classes/Zippy.js';
 
-import { getRandomInt, raf } from '/src/common.js';
+import { getRandomInt } from '/src/common.js';
 import { floor, sk8r_floor } from '/src/constants.js';
 import { create_key_listener } from '/src/key_listener.js';
 import { create_click_listener } from '/src/click_listener.js';
@@ -68,6 +69,7 @@ const game = {
 
         // Boolean for when to show the end of game menu.
         this.showing_restart_menu = false;
+        game.leaderboard = null;
 
         // Create game background.
         this.downtown = new Downtown(0, 0, this.context, loader.images.downtown);
@@ -124,6 +126,7 @@ const game = {
 
         this.buttons = [];
         this.showing_restart_menu = false;
+        this.leaderboard = null;
 
         // Create game background.
         this.downtown.reset_downtown();
@@ -251,6 +254,9 @@ const game = {
             }
         }
 
+        if (game.showing_restart_menu && game.leaderboard != null) {
+            game.leaderboard.render();
+        }
         game.buttons.forEach((button, i) => {
             button.render();
         });
@@ -281,8 +287,9 @@ const game = {
 
         game.showing_restart_menu = true;
         let restart_game = function() {this.restart_game();}
-        game.buttons.push(new Button(get_canvas_width()/2, get_canvas_height()*2/3, game.context,
+        game.buttons.push(new Button(get_canvas_width()/2, get_canvas_height()*1/3, game.context,
                           loader.images.button, "Restart", restart_game.bind(this), true));
+        game.leaderboard = new Leaderboard(get_canvas_width()/2, get_canvas_height()*2/3, game.context, loader.images.leaderboard, loader.images.smallfont, "nice");
     }
 };
 
@@ -292,9 +299,6 @@ function start_game() {
     create_key_listener(game);
     create_click_listener(game);
     resizeGame();
-
-    console.log('Testing frame rate...')
-    raf();
 }
 
 // Resize mini drawing canvas to fit true canvas.

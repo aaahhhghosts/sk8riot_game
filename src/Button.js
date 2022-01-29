@@ -1,6 +1,5 @@
 import { get_canvas_height } from '/src/Main.js';
 
-
 export default class Button {
 
   static src = '/sprites/button.png';

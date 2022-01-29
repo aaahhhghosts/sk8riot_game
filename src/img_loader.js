@@ -5,8 +5,10 @@ import Cityscape from '/src/classes/Cityscape.js';
 import Crate from '/src/classes/Crate.js';
 import Zippy from '/src/classes/Zippy.js';
 import Board from '/src/classes/Board.js';
-import Button from '/src/Button.js'
-import Logo from '/src/Logo.js'
+import Button from '/src/Button.js';
+import Logo from '/src/Logo.js';
+import Leaderboard from '/src/Leaderboard.js';
+import SmallFont from '/fonts/SmallFont.js';
 
 // Image resource loader.
 export const loader = {
@@ -37,5 +39,7 @@ export const loader = {
         loader.add('board', [Board.src]);
         loader.add('button', [Button.src]);
         loader.add('logo', [Logo.src]);
+        loader.add('leaderboard', [Leaderboard.src]);
+        loader.add('smallfont', [SmallFont.src]);
     }
 };
