@@ -24,8 +24,8 @@ export default class SmallFont {
           ['J', 9],  ['W', 109], ['9', 208],
           ['K', 10], ['X', 110], ['!', 209],
           ['L', 11], ['Y', 111], ['?', 210],
-          ['M', 12], ['Z', 112], ['_', 211],
-                                 ['-', 212],
+          ['M', 12], ['Z', 112], ['-', 211],
+                                 ['|', 212],
       ]);
   }
 
@@ -34,8 +34,11 @@ export default class SmallFont {
 
       // Get index and row of letter on the sprite sheet.
       let char_num = this.alpha_dict.get(char);
+
       let index = char_num % 100;
       let row = Math.floor(char_num/100);
+
+      let canvas_height = Math.floor(get_canvas_height());
 
       // Draw letter.
       this.ctx.drawImage(
@@ -45,7 +48,7 @@ export default class SmallFont {
           this.letter_width, // The width of the sub-rectangle
           this.letter_height, // The height of the sub-rectangle
           x, // The x coordinate
-          get_canvas_height() - (y+this.letter_height), // The y coordinate
+          canvas_height - (y+this.letter_height), // The y coordinate
           this.letter_width, // The width to draw the image
           this.letter_height, // The height to draw the image
       );
@@ -62,8 +65,12 @@ export default class SmallFont {
 
           if (str[i] == " ") {
               continue;
-          } else if (str[i].match(/[A-Z0-9!?-_]/)) {
-              this.draw_char(str[i], x+(i*this.letter_width), y);
+          } else if (str[i].match(/[A-Z0-9!?-|]/)) {
+
+              let x_pos = x+(i*this.letter_width);
+              if (i >= 8) {x_pos += 1;}
+
+              this.draw_char(str[i], x_pos, y);
           }
       }
   }

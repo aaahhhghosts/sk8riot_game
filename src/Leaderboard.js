@@ -6,19 +6,18 @@ export default class Leaderboard {
 
   static src = '/sprites/leaderboard.png';
 
-  constructor (x, y, context, background_image, font_image, text) {
+  constructor (x, y, context, background_image, font_image) {
 
     this.width = 100;
     this.height = 70;
 
-    this.x = x - this.width/2;
-    this.y = y - this.height/2+6;
+    this.x = Math.floor(x - this.width/2);
+    this.y = Math.floor(y - this.height/2)+5;
 
     this.ctx = context;
     this.background_image = background_image[0];
     this.row = 0;
 
-    this.text = text;
     this.small_font = new SmallFont(context, font_image);
     this.x_buffer = this.small_font.letter_width+2;
     this.y_buffer = 2*this.small_font.letter_width;

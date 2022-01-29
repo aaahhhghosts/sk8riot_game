@@ -9,8 +9,8 @@ export default class Button {
     this.width = 82;
     this.height = 24;
 
-    this.x = x - this.width/2;
-    this.y = y - this.height/2;
+    this.x = Math.floor(x - this.width/2);
+    this.y = Math.floor(y - this.height/2);
 
     this.ctx = context;
     this.image = image[0];
@@ -46,7 +46,7 @@ export default class Button {
     this.ctx.mozImageSmoothingEnabled = false;
     this.ctx.imageSmoothingEnabled = false;
 
-    var canvas_height = get_canvas_height();
+    var canvas_height = Math.floor(get_canvas_height());
 
     this.ctx.drawImage(
         this.image,

@@ -8,6 +8,7 @@ import Board from '/src/classes/Board.js';
 import Button from '/src/Button.js';
 import Logo from '/src/Logo.js';
 import Leaderboard from '/src/Leaderboard.js';
+import Inputbox from '/src/Inputbox.js';
 import SmallFont from '/fonts/SmallFont.js';
 
 // Image resource loader.
@@ -40,6 +41,7 @@ export const loader = {
         loader.add('button', [Button.src]);
         loader.add('logo', [Logo.src]);
         loader.add('leaderboard', [Leaderboard.src]);
+        loader.add('inputbox', [Inputbox.src]);
         loader.add('smallfont', [SmallFont.src]);
     }
 };

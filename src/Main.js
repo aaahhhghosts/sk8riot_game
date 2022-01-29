@@ -10,6 +10,7 @@ import Textbox from '/src/Textbox.js';
 import Button from '/src/Button.js';
 import Logo from '/src/Logo.js';
 import Leaderboard from '/src/Leaderboard.js';
+import Inputbox from '/src/Inputbox.js';
 import { loader } from '/src/img_loader.js';
 import { spawn_crates, despawn_crates } from '/src/classes/Crate.js';
 import { explode_zippies, despawn_zippies } from '/src/classes/Zippy.js';
@@ -69,7 +70,8 @@ const game = {
 
         // Boolean for when to show the end of game menu.
         this.showing_restart_menu = false;
-        game.leaderboard = null;
+        this.leaderboard = null;
+        this.inputbox = null;
 
         // Create game background.
         this.downtown = new Downtown(0, 0, this.context, loader.images.downtown);
@@ -127,6 +129,7 @@ const game = {
         this.buttons = [];
         this.showing_restart_menu = false;
         this.leaderboard = null;
+        this.inputbox = null;
 
         // Create game background.
         this.downtown.reset_downtown();
@@ -254,8 +257,10 @@ const game = {
             }
         }
 
-        if (game.showing_restart_menu && game.leaderboard != null) {
+        if (game.showing_restart_menu && game.leaderboard != null && game.inputbox != null) {
             game.leaderboard.render();
+            game.inputbox.update_inputbox();
+            game.inputbox.render();
         }
         game.buttons.forEach((button, i) => {
             button.render();
@@ -289,7 +294,8 @@ const game = {
         let restart_game = function() {this.restart_game();}
         game.buttons.push(new Button(get_canvas_width()/2, get_canvas_height()*1/3, game.context,
                           loader.images.button, "Restart", restart_game.bind(this), true));
-        game.leaderboard = new Leaderboard(get_canvas_width()/2, get_canvas_height()*2/3, game.context, loader.images.leaderboard, loader.images.smallfont, "nice");
+        game.leaderboard = new Leaderboard(get_canvas_width()/2, get_canvas_height()*2/3, game.context, loader.images.leaderboard, loader.images.smallfont);
+        game.inputbox = new Inputbox(get_canvas_width()/2, get_canvas_height()*1/2, game.context, loader.images.inputbox, loader.images.smallfont, "nice");
     }
 };
 

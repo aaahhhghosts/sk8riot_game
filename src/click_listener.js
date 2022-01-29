@@ -7,6 +7,7 @@ export function create_click_listener(game) {
         if (game.buttons.length > 0) {
             let mousePos = getMousePos(game.trueCanvas, evt);
 
+            // Fire any buttons, if clicked.
             game.buttons.some((button, i) => {
                 if (button.isInside(mousePos)) {
                     button.fire();
@@ -18,6 +19,15 @@ export function create_click_listener(game) {
                     }
                 }
             });
+
+            // Enter the inputbox, if clicked.
+            if (game.inputbox != null) {
+                if (game.inputbox.isInside(mousePos)) {
+                    game.inputbox.hightlight()
+                } else {
+                    game.inputbox.unhighlight();
+                }
+            }
         }
     }, false);
 
@@ -26,6 +36,7 @@ export function create_click_listener(game) {
         if (game.buttons.length > 0) {
             let mousePos = getMousePos(game.trueCanvas, evt);
 
+            // Highlight hovered-on buttons , if any.
             game.buttons.forEach((button, i) => {
                 if (button.isInside(mousePos)) {
                     if (!button.is_highlighted) {
