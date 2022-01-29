@@ -5,7 +5,7 @@ export default class Inputbox {
 
   static src = '/sprites/input_box.png';
 
-  constructor (x, y, context, background_image, font_image, text) {
+  constructor (x, y, context, background_image, font_image) {
 
     this.width = 40;
     this.height = 10;
@@ -17,12 +17,12 @@ export default class Inputbox {
     this.background_image = background_image[0];
     this.row = 0;
 
+    // Set up font variables.
     this.small_font = new SmallFont(context, font_image);
-    this.text = text;
-
-
-    let x_buffer = 4;
-    this.text_x = this.x + x_buffer;
+    this.text = "yo-name";
+    this.max_chars = 8;
+    this.hold_shift = false;
+    this.text_x = this.x+4;
     this.text_y = this.y+1;
 
     this.is_highlighted = true;
@@ -32,6 +32,9 @@ export default class Inputbox {
     this.ticksPerBlink = 20; // Speed of cursor animation
     this.tickCount = 0; // How much time has passed
   }
+
+  getText() {return this.text;}
+  setText(str) {this.text = str;}
 
   hightlight() {
       this.is_highlighted = true;
@@ -59,13 +62,13 @@ export default class Inputbox {
       return (within_x_bounds && within_y_bounds);
   }
 
+  // Update state of input box.
   update_inputbox() {
 
       if (!this.disable_cursor) {
 
           this.tickCount += 1;
           if (this.tickCount > this.ticksPerBlink) {
-
               this.toggle_show_cursor();
               this.tickCount = 0;
           }

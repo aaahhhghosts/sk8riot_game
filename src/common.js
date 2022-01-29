@@ -12,5 +12,5 @@ export function getRandomInt(min, max) {
 }
 
 export function add(accumulator, a) {
-  return accumulator + a;
+    return accumulator + a;
 }

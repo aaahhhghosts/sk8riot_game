@@ -65,7 +65,7 @@ export default class SmallFont {
 
           if (str[i] == " ") {
               continue;
-          } else if (str[i].match(/[A-Z0-9!?-|]/)) {
+          } else if (str[i].match(/[A-Z0-9!?|\-]/)) {
 
               let x_pos = x+(i*this.letter_width);
               if (i >= 8) {x_pos += 1;}

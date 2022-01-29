@@ -72,6 +72,7 @@ const game = {
         this.showing_restart_menu = false;
         this.leaderboard = null;
         this.inputbox = null;
+        this.is_prompting_for_input = false;
 
         // Create game background.
         this.downtown = new Downtown(0, 0, this.context, loader.images.downtown);
@@ -130,6 +131,7 @@ const game = {
         this.showing_restart_menu = false;
         this.leaderboard = null;
         this.inputbox = null;
+        this.is_prompting_for_input = false;
 
         // Create game background.
         this.downtown.reset_downtown();
@@ -257,11 +259,22 @@ const game = {
             }
         }
 
-        if (game.showing_restart_menu && game.leaderboard != null && game.inputbox != null) {
+        let restart_menu_exists = (game.showing_restart_menu && game.leaderboard != null && game.inputbox != null);
+        if (restart_menu_exists) {
             game.leaderboard.render();
             game.inputbox.update_inputbox();
             game.inputbox.render();
+
+
+            // Check if user is being prompted for input.
+            if (game.inputbox.is_highlighted) {
+                game.is_prompting_for_input = true;
+            } else {
+                game.is_prompting_for_input = false;
+            }
         }
+
+        // Render buttons, if any.
         game.buttons.forEach((button, i) => {
             button.render();
         });
