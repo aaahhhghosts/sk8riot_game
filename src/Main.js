@@ -7,11 +7,12 @@ import Zippy from '/src/classes/Zippy.js';
 import Board from '/src/classes/Board.js';
 
 import Textbox from '/src/Textbox.js';
-import Button from '/src/Button.js';
-import Logo from '/src/Logo.js';
-import Leaderboard from '/src/Leaderboard.js';
-import Inputbox from '/src/Inputbox.js';
-import { loader } from '/src/img_loader.js';
+import Button from '/src/menus/Button.js';
+import Logo from '/src/menus/Logo.js';
+import Leaderboard from '/src/menus/Leaderboard.js';
+import Inputbox from '/src/menus/Inputbox.js';
+import SaveButton from '/src/menus/SaveButton.js';
+import { loader } from '/src/loader.js';
 import { spawn_crates, despawn_crates } from '/src/classes/Crate.js';
 import { explode_zippies, despawn_zippies } from '/src/classes/Zippy.js';
 
@@ -72,6 +73,7 @@ const game = {
         this.showing_restart_menu = false;
         this.leaderboard = null;
         this.inputbox = null;
+        this.savebutton = null;
         this.is_prompting_for_input = false;
 
         // Create game background.
@@ -131,6 +133,7 @@ const game = {
         this.showing_restart_menu = false;
         this.leaderboard = null;
         this.inputbox = null;
+        this.savebutton = null;
         this.is_prompting_for_input = false;
 
         // Create game background.
@@ -303,12 +306,27 @@ const game = {
 
     show_restart_menu() {
 
+        // Set boolean for showing restart menu.
         game.showing_restart_menu = true;
+
+        // Set restart menu's position on screen.
+        let menu_xpos = get_canvas_width()/2;
+        let menu_ypos = get_canvas_height()*2/3;
+
+        // Create and add restart button.
         let restart_game = function() {this.restart_game();}
-        game.buttons.push(new Button(get_canvas_width()/2, get_canvas_height()*1/3, game.context,
+        game.buttons.push(new Button(menu_xpos, get_canvas_height()*1/3, game.context,
                           loader.images.button, "Restart", restart_game.bind(this), true));
-        game.leaderboard = new Leaderboard(get_canvas_width()/2, get_canvas_height()*2/3, game.context, loader.images.leaderboard, loader.images.smallfont);
-        game.inputbox = new Inputbox(get_canvas_width()/2, get_canvas_height()*1/2, game.context, loader.images.inputbox, loader.images.smallfont, "nice");
+
+        // Create and add leaderboard and usernae input box.
+        game.leaderboard = new Leaderboard(menu_xpos, menu_ypos, game.context, loader.images.leaderboard,
+                                           loader.images.smallfont, loader.saved_data);
+        game.inputbox = new Inputbox(menu_xpos, menu_ypos-21, game.context, loader.images.inputbox, loader.images.smallfont);
+
+        // Create and add save high score button.
+        let save_highscore = function() {this.restart_game();}
+        game.buttons.push(new SaveButton(menu_xpos+34, menu_ypos-20, game.context,
+                          loader.images.savebutton, save_highscore.bind(this), true));
     }
 };
 

@@ -68,7 +68,7 @@ export default class SmallFont {
           } else if (str[i].match(/[A-Z0-9!?|\-]/)) {
 
               let x_pos = x+(i*this.letter_width);
-              if (i >= 8) {x_pos += 1;}
+              if (i >= 10) {x_pos += 1;}
 
               this.draw_char(str[i], x_pos, y);
           }

@@ -1,5 +1,5 @@
 import { get_canvas_height } from '/src/Main.js';
-import SmallFont from '/fonts/SmallFont.js';
+import SmallFont from '/src/menus/SmallFont.js';
 
 export default class Inputbox {
 

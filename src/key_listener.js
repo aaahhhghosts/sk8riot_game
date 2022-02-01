@@ -1,5 +1,5 @@
 import { throw_zippy } from '/src/classes/Zippy.js';
-import { loader } from '/src/img_loader.js';
+import { loader } from '/src/loader.js';
 import { alphabet } from '/src/constants.js';
 
 export function create_key_listener(game) {

@@ -1,12 +1,13 @@
 import { get_canvas_height } from '/src/Main.js';
-import SmallFont from '/fonts/SmallFont.js';
+import SmallFont from '/src/menus/SmallFont.js';
 
 
 export default class Leaderboard {
 
   static src = '/sprites/leaderboard.png';
+  static saved_src = '/saved_data/highscores.json';
 
-  constructor (x, y, context, background_image, font_image) {
+  constructor (x, y, context, background_image, font_image, saved_data) {
 
     this.width = 100;
     this.height = 70;
@@ -24,8 +25,7 @@ export default class Leaderboard {
     this.text_y = this.y-33;
 
     this.line_char_max = 22;
-    this.names = ["rob", "jill", "wack", "granny", "lol"];
-    this.scores = [78699, 2042, 702, 13, 5];
+    this.saved_data = saved_data["highscores"];
   }
 
   render() {
@@ -48,16 +48,23 @@ export default class Leaderboard {
     );
 
     let x_pos = this.x+this.x_buffer;
-    this.names.forEach((name, i) => {
+    this.saved_data.forEach((entry, i) => {
 
         let y_pos = canvas_height-(this.text_y + i*this.y_buffer);
 
-        let name_str = (i+1).toString() + " " + name;
-        let score_str = this.scores[i].toString();
+        let name_str = (i+1).toString() + " " + entry.name;
+        let score_str = entry.score.toString();
 
+        // If score is 100 billion or more, nerf it lmao.
+        if (score_str.length > 11) {
+            score_str = score_str.substring(0, 11);
+        }
+
+        // Calculate how many spaces to place between name and score.
         let num_spaces = this.line_char_max - name_str.length - score_str.length;
         let line_string = name_str + " ".repeat(num_spaces) + score_str;
 
+        // Print highscore entry to leaderboard display.
         this.small_font.draw_string(line_string, x_pos, y_pos);
     });
   }
