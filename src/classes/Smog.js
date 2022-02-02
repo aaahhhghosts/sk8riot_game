@@ -1,8 +1,8 @@
 import Scenery from '/src/Scenery.js';
 
-export default class Cityscape extends Scenery {
+export default class Smog extends Scenery {
 
-  static src = '/sprites/cityscape.png';
+  static src = '/sprites/smog.png';
 
   constructor(x, y, context, image) {
       super({
@@ -15,20 +15,20 @@ export default class Cityscape extends Scenery {
           frameIndex: 0,
           column: 0,
           tickCount: 0,
-          ticksPerFrame: 0,
-          frames: 1
+          ticksPerFrame: 10,
+          frames: 2
       });
-      this.ticksPerRow = 5;
 
-      this.set_scroll(true, 0.5, true, 400);
+      this.set_scroll(true, 0.75, true, 400);
   }
 
-  update_cityscape() {
+  update_smog() {
       super.update();
+
   }
 
-  reset_cityscape() {
+  reset_smog() {
       super.reset();
-      this.set_scroll(true, 0.5, true, 400);
+      this.set_scroll(true, 0.75, true, 400);
   }
 }

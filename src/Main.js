@@ -1,6 +1,7 @@
 import Sk8r from '/src/classes/Sk8r.js';
 import Road from '/src/classes/Road.js';
 import Downtown from '/src/classes/Downtown.js';
+import Smog from '/src/classes/Smog.js';
 import Cityscape from '/src/classes/Cityscape.js';
 import Crate from '/src/classes/Crate.js';
 import Zippy from '/src/classes/Zippy.js';
@@ -78,6 +79,7 @@ const game = {
 
         // Create game background.
         this.downtown = new Downtown(0, 0, this.context, loader.images.downtown);
+        this.smog = new Smog(0, 0, this.context, loader.images.smog);
         this.cityscape = new Cityscape(0, 0, this.context, loader.images.cityscape);
 
         // Create game floor.
@@ -109,6 +111,8 @@ const game = {
     update_background() {
 
         // Draw background.
+        this.smog.render();
+        this.smog.update_smog();
         this.cityscape.render();
         this.cityscape.update_cityscape();
         this.downtown.render();
@@ -117,6 +121,7 @@ const game = {
 
     end_game() {
         this.downtown.stop_scroll();
+        this.smog.stop_scroll();
         this.cityscape.stop_scroll();
         this.road.stop_scroll();
 
@@ -138,6 +143,7 @@ const game = {
 
         // Create game background.
         this.downtown.reset_downtown();
+        this.smog.reset_smog();
         this.cityscape.reset_cityscape();
 
         // Create game floor.
