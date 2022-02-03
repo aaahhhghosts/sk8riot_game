@@ -3,14 +3,13 @@ import { sk8r_floor } from '/src/constants.js';
 
 export default class Sk8r extends Sprite {
 
-  static src = '/sprites/sk8r.png';
+  static src = ['/sprites/scuub.png', '/sprites/bluboy.png'];
   static board_src = '/sprites/board.png';
 
-
-  constructor(x, y, context, image, board_image) {
+  constructor(x, y, context, images, img_num, board_image) {
       super({
           context: context,
-          image: image[0],
+          image: images[img_num],
           x: x,
           y: y,
           width: 27,
@@ -24,6 +23,11 @@ export default class Sk8r extends Sprite {
           hasGravity: true
       });
 
+      this.names = [" scuub ", "blueboy"];
+      this.cur_name = this.names[img_num];
+      this.images = images;
+      this.img_num = img_num;
+
       this.isGrounded = true;
       this.gravity = 0.3;
       this.velocity_y = 0;
@@ -34,13 +38,22 @@ export default class Sk8r extends Sprite {
       this.timeSinceJump = 0;
   }
 
-  get_floor() {
-      return this.floor;
+  next_sprite() {
+      if (this.img_num < this.images.length-1) {this.img_num += 1};
+      this.cur_name = this.names[this.img_num];
+      this.image = this.images[this.img_num];
   }
 
-  set_floor(floor) {
-      this.floor = floor;
+  prev_sprite() {
+      if (this.img_num > 0) {this.img_num -= 1};
+      this.cur_name = this.names[this.img_num];
+      this.image = this.images[this.img_num];
   }
+
+  get_floor() {return this.floor;}
+  set_floor(floor) {this.floor = floor;}
+  getName() {return this.cur_name;}
+  setName(name) {this.cur_name = name;}
 
   animate_ride() {
     this.row = 0;
@@ -55,7 +68,7 @@ export default class Sk8r extends Sprite {
   }
 
   animate_death() {
-      this.width = 32;
+      this.width = 35;
       this.row = 2;
       this.frames = 4;
       this.frameIndex = 0;

@@ -2,7 +2,7 @@ import Scenery from '/src/Scenery.js';
 
 export default class Cityscape extends Scenery {
 
-  static src = '/sprites/cityscape.png';
+  static src = '/sprites/city_scape.png';
 
   constructor(x, y, context, image) {
       super({

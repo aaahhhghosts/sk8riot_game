@@ -1,43 +1,32 @@
 import { get_canvas_height } from '/src/Main.js';
+import SmallFont from '/src/menus/SmallFont.js';
 
-export default class SaveButton {
+export default class Label {
 
-  static src = '/sprites/save_button.png';
+  static src = '/sprites/label.png';
 
-  constructor (x, y, context, background_image, action, remove_on_fire) {
+  constructor (x, y, context, background_image, font_image, text) {
 
-    this.width = 21;
+    this.width = 33;
     this.height = 11;
 
     this.x =  Math.floor(x - this.width/2);
     this.y = Math.floor(y - this.height/2)+2;
 
     this.ctx = context;
-    this.background_image = background_image[0];
+    this.background_image = background_image;
     this.row = 0;
 
-    this.is_highlighted = true;
-
-    this.fire = action;
-    this.remove_on_fire = remove_on_fire;
+    // Set up font variables.
+    this.small_font = new SmallFont(context, font_image);
+    this.text = text;
+    this.max_chars = 7;
+    this.text_x = this.x+3;
+    this.text_y = this.y+2;
   }
 
-  hightlight() {
-      this.is_highlighted = true;
-      this.row = 1;
-  }
-
-  unhighlight() {
-      this.is_highlighted = false;
-      this.row = 0;
-  }
-
-  //Function to check whether a point is inside a rectangle
-  isInside (pos) {
-      let within_x_bounds = pos.x > this.x && pos.x < this.x+this.width;
-      let within_y_bounds = pos.y > this.y+2 && pos.y < this.y+this.height;
-      return (within_x_bounds && within_y_bounds);
-  }
+  getText() {return this.text;}
+  setText(str) {this.text = str;}
 
   render() {
 
@@ -56,5 +45,7 @@ export default class SaveButton {
           this.width, // The width to draw the image
           this.height // The height to draw the image
       );
+
+      this.small_font.draw_string(this.text, this.text_x, this.text_y);
   }
 }

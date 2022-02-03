@@ -1,19 +1,20 @@
 import { get_canvas_height } from '/src/Main.js';
 
-export default class SaveButton {
+export default class ArrowButton {
 
-  static src = '/sprites/save_button.png';
+  static src_0 = '/sprites/arrow_button_left.png';
+  static src_1 = '/sprites/arrow_button_right.png';
 
   constructor (x, y, context, background_image, action, remove_on_fire) {
 
-    this.width = 21;
+    this.width = 8;
     this.height = 11;
 
     this.x =  Math.floor(x - this.width/2);
     this.y = Math.floor(y - this.height/2)+2;
 
     this.ctx = context;
-    this.background_image = background_image[0];
+    this.background_image = background_image;
     this.row = 0;
 
     this.is_highlighted = true;

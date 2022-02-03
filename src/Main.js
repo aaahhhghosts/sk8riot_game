@@ -8,11 +8,14 @@ import Zippy from '/src/classes/Zippy.js';
 import Board from '/src/classes/Board.js';
 
 import Textbox from '/src/Textbox.js';
-import Button from '/src/menus/Button.js';
+import StartButton from '/src/menus/StartButton.js';
 import Logo from '/src/menus/Logo.js';
 import Leaderboard from '/src/menus/Leaderboard.js';
 import Inputbox from '/src/menus/Inputbox.js';
 import SaveButton from '/src/menus/SaveButton.js';
+import ArrowButton from '/src/menus/ArrowButton.js';
+import Label from '/src/menus/Label.js';
+
 import { loader } from '/src/loader.js';
 import { spawn_crates, despawn_crates } from '/src/classes/Crate.js';
 import { explode_zippies, despawn_zippies } from '/src/classes/Zippy.js';
@@ -53,6 +56,11 @@ const game = {
         // Load all image resources.
         loader.init();
 
+        let sk8r_x = 17;
+
+        // Create player.
+        this.sk8r = new Sk8r(sk8r_x, sk8r_floor, this.context, loader.images.sk8r, 0);
+
         // Score textbox
         this.scorebox = new Textbox(155.5, 10.5, this.context, 100, 50, "");
         this.score = 0;
@@ -60,6 +68,7 @@ const game = {
         // Opening title art
         this.showing_logo = true;
         this.logo = new Logo(this.canvas.width/2, this.canvas.height*3/4, game.context, loader.images.logo);
+        this.sk8r_label = new Label(sk8r_x+15, sk8r_floor+45, game.context, loader.images.label[0], loader.images.smallfont, this.sk8r.getName());
         this.has_started = false;
 
         // List of buttons on the screen at any given time.
@@ -67,14 +76,23 @@ const game = {
 
         // Add start game button.
         let start_game = function() {this.has_started = true;}
-        this.buttons.push(new Button(this.canvas.width/2, this.canvas.height*1/3, game.context,
-                                     loader.images.button, "Start", start_game.bind(this), true));
+        this.buttons.push(new StartButton(this.canvas.width/2, this.canvas.height*1/3, game.context,
+                                     loader.images.startbutton, "Start", start_game.bind(this), true));
+
+        let prev_sk8r = function() {this.sk8r.prev_sprite(); this.sk8r_label.setText(this.sk8r.getName());}
+        this.buttons.push(new ArrowButton(sk8r_x-4, sk8r_floor+45, game.context,
+                                          loader.images.arrowbuttons[0], prev_sk8r.bind(this), false));
+
+        let next_sk8r = function() {this.sk8r.next_sprite(); this.sk8r_label.setText(this.sk8r.getName());}
+        this.buttons.push(new ArrowButton(sk8r_x+33, sk8r_floor+45, game.context,
+                                          loader.images.arrowbuttons[1], next_sk8r.bind(this), false));
+
+
 
         // Boolean for when to show the end of game menu.
         this.showing_restart_menu = false;
         this.leaderboard = null;
         this.inputbox = null;
-        this.savebutton = null;
         this.is_prompting_for_input = false;
 
         // Create game background.
@@ -94,9 +112,6 @@ const game = {
         this.crates = [];
         this.timeSinceLastCrate = 0;
         this.crateCoolDown = 40;
-
-        // Create player.
-        this.sk8r = new Sk8r(10, sk8r_floor, this.context, loader.images.sk8r);
 
         // Start game
         this.drawingLoop();
@@ -138,7 +153,6 @@ const game = {
         this.showing_restart_menu = false;
         this.leaderboard = null;
         this.inputbox = null;
-        this.savebutton = null;
         this.is_prompting_for_input = false;
 
         // Create game background.
@@ -301,6 +315,13 @@ const game = {
             }
         }
 
+        if (game.has_started && game.sk8r_label != null) {
+            game.sk8r_label = null;
+            game.buttons = [];
+        } else if (game.sk8r_label != null) {
+            game.sk8r_label.render();
+        }
+
         // Draw this frame to true canvas.
         game.trueContext.drawImage(game.canvas, 0, 0, game.canvas.width, game.canvas.height, 0, 0, scale_width, scale_height);
 
@@ -321,8 +342,8 @@ const game = {
 
         // Create and add restart button.
         let restart_game = function() {this.restart_game();}
-        game.buttons.push(new Button(menu_xpos, get_canvas_height()*1/3, game.context,
-                          loader.images.button, "Restart", restart_game.bind(this), true));
+        game.buttons.push(new StartButton(menu_xpos, get_canvas_height()*1/3, game.context,
+                          loader.images.startbutton, "Restart", restart_game.bind(this), true));
 
         // Create and add leaderboard and usernae input box.
         game.leaderboard = new Leaderboard(menu_xpos, menu_ypos, game.context, loader.images.leaderboard,
