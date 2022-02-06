@@ -14,6 +14,8 @@ import SmallFont from '/src/menus/SmallFont.js';
 import SaveButton from '/src/menus/SaveButton.js';
 import ArrowButton from '/src/menus/ArrowButton.js';
 import Label from '/src/menus/Label.js';
+import Explosion from '/src/classes/Explosion.js';
+import Debris from '/src/classes/Debris.js';
 
 // Image resource loader.
 export const loader = {
@@ -60,5 +62,7 @@ export const loader = {
         loader.add('savebutton', [SaveButton.src]);
         loader.add('arrowbuttons', [ArrowButton.src_0, ArrowButton.src_1]);
         loader.add('label', [Label.src]);
+        loader.add('explosion', [Explosion.src]);
+        loader.add('debris', [Debris.src]);
     }
 };

@@ -87,6 +87,10 @@ export function despawn_zippies(zippies) {
 }
 
 export function explode_zippies(zippies, crates) {
+
+    // Declare list to hold the position of every crate break, if any.
+    let breakPosList = [];
+
     zippies.filter(zippy => zippy.isAirborn).forEach((zippy, i) => {
 
         // Check for crate collisions.
@@ -106,8 +110,10 @@ export function explode_zippies(zippies, crates) {
                 if (crate.type == 0) {
                     crate.break();
                     zippy.brokeCrate = true;
+                    breakPosList.push([Math.floor(crate.x), Math.floor(crate.y)]);
                 }
             }
         });
     });
+    return breakPosList;
 }

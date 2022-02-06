@@ -15,10 +15,14 @@ import Inputbox from '/src/menus/Inputbox.js';
 import SaveButton from '/src/menus/SaveButton.js';
 import ArrowButton from '/src/menus/ArrowButton.js';
 import Label from '/src/menus/Label.js';
+import Explosion from '/src/classes/Explosion.js';
+import Debris from '/src/classes/Debris.js';
 
 import { loader } from '/src/loader.js';
 import { spawn_crates, despawn_crates } from '/src/classes/Crate.js';
 import { explode_zippies, despawn_zippies } from '/src/classes/Zippy.js';
+import { despawn_explosions } from '/src/classes/Explosion.js';
+import { despawn_debris } from '/src/classes/Debris.js';
 
 import { getRandomInt } from '/src/common.js';
 import { floor, sk8r_floor } from '/src/constants.js';
@@ -87,8 +91,6 @@ const game = {
         this.buttons.push(new ArrowButton(sk8r_x+33, sk8r_floor+45, game.context,
                                           loader.images.arrowbuttons[1], next_sk8r.bind(this), false));
 
-
-
         // Boolean for when to show the end of game menu.
         this.showing_restart_menu = false;
         this.leaderboard = null;
@@ -107,6 +109,10 @@ const game = {
         this.zippies = [];
         this.timeSinceLastZippy = 0;
         this.zippyCoolDown = 10;
+
+        // List of sprites for destruction effects.
+        this.explosions = [];
+        this.debris = [];
 
         // List of crates on the screen at any given time.
         this.crates = [];
@@ -143,6 +149,14 @@ const game = {
         this.crates.forEach((crate, i) => {
             crate.moving = false;
         });
+
+        this.explosions.forEach((ex, i) => {
+            ex.moving = false;
+        });
+
+        this.debris.forEach((deb, i) => {
+            deb.moving = false;
+        });
     },
 
     restart_game() {
@@ -166,6 +180,9 @@ const game = {
         this.zippies = [];
         this.timeSinceLastZippy = 0;
         this.zippyCoolDown = 10;
+
+        this.explosions = [];
+        this.debris = [];
 
         this.crates = [];
         this.timeSinceLastCrate = 0;
@@ -203,7 +220,6 @@ const game = {
             crate.update_crate();
         });
 
-        game.sk8r.render();
         game.sk8r.update_sk8r(game.crates);
 
         // Check if zippies has collided with any objects.
@@ -211,7 +227,23 @@ const game = {
 
           despawn_zippies(game.zippies);
 
-          explode_zippies(game.zippies, game.crates);
+          // Explode zippies and get crate break locations, if any.
+          let breakPosList = explode_zippies(game.zippies, game.crates);
+
+          // Spawn explosions at each crate break location.
+          breakPosList.forEach((pos, i) => {
+              let x_pos = pos[0];
+              let y_pos = pos[1]-2;
+              for (let j = 0; j < 3; j++) {
+                  x_pos += getRandomInt(-1, 4);
+                  y_pos += getRandomInt(-1, 4);
+                  game.explosions.push(new Explosion(x_pos, y_pos, game.context, loader.images.explosion, 3*j));
+
+                  if (getRandomInt(0,5) > 0) {
+                      game.debris.push(new Debris(x_pos, y_pos+2, game.context, loader.images.debris, 2*j));
+                  }
+              }
+          });
 
           // Draw zippies
           game.zippies.forEach((zippy, i) => {
@@ -219,6 +251,18 @@ const game = {
               zippy.update_zippy();
           });
         }
+
+        game.explosions.forEach((ex, i) => {
+            ex.update_explosion();
+            ex.render();
+        });
+        despawn_explosions(game.explosions);
+
+        game.debris.forEach((deb, i) => {
+            deb.update_debris();
+            deb.render();
+        });
+        despawn_debris(game.debris);
 
         // Calculate zippy cooldown clock.
         if (game.timeSinceLastZippy > 0) {
@@ -230,6 +274,7 @@ const game = {
         }
 
         // Await new Promise(r => setTimeout(r, 180));
+        game.sk8r.render();
 
         // If player is still alive, continue spawning new crates.
         if (game.sk8r.isAlive && game.has_started) {
@@ -271,7 +316,7 @@ const game = {
         if (!game.sk8r.isAlive) {
 
             if (game.board == null) {
-                game.board = new Board(game.crates, 10, game.sk8r.y, game.context, loader.images.board, 0);
+                game.board = new Board(game.crates, 18, game.sk8r.y, game.context, loader.images.board, 0);
             } else {
                 game.board.render();
                 game.board.update_board();
@@ -287,7 +332,6 @@ const game = {
             game.leaderboard.render();
             game.inputbox.update_inputbox();
             game.inputbox.render();
-
 
             // Check if user is being prompted for input.
             if (game.inputbox.is_highlighted) {
