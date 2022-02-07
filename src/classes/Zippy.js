@@ -86,7 +86,7 @@ export function despawn_zippies(zippies) {
     });
 }
 
-export function explode_zippies(zippies, crates) {
+export function explode_zippies(zippies, crates, cars) {
 
     // Declare list to hold the position of every crate break, if any.
     let breakPosList = [];
@@ -96,7 +96,7 @@ export function explode_zippies(zippies, crates) {
         // Check for crate collisions.
         crates.filter(crate => !crate.isBroken).forEach((crate, j) => {
 
-            var hitCrate = zippy.x >= crate.x-5 && (zippy.x <= (crate.x+crate.width) &&
+            let hitCrate = zippy.x >= crate.x-5 && (zippy.x <= (crate.x+crate.width) &&
                            zippy.y >= (crate.y-2) && zippy.y < crate.y+crate.height);
 
             // If zippy collided with crate.
@@ -115,5 +115,74 @@ export function explode_zippies(zippies, crates) {
             }
         });
     });
+
+
+    zippies.filter(zippy => zippy.isAirborn).forEach((zippy, i) => {
+
+        // Check for crate collisions.
+        crates.filter(crate => !crate.isBroken).forEach((crate, j) => {
+
+            let hitCrate = zippy.x >= crate.x-5 && (zippy.x <= (crate.x+crate.width) &&
+                           zippy.y >= (crate.y-2) && zippy.y < crate.y+crate.height);
+
+            // If zippy collided with crate.
+            if (hitCrate && !zippy.brokeCrate) {
+
+                // Set zippy's floor to the top of the crate,
+                // which will trigger a landing event next update.
+                zippy.floor = crate.y+crate.height;
+
+                // If crate is wooden and unbroken, break.
+                if (crate.type == 0) {
+                    crate.break();
+                    zippy.brokeCrate = true;
+                    breakPosList.push([Math.floor(crate.x), Math.floor(crate.y)]);
+                }
+            }
+        });
+
+        // Check for car collisions.
+        cars.filter(car => !car.isBroken).forEach((car, j) => {
+
+
+            if (zippy.x >= car.x-23 && zippy.x <= car.x+car.width-7) {
+
+                // Get y coord of the top of this car.
+                let top_of_car = car.y+car.height/2-1;
+
+                if (zippy.x >= car.x+5 && zippy.x <= car.x+56) {
+                    top_of_car = car.y+(car.height-4);
+                }
+
+                let hitCar = zippy.x >= car.x-5 && (zippy.x <= (car.x+car.width) &&
+                             zippy.y >= (car.y-2) && zippy.y < top_of_car);
+
+                // If zippy collided with car.
+                if (hitCar && !zippy.brokeCrate) {
+
+                   // Set zippy's floor to the top of the car,
+                   // which will trigger a landing event next update.
+                   zippy.floor = car.y+car.height;
+
+                   // If car is wooden and unbroken, break.
+                   if (!car.isBroken) {
+                       car.damage();
+                       zippy.brokeCrate = true;
+                       breakPosList.push([Math.floor(zippy.x), Math.floor(car.y)]);
+
+                       if (car.isBroken) {
+                           breakPosList.push([Math.floor(car.x+5), Math.floor(car.y+5)]);
+                           breakPosList.push([Math.floor(car.x+20), Math.floor(car.y+10)]);
+                           breakPosList.push([Math.floor(car.x+40), Math.floor(car.y+7)]);
+                           breakPosList.push([Math.floor(car.x+60), Math.floor(car.y+3)]);
+                       }
+                   }
+                }
+            }
+        });
+    });
+
+
+
     return breakPosList;
 }

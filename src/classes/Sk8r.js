@@ -34,6 +34,7 @@ export default class Sk8r extends Sprite {
       this.velocity_x = 0;
 
       this.isAlive = true;
+      this.death_floor = sk8r_floor;
       this.board_image = board_image;
       this.timeSinceJump = 0;
   }
@@ -94,6 +95,7 @@ export default class Sk8r extends Sprite {
   throw_off_board() {
 
     // Send sk8r's body flying.
+    this.death_floor = this.floor;
     this.set_floor(sk8r_floor-12);
     this.isGrounded = false;
     this.velocity_y = 4;
@@ -101,12 +103,12 @@ export default class Sk8r extends Sprite {
     this.velocity_x = 1.5;
   }
 
-  update_sk8r(crates) {
+  update_sk8r(crates, cars) {
       super.update();
 
       // Update current floor as long as player is alive.
       if (this.isAlive) {
-          this.update_floor(crates);
+          this.update_floor(crates, cars);
       }
   }
 
@@ -154,7 +156,7 @@ export default class Sk8r extends Sprite {
       }
   }
 
-  update_floor(crates) {
+  update_floor(crates, cars) {
 
       // Reset floor.
       this.set_floor(sk8r_floor);
@@ -166,7 +168,7 @@ export default class Sk8r extends Sprite {
           if (this.x >= crate.x-crate.width*2 && this.x <= crate.x+crate.width/2) {
 
               // Get y coord of the top of this crate.
-              var top_of_crate = crate.y+(crate.height-1);
+              let top_of_crate = crate.y+(crate.height-1);
 
               // If sk8r is below the top of crate, they have hit a wall.
               // Kill sk8r and break out of loop.
@@ -178,6 +180,34 @@ export default class Sk8r extends Sprite {
               // Else if sk8r clears the top of crate, update the current floor.
               if (this.get_floor() < top_of_crate) {
                   this.set_floor(top_of_crate);
+              }
+          }
+      });
+
+
+      // Loop through all cars.
+      cars.filter(car => !car.isBroken).some((car, j) => {
+
+          // If car is at the same place as sk8r
+          if (this.x >= car.x-23 && this.x <= car.x+car.width-7) {
+
+              // Get y coord of the top of this car.
+              let top_of_car = car.y+car.height/2-1;
+
+              if (this.x >= car.x+5 && this.x <= car.x+56) {
+                  top_of_car = car.y+(car.height-4);
+              }
+
+              // If sk8r is below the top of car, they have hit a wall.
+              // Kill sk8r and break out of loop.
+              if (this.y < top_of_car-2) {
+                  this.kill();
+                  return true;
+              }
+
+              // Else if sk8r clears the top of car, update the current floor.
+              if (this.get_floor() < top_of_car) {
+                  this.set_floor(top_of_car);
               }
           }
       });

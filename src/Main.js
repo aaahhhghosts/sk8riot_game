@@ -17,12 +17,14 @@ import ArrowButton from '/src/menus/ArrowButton.js';
 import Label from '/src/menus/Label.js';
 import Explosion from '/src/classes/Explosion.js';
 import Debris from '/src/classes/Debris.js';
+import Car from '/src/classes/Car.js';
 
 import { loader } from '/src/loader.js';
 import { spawn_crates, despawn_crates } from '/src/classes/Crate.js';
 import { explode_zippies, despawn_zippies } from '/src/classes/Zippy.js';
 import { despawn_explosions } from '/src/classes/Explosion.js';
 import { despawn_debris } from '/src/classes/Debris.js';
+import { despawn_cars } from '/src/classes/Car.js';
 
 import { getRandomInt } from '/src/common.js';
 import { floor, sk8r_floor } from '/src/constants.js';
@@ -119,6 +121,8 @@ const game = {
         this.timeSinceLastCrate = 0;
         this.crateCoolDown = 40;
 
+        this.cars = [];
+
         // Start game
         this.drawingLoop();
     },
@@ -149,6 +153,11 @@ const game = {
         this.crates.forEach((crate, i) => {
             crate.moving = false;
         });
+
+        this.cars.forEach((car, i) => {
+            car.moving = false;
+        });
+
 
         this.explosions.forEach((ex, i) => {
             ex.moving = false;
@@ -184,6 +193,7 @@ const game = {
         this.explosions = [];
         this.debris = [];
 
+        this.cars = [];
         this.crates = [];
         this.timeSinceLastCrate = 0;
         this.crateCoolDown = 40;
@@ -211,16 +221,28 @@ const game = {
         game.update_background();
 
         // Draw floor.
-        game.road.render();
         game.road.update_road();
+        game.road.render();
 
         // Draw crates.
-        game.crates.forEach((crate, i) => {
-            crate.render();
-            crate.update_crate();
-        });
+        if (game.crates.length > 0) {
+            game.crates.forEach((crate, i) => {
+                crate.update_crate();
+                crate.render();
+            });
+            despawn_crates(game.crates);
+        }
 
-        game.sk8r.update_sk8r(game.crates);
+        // Draw cars.
+        if (game.cars.length > 0) {
+            game.cars.forEach((car, i) => {
+                car.update_car();
+                car.render();
+            });
+            despawn_cars(game.cars);
+        }
+
+        game.sk8r.update_sk8r(game.crates, game.cars);
 
         // Check if zippies has collided with any objects.
         if (game.zippies.length > 0) {
@@ -228,7 +250,7 @@ const game = {
           despawn_zippies(game.zippies);
 
           // Explode zippies and get crate break locations, if any.
-          let breakPosList = explode_zippies(game.zippies, game.crates);
+          let breakPosList = explode_zippies(game.zippies, game.crates, game.cars);
 
           // Spawn explosions at each crate break location.
           breakPosList.forEach((pos, i) => {
@@ -252,17 +274,21 @@ const game = {
           });
         }
 
-        game.explosions.forEach((ex, i) => {
-            ex.update_explosion();
-            ex.render();
-        });
-        despawn_explosions(game.explosions);
+        if (game.explosions.length > 0) {
+            game.explosions.forEach((ex, i) => {
+                ex.update_explosion();
+                ex.render();
+            });
+            despawn_explosions(game.explosions);
+        }
 
-        game.debris.forEach((deb, i) => {
-            deb.update_debris();
-            deb.render();
-        });
-        despawn_debris(game.debris);
+        if (game.debris.length > 0) {
+            game.debris.forEach((deb, i) => {
+                deb.update_debris();
+                deb.render();
+            });
+            despawn_debris(game.debris);
+        }
 
         // Calculate zippy cooldown clock.
         if (game.timeSinceLastZippy > 0) {
@@ -294,29 +320,36 @@ const game = {
             // If cooldown has ended since last crate spawn, try to spawn another.
             if (game.timeSinceLastCrate == 0) {
 
-                var stack_width = 0;
+                let stack_width = 0;
 
-                var randInt = getRandomInt(1, 700);
-                if (randInt < 17) {stack_width = 1;}
-                else if (randInt < 19) {stack_width = 2;}
-                else if (randInt < 21) {stack_width = 3;}
-                else if (randInt < 22) {stack_width = 4;}
+                let randInt = getRandomInt(1, 700);
 
-                // Spawn crates if any.
-                if (stack_width > 0) {
-                    spawn_crates(game.context, loader.images.crates, game.crates, stack_width);
+                // If random int is below 3, spawn car.
+                if (randInt > 698) {
+                    game.cars.push(new Car(get_canvas_width(), floor+1, game.context, loader.images.car));
                     game.timeSinceLastCrate = 1;
+
+                // Else, move on to possibly spawn crate.
+                } else {
+
+                    if (randInt < 17) {stack_width = 1;}
+                    else if (randInt < 19) {stack_width = 2;}
+                    else if (randInt < 21) {stack_width = 3;}
+                    else if (randInt < 22) {stack_width = 4;}
+
+                    // Spawn crates if any.
+                    if (stack_width > 0) {
+                        spawn_crates(game.context, loader.images.crates, game.crates, stack_width);
+                        game.timeSinceLastCrate = 1;
+                    }
                 }
             }
-
-            // Remove crates that leave screen.
-            despawn_crates(game.crates);
         }
 
         if (!game.sk8r.isAlive) {
 
             if (game.board == null) {
-                game.board = new Board(game.crates, 18, game.sk8r.y, game.context, loader.images.board, 0);
+                game.board = new Board(18, game.sk8r.y, game.context, loader.images.board, game.crates, game.cars);
             } else {
                 game.board.render();
                 game.board.update_board();

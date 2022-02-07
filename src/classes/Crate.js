@@ -97,17 +97,17 @@ export function spawn_crates(context, img_list, crates, stack_width) {
 
     for (let i = 0; i < stack_width; i++) {
 
-        var xpos = next_xpos;
+        let xpos = next_xpos;
 
-        var stack_height = 1;
-        var randInt = getRandomInt(1, 20);
+        let stack_height = 1;
+        let randInt = getRandomInt(1, 20);
 
         if (randInt < 7) {stack_height = 2;}
         else if (randInt < 10) {stack_height = 3;}
         else if (randInt < 11) {stack_height = 4;}
 
         // Generate crate stack types
-        var crate_types = Array.from({length: stack_height}, () => {return (getRandomInt(0, 4) == 4) ? 1 : 0;});
+        let crate_types = Array.from({length: stack_height}, () => {return (getRandomInt(0, 4) == 4) ? 1 : 0;});
 
         // Prevent stack of four steel crates
         if (stack_height == 4) {
@@ -117,7 +117,7 @@ export function spawn_crates(context, img_list, crates, stack_width) {
         }
 
         // Spawn one crate
-        var crate_1 = new Crate(xpos, floor, context, img_list, crate_types[0]);
+        let crate_1 = new Crate(xpos, floor, context, img_list, crate_types[0]);
         crates.push(crate_1);
 
         next_xpos += crate_1.width-1;
@@ -125,21 +125,21 @@ export function spawn_crates(context, img_list, crates, stack_width) {
         if (stack_height == 1) continue;
 
         // Spawn 2nd crate on top of last one
-        var crate_2 = new Crate(xpos, floor, context, img_list, crate_types[1]);
+        let crate_2 = new Crate(xpos, floor, context, img_list, crate_types[1]);
         crate_2.stackOn([crate_1]);
         crates.push(crate_2);
 
         if (stack_height == 2) continue;
 
         // Spawn 3rd crate on top of the last two
-        var crate_3 = new Crate(xpos, floor, context, img_list, crate_types[2]);
+        let crate_3 = new Crate(xpos, floor, context, img_list, crate_types[2]);
         crate_3.stackOn([crate_1, crate_2]);
         crates.push(crate_3);
 
         if (stack_height == 3) continue;
 
         // Spawn 4th crate on top of the last three.
-        var crate_4 = new Crate(xpos, floor, context, img_list, crate_types[3]);
+        let crate_4 = new Crate(xpos, floor, context, img_list, crate_types[3]);
         crate_4.stackOn([crate_1, crate_2, crate_3]);
         crates.push(crate_4);
     }

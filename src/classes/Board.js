@@ -5,7 +5,7 @@ export default class Board extends Sprite {
 
   static src = '/sprites/board.png';
 
-  constructor(crates, x, y, context, image) {
+  constructor(x, y, context, image, crates, cars) {
       super({
           context: context,
           image: image[0],
@@ -25,6 +25,8 @@ export default class Board extends Sprite {
       this.floor = sk8r_floor;
       this.velocity_y = 1;
 
+      this.car_beneath = null;
+
       // Loop through all creates.
       crates.filter(crate => !crate.isBroken).some((crate, j) => {
 
@@ -32,7 +34,7 @@ export default class Board extends Sprite {
           if (this.x >= crate.x-crate.width && this.x <= crate.x+crate.width/2) {
 
               // Get y coord of the top of this crate.
-              var top_of_crate = crate.y+(crate.height-1);
+              let top_of_crate = crate.y+(crate.height-1);
 
               // Else if board clears the top of crate, update the current floor.
               if (this.floor < top_of_crate) {
@@ -40,9 +42,47 @@ export default class Board extends Sprite {
               }
           }
       });
+
+      // Loop through all cars.
+      cars.filter(car => !car.isBroken).some((car, j) => {
+
+          // If car is at the same place as sk8r
+          if (this.x >= car.x-19 && this.x <= car.x+car.width-7) {
+
+              // Get y coord of the top of this car.
+              let top_of_car = car.y+car.height/2-1;
+
+              if (this.x >= car.x+7 && this.x <= car.x+56) {
+                  top_of_car = car.y+(car.height-4);
+              }
+
+              // Else if sk8r clears the top of car, update the current floor.
+              if (this.floor < top_of_car) {
+
+                  this.floor = top_of_car;
+                  this.car_beneath = car;
+              }
+          }
+      });
   }
 
   update_board() {
+
+
+      if (this.car_beneath != null && this.frameIndex >= this.frames-1) {
+
+          if (this.car_beneath.isBroken) {
+              this.car_beneath = null;
+              this.floor = sk8r_floor;
+              
+          } else {
+              if (this.car_beneath.frameIndex == 1) {
+                  this.y = this.floor-1;
+              } else {
+                  this.y = this.floor;
+              }
+          }
+      }
       super.update();
   }
 }
