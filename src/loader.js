@@ -17,6 +17,9 @@ import Label from '/src/menus/Label.js';
 import Explosion from '/src/classes/Explosion.js';
 import Debris from '/src/classes/Debris.js';
 import Car from '/src/classes/Car.js';
+import Tire from '/src/classes/Tire.js';
+import Cop from '/src/classes/Cop.js';
+import Bullet from '/src/classes/Bullet.js';
 
 // Image resource loader.
 export const loader = {
@@ -63,8 +66,11 @@ export const loader = {
         loader.add('savebutton', [SaveButton.src]);
         loader.add('arrowbuttons', [ArrowButton.src_0, ArrowButton.src_1]);
         loader.add('label', [Label.src]);
-        loader.add('explosion', [Explosion.src]);
-        loader.add('debris', [Debris.src]);
+        loader.add('explosion', Explosion.src);
+        loader.add('debris', Debris.src);
         loader.add('car', [Car.src]);
+        loader.add('tire', Tire.src);
+        loader.add('cop', Cop.src);
+        loader.add('bullet', Bullet.src);
     }
 };

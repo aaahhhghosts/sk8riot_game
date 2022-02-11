@@ -37,8 +37,8 @@ export default class Car extends Sprite {
       if (this.row != 1) {this.row = 1;}
 
       this.health -= 1;
-      
-      if (this.health < 2) {this.row = 2;}
+
+      if (this.health < 2) {this.row = 2; this.ticksPerFrame = 7;}
 
       if (this.health <= 0) {
           this.break();
@@ -47,6 +47,7 @@ export default class Car extends Sprite {
 
   break() {
       this.isBroken = true;
+      this.ticksPerFrame = 15;
       this.row = 3;
   }
 

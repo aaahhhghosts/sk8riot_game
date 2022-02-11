@@ -18,6 +18,9 @@ import Label from '/src/menus/Label.js';
 import Explosion from '/src/classes/Explosion.js';
 import Debris from '/src/classes/Debris.js';
 import Car from '/src/classes/Car.js';
+import Tire from '/src/classes/Tire.js';
+import Cop from '/src/classes/Cop.js';
+import Bullet from '/src/classes/Bullet.js';
 
 import { loader } from '/src/loader.js';
 import { spawn_crates, despawn_crates } from '/src/classes/Crate.js';
@@ -25,6 +28,8 @@ import { explode_zippies, despawn_zippies } from '/src/classes/Zippy.js';
 import { despawn_explosions } from '/src/classes/Explosion.js';
 import { despawn_debris } from '/src/classes/Debris.js';
 import { despawn_cars } from '/src/classes/Car.js';
+import { despawn_cops } from '/src/classes/Cop.js';
+import { despawn_bullets } from '/src/classes/Bullet.js';
 
 import { getRandomInt } from '/src/common.js';
 import { floor, sk8r_floor } from '/src/constants.js';
@@ -112,9 +117,10 @@ const game = {
         this.timeSinceLastZippy = 0;
         this.zippyCoolDown = 10;
 
-        // List of sprites for destruction effects.
-        this.explosions = [];
-        this.debris = [];
+        // List of zombie cops on the screen at any given time.
+        this.cops = [];
+        this.cops.push(new Cop(100, 30, game.context, loader.images.cop[0]));
+        this.bullets = [];
 
         // List of crates on the screen at any given time.
         this.crates = [];
@@ -122,6 +128,11 @@ const game = {
         this.crateCoolDown = 40;
 
         this.cars = [];
+
+        // List of sprites for destruction effects.
+        this.explosions = [];
+        this.debris = [];
+        this.tires = [];
 
         // Start game
         this.drawingLoop();
@@ -154,18 +165,11 @@ const game = {
             crate.moving = false;
         });
 
-        this.cars.forEach((car, i) => {
-            car.moving = false;
-        });
-
-
-        this.explosions.forEach((ex, i) => {
-            ex.moving = false;
-        });
-
-        this.debris.forEach((deb, i) => {
-            deb.moving = false;
-        });
+        this.cars.forEach((car, i) => {car.moving = false;});
+        this.explosions.forEach((ex, i) => {ex.moving = false;});
+        this.debris.forEach((deb, i) => {deb.moving = false;});
+        this.tires.forEach((tire, i) => {tire.moving = false;});
+        this.cops.forEach((cop, i) => {cop.moving = false;});
     },
 
     restart_game() {
@@ -190,8 +194,12 @@ const game = {
         this.timeSinceLastZippy = 0;
         this.zippyCoolDown = 10;
 
+        this.cops = [];
+        this.bullets = [];
+
         this.explosions = [];
         this.debris = [];
+        this.tires = [];
 
         this.cars = [];
         this.crates = [];
@@ -253,17 +261,25 @@ const game = {
           let breakPosList = explode_zippies(game.zippies, game.crates, game.cars);
 
           // Spawn explosions at each crate break location.
+          let spawned_tire = false;
           breakPosList.forEach((pos, i) => {
               let x_pos = pos[0];
               let y_pos = pos[1]-2;
+              let type = pos[2];
+
               for (let j = 0; j < 3; j++) {
                   x_pos += getRandomInt(-1, 4);
                   y_pos += getRandomInt(-1, 4);
-                  game.explosions.push(new Explosion(x_pos, y_pos, game.context, loader.images.explosion, 3*j));
+                  game.explosions.push(new Explosion(x_pos, y_pos, game.context, loader.images.explosion, 0, 3*j));
 
-                  if (getRandomInt(0,5) > 0) {
-                      game.debris.push(new Debris(x_pos, y_pos+2, game.context, loader.images.debris, 2*j));
+                  if (type != undefined && getRandomInt(0,5) > 0) {
+                      game.debris.push(new Debris(x_pos, y_pos+2, game.context, loader.images.debris[type], 2*j, type));
                   }
+              }
+
+              if (type == 1 && !spawned_tire && getRandomInt(0, 4) == 4) {
+                  game.tires.push(new Tire(x_pos, y_pos+2, game.context, loader.images.tire[0], 0))
+                  spawned_tire = true;
               }
           });
 
@@ -288,6 +304,37 @@ const game = {
                 deb.render();
             });
             despawn_debris(game.debris);
+        }
+
+        if (game.tires.length > 0) {
+            game.tires.forEach((tire, i) => {
+                tire.update_tire();
+                tire.render();
+            });
+            despawn_debris(game.tires);
+        }
+
+        if (game.cops.length > 0) {
+            game.cops.forEach((cop, i) => {
+
+                if (cop.readyToFire) {
+                    game.bullets.push(new Bullet(cop.x-1, cop.y+24, game.context, loader.images.bullet[0]));
+                    game.explosions.push(new Explosion(cop.x-5, cop.y+21, game.context, loader.images.explosion, 1, 0));
+                    cop.timeSinceFire = 0;
+                    cop.readyToFire = false;
+                }
+                cop.update_cop()
+                cop.render();
+            });
+            despawn_cops(game.cops);
+        }
+
+        if (game.bullets.length > 0) {
+            game.bullets.forEach((bullet, i) => {
+                bullet.update_bullet();
+                bullet.render();
+            });
+            despawn_bullets(game.bullets);
         }
 
         // Calculate zippy cooldown clock.
@@ -325,8 +372,12 @@ const game = {
                 let randInt = getRandomInt(1, 700);
 
                 // If random int is below 3, spawn car.
-                if (randInt > 698) {
+                if (randInt > 697) {
                     game.cars.push(new Car(get_canvas_width(), floor+1, game.context, loader.images.car));
+                    game.timeSinceLastCrate = 1;
+
+                } else if (randInt > 690) {
+                    game.cops.push(new Cop(get_canvas_width(), sk8r_floor+1, game.context, loader.images.cop[0]));
                     game.timeSinceLastCrate = 1;
 
                 // Else, move on to possibly spawn crate.

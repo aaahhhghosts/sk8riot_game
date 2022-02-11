@@ -3,24 +3,31 @@ import { sk8r_floor } from '/src/constants.js';
 
 export default class Explosion extends Sprite {
 
-  static src = '/sprites/explosion.png';
+  static src = ['/sprites/explosion.png', '/sprites/small_explosion.png'];
 
-  constructor(x, y, context, image, countdown) {
-      super({
-          context: context,
-          image: image[0],
-          x: x,
-          y: y,
-          width: 20,
-          height: 20,
-          frameIndex: 0,
-          row: 0,
-          tickCount: 0,
-          ticksPerFrame: 2,
-          frames: 8,
-          loop_animation: false,
-          hasGravity: false
-      });
+  constructor(x, y, context, image, type, countdown) {
+
+    let width, height, frames;
+    switch(type) {
+        case 0: width = 20; height = 20; frames = 8; break;
+        case 1: width = 9; height = 9; frames = 5; break;
+    }
+
+    super({
+        context: context,
+        image: image[type],
+        x: x,
+        y: y,
+        width: width,
+        height: height,
+        frameIndex: 0,
+        row: 0,
+        tickCount: 0,
+        ticksPerFrame: 2,
+        frames: frames,
+        loop_animation: false,
+        hasGravity: false
+    });
 
       this.countdown = countdown;
       this.doneExploding = false;

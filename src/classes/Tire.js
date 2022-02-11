@@ -2,11 +2,11 @@ import Sprite from '/src/Sprite.js';
 import { getRandomInt } from '/src/common.js';
 import { floor } from '/src/constants.js';
 
-export default class Debris extends Sprite {
+export default class Tire extends Sprite {
 
-  static src = ['/sprites/wood_debris.png', '/sprites/car_debris.png'];
+  static src = ['/sprites/tire.png'];
 
-  constructor(x, y, context, image, countdown, x_velocity_boost) {
+  constructor(x, y, context, image, countdown) {
       super({
           context: context,
           image: image,
@@ -18,7 +18,7 @@ export default class Debris extends Sprite {
           row: 0,
           tickCount: 0,
           ticksPerFrame: 1,
-          frames: 12,
+          frames: 8,
           loop_animation: true,
           hasGravity: true
       });
@@ -29,22 +29,21 @@ export default class Debris extends Sprite {
       this.moving = true;
 
       this.velocity_y = 1.0 + (getRandomInt(0, 5)/10.0);
-      this.velocity_x = x_velocity_boost + 2.0 + (getRandomInt(0, 15)/10.0);
-
-      switch(getRandomInt(0,4)) {
-          case 1: this.frames = 12; this.row = 1; break;
-          case 2: this.frames = 8; this.row = 2; break;
-          case 3: this.frames = 8; this.row = 3; break;
-      }
+      this.velocity_x = 3.0 + (getRandomInt(0, 10)/10.0);
   }
 
   animate_land() {
-       this.y -= getRandomInt(4, 8);
-       this.frameIndex = (this.frames)*getRandomInt(0,1);
-       this.frames = 1;
+       this.y -= getRandomInt(4, 6);
   }
 
-  update_debris() {
+  animate_topple() {
+      this.row = 1;
+      this.frames = 3;
+      this.frameIndex = 0;
+      this.loop_animation = false;
+  }
+
+  update_tire() {
 
       // If countdown is up, begin throw.
       if (this.countdown > 0) {
@@ -54,7 +53,7 @@ export default class Debris extends Sprite {
       }
 
       if (this.isAirborn) {
-          this.x += 1.5;
+          this.x += this.velocity_x;
       } else if (this.moving) {
           this.x -= 2;
       }
@@ -63,7 +62,13 @@ export default class Debris extends Sprite {
       if (!this.isAirborn && this.velocity_x > 0) {
 
           this.x += this.velocity_x;
-          this.velocity_x -= this.velocity_x / 30;
+          this.velocity_x -= this.velocity_x / 50;
+
+          this.ticksPerFrame = Math.floor(7 - (2*this.velocity_x));
+
+          if (this.velocity_x < 1.0 && this.row == 0) {
+              this.animate_topple();
+          }
 
           if (this.velocity_x < 0.3) {
               this.velocity_x = 0;
@@ -73,13 +78,13 @@ export default class Debris extends Sprite {
 }
 
 // Despawn debris when it leaves frame.
-export function despawn_debris(debris) {
-  debris.forEach((deb, i) => {
-      if (deb.x < 0 - deb.width) {
+export function despawn_tires(tires) {
+  tires.forEach((tire, i) => {
+      if (tire.x < 0 - tire.width) {
 
         // If crate leaves map, despawn.
-        let i = debris.indexOf(deb);
-        debris.splice(i, 1);
+        let i = tires.indexOf(tire);
+        tires.splice(i, 1);
       }
   });
 }

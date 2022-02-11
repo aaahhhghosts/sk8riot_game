@@ -110,33 +110,7 @@ export function explode_zippies(zippies, crates, cars) {
                 if (crate.type == 0) {
                     crate.break();
                     zippy.brokeCrate = true;
-                    breakPosList.push([Math.floor(crate.x), Math.floor(crate.y)]);
-                }
-            }
-        });
-    });
-
-
-    zippies.filter(zippy => zippy.isAirborn).forEach((zippy, i) => {
-
-        // Check for crate collisions.
-        crates.filter(crate => !crate.isBroken).forEach((crate, j) => {
-
-            let hitCrate = zippy.x >= crate.x-5 && (zippy.x <= (crate.x+crate.width) &&
-                           zippy.y >= (crate.y-2) && zippy.y < crate.y+crate.height);
-
-            // If zippy collided with crate.
-            if (hitCrate && !zippy.brokeCrate) {
-
-                // Set zippy's floor to the top of the crate,
-                // which will trigger a landing event next update.
-                zippy.floor = crate.y+crate.height;
-
-                // If crate is wooden and unbroken, break.
-                if (crate.type == 0) {
-                    crate.break();
-                    zippy.brokeCrate = true;
-                    breakPosList.push([Math.floor(crate.x), Math.floor(crate.y)]);
+                    breakPosList.push([Math.floor(crate.x), Math.floor(crate.y), 0]);
                 }
             }
         });
@@ -171,18 +145,16 @@ export function explode_zippies(zippies, crates, cars) {
                        breakPosList.push([Math.floor(zippy.x), Math.floor(car.y)]);
 
                        if (car.isBroken) {
-                           breakPosList.push([Math.floor(car.x+5), Math.floor(car.y+5)]);
-                           breakPosList.push([Math.floor(car.x+20), Math.floor(car.y+10)]);
-                           breakPosList.push([Math.floor(car.x+40), Math.floor(car.y+7)]);
-                           breakPosList.push([Math.floor(car.x+60), Math.floor(car.y+3)]);
+                           breakPosList.push([Math.floor(car.x+5), Math.floor(car.y+5), 1]);
+                           breakPosList.push([Math.floor(car.x+20), Math.floor(car.y+10), 1]);
+                           breakPosList.push([Math.floor(car.x+40), Math.floor(car.y+7), 1]);
+                           breakPosList.push([Math.floor(car.x+60), Math.floor(car.y+3), 1]);
                        }
                    }
                 }
             }
         });
     });
-
-
 
     return breakPosList;
 }

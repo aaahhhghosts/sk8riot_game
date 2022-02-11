@@ -4,9 +4,8 @@ import { sk8r_floor } from '/src/constants.js';
 export default class Sk8r extends Sprite {
 
   static src = ['/sprites/scuub.png', '/sprites/bluboy.png'];
-  static board_src = '/sprites/board.png';
 
-  constructor(x, y, context, images, img_num, board_image) {
+  constructor(x, y, context, images, img_num) {
       super({
           context: context,
           image: images[img_num],
@@ -35,7 +34,6 @@ export default class Sk8r extends Sprite {
 
       this.isAlive = true;
       this.death_floor = sk8r_floor;
-      this.board_image = board_image;
       this.timeSinceJump = 0;
   }
 

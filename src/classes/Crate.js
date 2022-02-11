@@ -84,7 +84,7 @@ export function despawn_crates(crates) {
       if (crate.x < 0 - crate.width) {
 
         // If crate leaves map, despawn.
-        var i = crates.indexOf(crate);
+        let i = crates.indexOf(crate);
         crates.splice(i, 1);
       }
   });
