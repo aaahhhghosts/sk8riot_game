@@ -24,6 +24,7 @@ export default class Board extends Sprite {
 
       this.floor = sk8r_floor;
       this.velocity_y = 1;
+      this.set_scroll(0, false);
 
       this.car_beneath = null;
 
@@ -74,7 +75,7 @@ export default class Board extends Sprite {
           if (this.car_beneath.isBroken) {
               this.car_beneath = null;
               this.floor = sk8r_floor;
-              
+
           } else {
               if (this.car_beneath.frameIndex == 1) {
                   this.y = this.floor-1;

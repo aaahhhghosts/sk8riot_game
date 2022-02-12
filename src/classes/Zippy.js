@@ -24,13 +24,12 @@ export default class Zippy extends Sprite {
       });
 
       this.floor = floor;
-
-      this.doneExploding = false;
-      this.brokeCrate = false;
+      this.velocity_y = 1;
+      this.set_scroll(false, 0);
 
       this.isAirborn = true;
-
-      this.velocity_y = 1;
+      this.doneExploding = false;
+      this.brokeCrate = false;
   }
 
   animate_throw() {
@@ -56,34 +55,13 @@ export default class Zippy extends Sprite {
   update_zippy() {
 
       super.update();
-
-      if (this.isAirborn) {
-          this.x += 1.5;
-
-      } else {
-          this.doneExploding = (this.row === 1 && this.frameIndex >= this.frames-1);
-      }
+      if (this.isAirborn) {this.x += 1.5;}
   }
 }
 
 // Spawn zippy.
 export function throw_zippy(x, y, context, img, zippies) {
-
     zippies.push(new Zippy(x, y, context, img));
-}
-
-// Despawn exploded zippies.
-export function despawn_zippies(zippies) {
-
-    zippies.some((zippy, i) => {
-
-        // If zippy has finished exploding, despawn.
-        if (zippy.doneExploding) {
-            let i = zippies.indexOf(zippy);
-            zippies.splice(i, 1);
-            return true;
-        }
-    });
 }
 
 export function explode_zippies(zippies, crates, cars) {

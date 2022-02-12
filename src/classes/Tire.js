@@ -26,7 +26,6 @@ export default class Tire extends Sprite {
       this.countdown = countdown;
       this.floor = floor;
       this.isAirborn = true;
-      this.moving = true;
 
       this.velocity_y = 1.0 + (getRandomInt(0, 5)/10.0);
       this.velocity_x = 3.0 + (getRandomInt(0, 10)/10.0);
@@ -54,8 +53,6 @@ export default class Tire extends Sprite {
 
       if (this.isAirborn) {
           this.x += this.velocity_x;
-      } else if (this.moving) {
-          this.x -= 2;
       }
 
       // If sk8r is dead, move body forwards.
@@ -75,16 +72,4 @@ export default class Tire extends Sprite {
           }
       }
   }
-}
-
-// Despawn debris when it leaves frame.
-export function despawn_tires(tires) {
-  tires.forEach((tire, i) => {
-      if (tire.x < 0 - tire.width) {
-
-        // If crate leaves map, despawn.
-        let i = tires.indexOf(tire);
-        tires.splice(i, 1);
-      }
-  });
 }

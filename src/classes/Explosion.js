@@ -29,38 +29,26 @@ export default class Explosion extends Sprite {
         hasGravity: false
     });
 
+      this.x_movement = 0;
+      if (type == 1) {
+          this.x_movement = 1.5;
+      }
       this.countdown = countdown;
       this.doneExploding = false;
-      this.moving = true;
   }
 
   update_explosion() {
 
+      this.x += this.x_movement;
+
       // If countdown is up, begin explosion.
       if (this.countdown > 0) {
           this.countdown -= 1;
+          this.scroll();
       } else {
           super.update();
       }
 
-      if (this.moving) {
-          this.x -= 2;
-      }
-
       this.doneExploding = (this.frameIndex >= this.frames-1);
   }
-}
-
-// Despawn finished explosions.
-export function despawn_explosions(explosions) {
-
-    explosions.some((ex, i) => {
-
-        // If zippy has finished exploding, despawn.
-        if (ex.doneExploding) {
-            let i = explosions.indexOf(ex);
-            explosions.splice(i, 1);
-            return true;
-        }
-    });
 }

@@ -31,6 +31,7 @@ export default class Sk8r extends Sprite {
       this.gravity = 0.3;
       this.velocity_y = 0;
       this.velocity_x = 0;
+      this.set_scroll(false, 0);
 
       this.isAlive = true;
       this.death_floor = sk8r_floor;

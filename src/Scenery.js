@@ -29,8 +29,8 @@ resize(context) {
     context = context;
 }
 
-set_scroll(scroll, speed, reset, reset_x) {
-    this.does_scroll = scroll;
+set_scroll(does_scroll, speed, reset, reset_x) {
+    this.does_scroll = does_scroll;
     this.scroll_speed = speed;
     this.scroll_reset = reset;
     this.scroll_reset_x = reset_x;

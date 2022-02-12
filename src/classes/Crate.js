@@ -5,95 +5,77 @@ import { get_canvas_width } from '/src/Main.js';
 
 export default class Crate extends Sprite {
 
-  static src_0 = '/sprites/wood_crate.png';
-  static src_1 = '/sprites/steel_crate.png';
+    static src_0 = '/sprites/wood_crate.png';
+    static src_1 = '/sprites/steel_crate.png';
 
-  constructor(x, y, context, image, type) {
+    constructor(x, y, context, image, type) {
 
-      super({
-          context: context,
-          image: image[type],
-          x: x,
-          y: y,
-          width: 15,
-          height: 15,
-          frameIndex: 0,
-          row: 0,
-          tickCount: 0,
-          ticksPerFrame: 1,
-          frames: 1,
-          loop_animation: true,
-          hasGravity: true,
-      });
+        super({
+            context: context,
+            image: image[type],
+            x: x,
+            y: y,
+            width: 15,
+            height: 15,
+            frameIndex: 0,
+            row: 0,
+            tickCount: 0,
+            ticksPerFrame: 1,
+            frames: 1,
+            loop_animation: true,
+            hasGravity: true,
+        });
 
-      this.type = type;
+        this.type = type;
 
-      this.stackedOn = [];
-      this.isBroken = false;
+        this.stackedOn = [];
+        this.isBroken = false;
+    }
 
-      this.moving = true;
-  }
+    // Stack list of crates below this crate.
+    stackOn(crates) {
+        crates.forEach((crate, i) => {
+            this.stackedOn.push(crate);
+            this.floor += (crate.height-1);
+            this.y = this.floor;
+        });
+    }
 
-  // Stack list of crates below this crate.
-  stackOn(crates) {
-      crates.forEach((crate, i) => {
-          this.stackedOn.push(crate);
-          this.floor += (crate.height-1);
-          this.y = this.floor;
-      });
-  }
+    break() {
+        this.isBroken = true;
+        this.row = 1;
+    }
 
-  break() {
-      this.isBroken = true;
-      this.row = 1;
-  }
+    update_crate() {
+        super.update();
+        this.update_floor();
+    }
 
-  update_crate() {
-      super.update();
+    update_floor() {
 
-      if (this.moving) {
-          this.x -= 2;
-      }
+        // If there are any crates beneath current crate.
+        if (this.stackedOn.length > 0) {
 
-      this.update_floor();
-  }
+            // Remove broken crates from stack.
+            this.stackedOn.forEach((crate, i) => {
 
-  update_floor() {
+                // If crate is broken, remove from stack.
+                if (crate.isBroken) {
+                    var i = this.stackedOn.indexOf(crate);
+                    this.stackedOn.splice(i, 1);
 
-      // If there are any crates beneath current crate.
-      if (this.stackedOn.length > 0) {
-
-          // Remove broken crates from stack.
-          this.stackedOn.forEach((crate, i) => {
-
-              // If crate is broken, remove from stack.
-              if (crate.isBroken) {
-                  var i = this.stackedOn.indexOf(crate);
-                  this.stackedOn.splice(i, 1);
-
-                  // Set new current floor to height below crate.
-                  this.floor -= (crate.height-1);
-              }
-          });
-      }
-  }
-}
-
-export function despawn_crates(crates) {
-  crates.forEach((crate, i) => {
-      if (crate.x < 0 - crate.width) {
-
-        // If crate leaves map, despawn.
-        let i = crates.indexOf(crate);
-        crates.splice(i, 1);
-      }
-  });
+                    // Set new current floor to height below crate.
+                    this.floor -= (crate.height-1);
+                }
+            });
+        }
+    }
 }
 
 // Method for spawning in a given number of stacked crates.
 export function spawn_crates(context, img_list, crates, stack_width) {
 
-    var next_xpos = get_canvas_width();
+    let next_xpos = get_canvas_width();
 
     for (let i = 0; i < stack_width; i++) {
 

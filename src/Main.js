@@ -23,13 +23,9 @@ import Cop from '/src/classes/Cop.js';
 import Bullet from '/src/classes/Bullet.js';
 
 import { loader } from '/src/loader.js';
-import { spawn_crates, despawn_crates } from '/src/classes/Crate.js';
-import { explode_zippies, despawn_zippies } from '/src/classes/Zippy.js';
-import { despawn_explosions } from '/src/classes/Explosion.js';
-import { despawn_debris } from '/src/classes/Debris.js';
-import { despawn_cars } from '/src/classes/Car.js';
-import { despawn_cops } from '/src/classes/Cop.js';
-import { despawn_bullets } from '/src/classes/Bullet.js';
+import { despawn_sprites } from '/src/Sprite.js';
+import { spawn_crates } from '/src/classes/Crate.js';
+import { explode_zippies } from '/src/classes/Zippy.js';
 
 import { getRandomInt } from '/src/common.js';
 import { floor, sk8r_floor } from '/src/constants.js';
@@ -119,7 +115,7 @@ const game = {
 
         // List of zombie cops on the screen at any given time.
         this.cops = [];
-        this.cops.push(new Cop(100, 30, game.context, loader.images.cop[0]));
+        this.cops.push(new Cop(150, 30, game.context, loader.images.cop[0]));
         this.bullets = [];
 
         // List of crates on the screen at any given time.
@@ -161,15 +157,12 @@ const game = {
         this.cityscape.stop_scroll();
         this.road.stop_scroll();
 
-        this.crates.forEach((crate, i) => {
-            crate.moving = false;
-        });
-
-        this.cars.forEach((car, i) => {car.moving = false;});
-        this.explosions.forEach((ex, i) => {ex.moving = false;});
-        this.debris.forEach((deb, i) => {deb.moving = false;});
-        this.tires.forEach((tire, i) => {tire.moving = false;});
-        this.cops.forEach((cop, i) => {cop.moving = false;});
+        this.crates.forEach((crate, i) => crate.stop_scroll());
+        this.cars.forEach((car, i) => car.stop_scroll());
+        this.explosions.forEach((ex, i) => ex.stop_scroll());
+        this.debris.forEach((deb, i) => deb.stop_scroll());
+        this.tires.forEach((tire, i) => tire.stop_scroll());
+        this.cops.forEach((cop, i) => cop.stop_scroll());
     },
 
     restart_game() {
@@ -223,8 +216,8 @@ const game = {
         game.trueContext.clearRect(0, 0, game.trueCanvas.width, game.trueCanvas.height);
 
         // Game true canvas size.
-        var scale_width = game.trueCanvas.width;
-        var scale_height = game.trueCanvas.height;
+        let scale_width = game.trueCanvas.width;
+        let scale_height = game.trueCanvas.height;
 
         game.update_background();
 
@@ -238,7 +231,7 @@ const game = {
                 crate.update_crate();
                 crate.render();
             });
-            despawn_crates(game.crates);
+            despawn_sprites(game.crates);
         }
 
         // Draw cars.
@@ -247,15 +240,13 @@ const game = {
                 car.update_car();
                 car.render();
             });
-            despawn_cars(game.cars);
+            despawn_sprites(game.cars);
         }
 
         game.sk8r.update_sk8r(game.crates, game.cars);
 
         // Check if zippies has collided with any objects.
         if (game.zippies.length > 0) {
-
-          despawn_zippies(game.zippies);
 
           // Explode zippies and get crate break locations, if any.
           let breakPosList = explode_zippies(game.zippies, game.crates, game.cars);
@@ -273,7 +264,7 @@ const game = {
                   game.explosions.push(new Explosion(x_pos, y_pos, game.context, loader.images.explosion, 0, 3*j));
 
                   if (type != undefined && getRandomInt(0,5) > 0) {
-                      game.debris.push(new Debris(x_pos, y_pos+2, game.context, loader.images.debris[type], 2*j, type));
+                      game.debris.push(new Debris(x_pos, y_pos+3, game.context, loader.images.debris[type], 2*j, type));
                   }
               }
 
@@ -285,9 +276,10 @@ const game = {
 
           // Draw zippies
           game.zippies.forEach((zippy, i) => {
-              zippy.render();
               zippy.update_zippy();
+              zippy.render();
           });
+          despawn_sprites(game.zippies);
         }
 
         if (game.explosions.length > 0) {
@@ -295,7 +287,7 @@ const game = {
                 ex.update_explosion();
                 ex.render();
             });
-            despawn_explosions(game.explosions);
+            despawn_sprites(game.explosions);
         }
 
         if (game.debris.length > 0) {
@@ -303,7 +295,7 @@ const game = {
                 deb.update_debris();
                 deb.render();
             });
-            despawn_debris(game.debris);
+            despawn_sprites(game.debris);
         }
 
         if (game.tires.length > 0) {
@@ -311,22 +303,38 @@ const game = {
                 tire.update_tire();
                 tire.render();
             });
-            despawn_debris(game.tires);
+            despawn_sprites(game.tires);
+        }
+
+        // Await new Promise(r => setTimeout(r, 180));
+        game.sk8r.render();
+        if (!game.sk8r.isAlive) {
+
+            if (game.board == null) {
+                game.board = new Board(18, game.sk8r.y, game.context, loader.images.board, game.crates, game.cars);
+            } else {
+                game.board.render();
+                game.board.update_board();
+            }
+
+            if (game.sk8r.velocity_x == 0 && !game.showing_restart_menu) {
+                game.show_restart_menu();
+            }
         }
 
         if (game.cops.length > 0) {
             game.cops.forEach((cop, i) => {
 
                 if (cop.readyToFire) {
-                    game.bullets.push(new Bullet(cop.x-1, cop.y+24, game.context, loader.images.bullet[0]));
-                    game.explosions.push(new Explosion(cop.x-5, cop.y+21, game.context, loader.images.explosion, 1, 0));
+                    game.bullets.push(new Bullet(cop.x, cop.y+24, game.context, loader.images.bullet[0]));
+                    game.explosions.push(new Explosion(cop.x-5, cop.y+20, game.context, loader.images.explosion, 1, 0));
                     cop.timeSinceFire = 0;
                     cop.readyToFire = false;
                 }
                 cop.update_cop()
                 cop.render();
             });
-            despawn_cops(game.cops);
+            despawn_sprites(game.cops);
         }
 
         if (game.bullets.length > 0) {
@@ -334,7 +342,7 @@ const game = {
                 bullet.update_bullet();
                 bullet.render();
             });
-            despawn_bullets(game.bullets);
+            despawn_sprites(game.bullets);
         }
 
         // Calculate zippy cooldown clock.
@@ -345,9 +353,6 @@ const game = {
                 game.timeSinceLastZippy = 0;
             }
         }
-
-        // Await new Promise(r => setTimeout(r, 180));
-        game.sk8r.render();
 
         // If player is still alive, continue spawning new crates.
         if (game.sk8r.isAlive && game.has_started) {
@@ -368,7 +373,6 @@ const game = {
             if (game.timeSinceLastCrate == 0) {
 
                 let stack_width = 0;
-
                 let randInt = getRandomInt(1, 700);
 
                 // If random int is below 3, spawn car.
@@ -377,7 +381,7 @@ const game = {
                     game.timeSinceLastCrate = 1;
 
                 } else if (randInt > 690) {
-                    game.cops.push(new Cop(get_canvas_width(), sk8r_floor+1, game.context, loader.images.cop[0]));
+                    game.cops.push(new Cop(get_canvas_width(), sk8r_floor-6, game.context, loader.images.cop[0]));
                     game.timeSinceLastCrate = 1;
 
                 // Else, move on to possibly spawn crate.
@@ -394,20 +398,6 @@ const game = {
                         game.timeSinceLastCrate = 1;
                     }
                 }
-            }
-        }
-
-        if (!game.sk8r.isAlive) {
-
-            if (game.board == null) {
-                game.board = new Board(18, game.sk8r.y, game.context, loader.images.board, game.crates, game.cars);
-            } else {
-                game.board.render();
-                game.board.update_board();
-            }
-
-            if (game.sk8r.velocity_x == 0 && !game.showing_restart_menu) {
-                game.show_restart_menu();
             }
         }
 

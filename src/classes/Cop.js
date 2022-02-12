@@ -11,7 +11,7 @@ export default class Cop extends Sprite {
           image: image,
           x: x,
           y: y,
-          width: 27,
+          width: 29,
           height: 41,
           frameIndex: 0,
           row: 0,
@@ -26,10 +26,9 @@ export default class Cop extends Sprite {
       this.gravity = 0.3;
       this.velocity_y = 0;
       this.velocity_x = 0;
-      this.moving = true;
 
       this.isAlive = true;
-      this.floor = sk8r_floor+1;
+      this.set_floor(sk8r_floor-6);
       this.death_floor = floor;
       this.timeSinceFire = 70;
       this.readyToFire = false;
@@ -76,30 +75,19 @@ export default class Cop extends Sprite {
     this.velocity_x = 1.5;
   }
 
-  update_cop(context, image, bullets) {
+  update_cop() {
       super.update();
 
+      if (this.isAlive) {
+          this.x += 1.5;
+      }
+
       this.timeSinceFire += 1;
-      if (this.isAlive && this.row == 0 && this.frameIndex == 3) {
+      if (this.isAlive && this.row == 0 && this.frameIndex == 5) {
 
           if (this.timeSinceFire > 80) {
               this.readyToFire = true;
           }
       }
-
-      if (this.moving) {
-          this.x -= 0.5;
-      }
   }
-}
-
-export function despawn_cops(cops) {
-  cops.forEach((cop, i) => {
-      if (cop.x < 0 - cop.width) {
-
-        // If crate leaves map, despawn.
-        let i = cops.indexOf(cop);
-        cops.splice(i, 1);
-      }
-  });
 }

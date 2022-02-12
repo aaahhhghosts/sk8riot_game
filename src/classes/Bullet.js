@@ -26,7 +26,7 @@ export default class Bullet extends Sprite {
       });
 
       this.doneBreaking = false;
-      this.moving = true;
+      this.set_scroll(true, 2.5);
   }
 
   break() {
@@ -40,21 +40,5 @@ export default class Bullet extends Sprite {
           if (this.row == 0) {this.row = 1;}
           if (this.row == 2) {this.doneBreaking = true;}
       }
-
-
-      if (this.moving) {
-          this.x -= 2.5;
-      }
   }
-}
-
-export function despawn_bullets(bullets) {
-  bullets.forEach((bullet, i) => {
-      if (bullets.x < 0 - bullet.width || bullet.doneBreaking) {
-
-        // If crate leaves map, despawn.
-        let i = crates.indexOf(crate);
-        bullets.splice(i, 1);
-      }
-  });
 }

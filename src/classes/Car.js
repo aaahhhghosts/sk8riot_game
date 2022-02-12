@@ -28,8 +28,6 @@ export default class Car extends Sprite {
       this.stackedOn = [];
       this.isBroken = false;
       this.health = 4;
-
-      this.moving = true;
   }
 
   damage() {
@@ -39,7 +37,6 @@ export default class Car extends Sprite {
       this.health -= 1;
 
       if (this.health < 2) {this.row = 2; this.ticksPerFrame = 7;}
-
       if (this.health <= 0) {
           this.break();
       }
@@ -53,20 +50,5 @@ export default class Car extends Sprite {
 
   update_car() {
       super.update();
-
-      if (this.moving) {
-          this.x -= 2;
-      }
   }
-}
-
-export function despawn_cars(cars) {
-  cars.forEach((car, i) => {
-      if (car.x < 0 - car.width) {
-
-        // If crate leaves map, despawn.
-        let i = cars.indexOf(car);
-        cars.splice(i, 1);
-      }
-  });
 }
