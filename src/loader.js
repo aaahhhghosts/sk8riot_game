@@ -20,6 +20,7 @@ import Car from '/src/classes/Car.js';
 import Tire from '/src/classes/Tire.js';
 import Cop from '/src/classes/Cop.js';
 import Bullet from '/src/classes/Bullet.js';
+import Scooter from '/src/classes/Scooter.js';
 
 // Image resource loader.
 export const loader = {
@@ -72,5 +73,6 @@ export const loader = {
         loader.add('tire', Tire.src);
         loader.add('cop', Cop.src);
         loader.add('bullet', Bullet.src);
+        loader.add('scooter', Scooter.src);
     }
 };

@@ -4,59 +4,59 @@ import { floor } from '/src/constants.js';
 
 export default class Zippy extends Sprite {
 
-  static src = '/sprites/zippy.png';
+    static src = '/sprites/zippy.png';
 
-  constructor(x, y, context, image) {
-      super({
-          context: context,
-          image: image[0],
-          x: x,
-          y: y,
-          width: 9,
-          height: 9,
-          frameIndex: 0,
-          row: 0,
-          tickCount: 0,
-          ticksPerFrame: 0,
-          frames: 20,
-          loop_animation: true,
-          hasGravity: true
-      });
+    constructor(x, y, context, image) {
+        super({
+            context: context,
+            image: image[0],
+            x: x,
+            y: y,
+            width: 9,
+            height: 9,
+            frameIndex: 0,
+            row: 0,
+            tickCount: 0,
+            ticksPerFrame: 0,
+            frames: 20,
+            loop_animation: true,
+            hasGravity: true
+        });
 
-      this.floor = floor;
-      this.velocity_y = 1;
-      this.set_scroll(false, 0);
+        this.floor = floor;
+        this.velocity_y = 1;
+        this.set_scroll(false, 0);
 
-      this.isAirborn = true;
-      this.doneExploding = false;
-      this.brokeCrate = false;
-  }
+        this.isAirborn = true;
+        this.doneExploding = false;
+        this.brokeCrate = false;
+    }
 
-  animate_throw() {
-      this.row = 0;
-      this.frames = 20;
-      this.frameIndex = 0;
-  }
+    animate_throw() {
+        this.row = 0;
+        this.frames = 20;
+        this.frameIndex = 0;
+    }
 
-  animate_explode() {
+    animate_explode() {
 
-      this.loop_animation = false;
-      this.row = 1;
-      this.frames = 5+1;
-      this.frameIndex = 0;
-      this.ticksPerFrame = 2;
-  }
+        this.loop_animation = false;
+        this.row = 1;
+        this.frames = 5+1;
+        this.frameIndex = 0;
+        this.ticksPerFrame = 2;
+    }
 
-  animate_land() {
-      this.y -= getRandomInt(0, 4);
-      this.animate_explode();
-  }
+    animate_land() {
+        this.y -= getRandomInt(0, 4);
+        this.animate_explode();
+    }
 
-  update_zippy() {
+    update_zippy() {
 
-      super.update();
-      if (this.isAirborn) {this.x += 1.5;}
-  }
+        super.update();
+        if (this.isAirborn) {this.x += 1.5;}
+    }
 }
 
 // Spawn zippy.
@@ -64,7 +64,7 @@ export function throw_zippy(x, y, context, img, zippies) {
     zippies.push(new Zippy(x, y, context, img));
 }
 
-export function explode_zippies(zippies, crates, cars) {
+export function explode_zippies(zippies, crates, cars, cops) {
 
     // Declare list to hold the position of every crate break, if any.
     let breakPosList = [];
@@ -128,6 +128,39 @@ export function explode_zippies(zippies, crates, cars) {
                            breakPosList.push([Math.floor(car.x+40), Math.floor(car.y+7), 1]);
                            breakPosList.push([Math.floor(car.x+60), Math.floor(car.y+3), 1]);
                        }
+                   }
+                }
+            }
+        });
+
+        // Check for cop collisions.
+        cops.filter(cop => !cop.isBroken).forEach((cop, j) => {
+
+
+            if (zippy.x >= cop.x-23 && zippy.x <= cop.x+cop.width-7) {
+
+                // Get y coord of the top of this cop.
+                let top_of_cop = cop.y+cop.height/2-1;
+
+                if (zippy.x >= cop.x+5 && zippy.x <= cop.x+56) {
+                    top_of_cop = cop.y+(cop.height-4);
+                }
+
+                let hitcop = zippy.x >= cop.x-5 && (zippy.x <= (cop.x+cop.width) &&
+                             zippy.y >= (cop.y-2) && zippy.y < top_of_cop);
+
+                // If zippy collided with cop.
+                if (hitcop && !zippy.brokeCrate) {
+
+                   // Set zippy's floor to the top of the cop,
+                   // which will trigger a landing event next update.
+                   zippy.floor = cop.y+cop.height;
+
+                   // If cop is alive on collision, blow up that cop ass.
+                   if (cop.isAlive) {
+                       cop.kill();
+                       breakPosList.push([Math.floor(zippy.x+9), Math.floor(cop.y), 2]);
+                       zippy.brokeCrate = true;
                    }
                 }
             }

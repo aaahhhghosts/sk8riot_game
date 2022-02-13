@@ -21,6 +21,7 @@ import Car from '/src/classes/Car.js';
 import Tire from '/src/classes/Tire.js';
 import Cop from '/src/classes/Cop.js';
 import Bullet from '/src/classes/Bullet.js';
+import Scooter from '/src/classes/Scooter.js';
 
 import { loader } from '/src/loader.js';
 import { despawn_sprites } from '/src/Sprite.js';
@@ -82,9 +83,9 @@ const game = {
         this.buttons = [];
 
         // Add start game button.
-        let start_game = function() {this.has_started = true;}
-        this.buttons.push(new StartButton(this.canvas.width/2, this.canvas.height*1/3, game.context,
-                                     loader.images.startbutton, "Start", start_game.bind(this), true));
+        // let start_game = function() {this.has_started = true;}
+        // this.buttons.push(new StartButton(this.canvas.width/2, this.canvas.height*1/3, game.context,
+        //                              loader.images.startbutton, "Start", start_game.bind(this), true));
 
         let prev_sk8r = function() {this.sk8r.prev_sprite(); this.sk8r_label.setText(this.sk8r.getName());}
         this.buttons.push(new ArrowButton(sk8r_x-4, sk8r_floor+45, game.context,
@@ -117,6 +118,7 @@ const game = {
         this.cops = [];
         this.cops.push(new Cop(150, 30, game.context, loader.images.cop[0]));
         this.bullets = [];
+        this.scooters = [];
 
         // List of crates on the screen at any given time.
         this.crates = [];
@@ -163,6 +165,7 @@ const game = {
         this.debris.forEach((deb, i) => deb.stop_scroll());
         this.tires.forEach((tire, i) => tire.stop_scroll());
         this.cops.forEach((cop, i) => cop.stop_scroll());
+        this.scooters.forEach((scooter, i) => scooter.stop_scroll());
     },
 
     restart_game() {
@@ -249,7 +252,7 @@ const game = {
         if (game.zippies.length > 0) {
 
           // Explode zippies and get crate break locations, if any.
-          let breakPosList = explode_zippies(game.zippies, game.crates, game.cars);
+          let breakPosList = explode_zippies(game.zippies, game.crates, game.cars, game.cops);
 
           // Spawn explosions at each crate break location.
           let spawned_tire = false;
@@ -257,6 +260,11 @@ const game = {
               let x_pos = pos[0];
               let y_pos = pos[1]-2;
               let type = pos[2];
+
+              if (type == 2) {
+                  game.scooters.push(new Scooter(x_pos, y_pos, game.context, loader.images.scooter[0]));
+                  return;
+              }
 
               for (let j = 0; j < 3; j++) {
                   x_pos += getRandomInt(-1, 4);
@@ -331,10 +339,23 @@ const game = {
                     cop.timeSinceFire = 0;
                     cop.readyToFire = false;
                 }
+
+                if (cop.is_looking_backwards() && cop.x < game.sk8r.x) {
+                    cop.look_forwards();
+                }
+
                 cop.update_cop()
                 cop.render();
             });
             despawn_sprites(game.cops);
+        }
+
+        if (game.scooters.length > 0) {
+            game.scooters.forEach((scooter, i) => {
+                scooter.update_scooter();
+                scooter.render();
+            });
+            despawn_sprites(game.scooters);
         }
 
         if (game.bullets.length > 0) {

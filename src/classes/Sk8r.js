@@ -56,15 +56,15 @@ export default class Sk8r extends Sprite {
   setName(name) {this.cur_name = name;}
 
   animate_ride() {
-    this.row = 0;
-    this.frames = 6;
-    this.frameIndex = 0;
+      this.row = 0;
+      this.frames = 6;
+      this.frameIndex = 0;
   }
 
   animate_jump() {
-    this.row = 1;
-    this.frames = 2;
-    this.frameIndex = 0;
+      this.row = 1;
+      this.frames = 2;
+      this.frameIndex = 0;
   }
 
   animate_death() {

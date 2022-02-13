@@ -11,8 +11,8 @@ export default class Cop extends Sprite {
           image: image,
           x: x,
           y: y,
-          width: 29,
-          height: 41,
+          width: 30,
+          height: 36,
           frameIndex: 0,
           row: 0,
           tickCount: 0,
@@ -37,16 +37,9 @@ export default class Cop extends Sprite {
   get_floor() {return this.floor;}
   set_floor(floor) {this.floor = floor;}
 
-  animate_ride() {
-    this.row = 0;
-    this.frames = 6;
-    this.frameIndex = 0;
-  }
-
-  animate_jump() {
-    this.row = 1;
-    this.frames = 2;
-    this.frameIndex = 0;
+  is_looking_backwards() {return this.row == 0;}
+  look_forwards() {
+      this.row = 1;
   }
 
   animate_death() {
@@ -54,25 +47,27 @@ export default class Cop extends Sprite {
       this.row = 2;
       this.frames = 4;
       this.frameIndex = 0;
-      this.ticksPerFrame = 12;
+      this.ticksPerFrame = 10;
       this.loop_animation = false;
+      this.despawn_after_animation = false;
   }
 
   kill() {
       this.isAlive = false;
+      this.set_floor(sk8r_floor-11)
       this.animate_death();
-      this.throw_off_board();
+      this.throw_off_scooter();
   }
 
-  throw_off_board() {
+  throw_off_scooter() {
 
     // Send sk8r's body flying.
     this.death_floor = this.floor;
     this.set_floor(sk8r_floor-12);
     this.isGrounded = false;
-    this.velocity_y = 4;
+    this.velocity_y = 4.5;
     this.y += 3;
-    this.velocity_x = 1.5;
+    this.velocity_x = 4.2;
   }
 
   update_cop() {
@@ -80,13 +75,26 @@ export default class Cop extends Sprite {
 
       if (this.isAlive) {
           this.x += 1.5;
+
+          this.timeSinceFire += 1;
+          if (this.row == 0 && this.frameIndex == 5) {
+
+              if (this.timeSinceFire > 80) {
+                  this.readyToFire = true;
+              }
+          }
       }
 
-      this.timeSinceFire += 1;
-      if (this.isAlive && this.row == 0 && this.frameIndex == 5) {
+      // If sk8r is dead, move body forwards.
+      if (!this.isAlive && this.velocity_x > 0) {
 
-          if (this.timeSinceFire > 80) {
-              this.readyToFire = true;
+          this.x += this.velocity_x;
+          if (this.y <= sk8r_floor-12) {
+              this.velocity_x -= this.velocity_x / 15;
+
+              if (this.velocity_x < 0.1) {
+                  this.velocity_x = 0;
+              }
           }
       }
   }
