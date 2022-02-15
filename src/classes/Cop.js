@@ -52,22 +52,28 @@ export default class Cop extends Sprite {
       this.despawn_after_animation = false;
   }
 
-  kill() {
+  kill(cause_of_death) {
       this.isAlive = false;
       this.set_floor(sk8r_floor-11)
       this.animate_death();
-      this.throw_off_scooter();
+
+      // If killed by debris and not explosion,
+      // make flying off board less dramatic.
+      switch(cause_of_death) {
+          case 0: this.throw_off_scooter(4.0, 2.8); break;
+          case 1: this.throw_off_scooter(2.0, 1.2); break;
+      }
   }
 
-  throw_off_scooter() {
+  throw_off_scooter(x_vel, y_vel) {
 
     // Send sk8r's body flying.
     this.death_floor = this.floor;
     this.set_floor(sk8r_floor-12);
     this.isGrounded = false;
-    this.velocity_y = 4.5;
+    this.velocity_x = x_vel;
+    this.velocity_y = y_vel;
     this.y += 3;
-    this.velocity_x = 4.2;
   }
 
   update_cop() {
@@ -90,7 +96,7 @@ export default class Cop extends Sprite {
 
           this.x += this.velocity_x;
           if (this.y <= sk8r_floor-12) {
-              this.velocity_x -= this.velocity_x / 15;
+              this.velocity_x -= this.velocity_x / 30;
 
               if (this.velocity_x < 0.1) {
                   this.velocity_x = 0;

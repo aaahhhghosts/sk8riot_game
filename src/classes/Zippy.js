@@ -106,8 +106,8 @@ export function explode_zippies(zippies, crates, cars, cops) {
                     top_of_car = car.y+(car.height-4);
                 }
 
-                let hitCar = zippy.x >= car.x-5 && (zippy.x <= (car.x+car.width) &&
-                             zippy.y >= (car.y-2) && zippy.y < top_of_car);
+                let hitCar = zippy.x >= (car.x-5) && zippy.x <= (car.x+car.width) &&
+                             zippy.y >= (car.y-2) && zippy.y < top_of_car;
 
                 // If zippy collided with car.
                 if (hitCar && !zippy.brokeCrate) {
@@ -134,20 +134,12 @@ export function explode_zippies(zippies, crates, cars, cops) {
         });
 
         // Check for cop collisions.
-        cops.filter(cop => !cop.isBroken).forEach((cop, j) => {
-
+        cops.filter(cop => cop.isAlive).forEach((cop, j) => {
 
             if (zippy.x >= cop.x-23 && zippy.x <= cop.x+cop.width-7) {
 
-                // Get y coord of the top of this cop.
-                let top_of_cop = cop.y+cop.height/2-1;
-
-                if (zippy.x >= cop.x+5 && zippy.x <= cop.x+56) {
-                    top_of_cop = cop.y+(cop.height-4);
-                }
-
-                let hitcop = zippy.x >= cop.x-5 && (zippy.x <= (cop.x+cop.width) &&
-                             zippy.y >= (cop.y-2) && zippy.y < top_of_cop);
+                let hitcop = zippy.x >= (cop.x-5) && zippy.x <= (cop.x+cop.width) &&
+                               zippy.y >= (cop.y-2) && zippy.y < (cop.y+cop.height);
 
                 // If zippy collided with cop.
                 if (hitcop && !zippy.brokeCrate) {
@@ -158,7 +150,7 @@ export function explode_zippies(zippies, crates, cars, cops) {
 
                    // If cop is alive on collision, blow up that cop ass.
                    if (cop.isAlive) {
-                       cop.kill();
+                       cop.kill(0);
                        breakPosList.push([Math.floor(zippy.x+9), Math.floor(cop.y), 2]);
                        zippy.brokeCrate = true;
                    }

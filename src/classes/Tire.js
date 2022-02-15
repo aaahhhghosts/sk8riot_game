@@ -23,6 +23,7 @@ export default class Tire extends Sprite {
           hasGravity: true
       });
 
+      this.despawn_after_animation = false;
       this.countdown = countdown;
       this.floor = floor;
       this.isAirborn = true;

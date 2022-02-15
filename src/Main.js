@@ -27,6 +27,8 @@ import { loader } from '/src/loader.js';
 import { despawn_sprites } from '/src/Sprite.js';
 import { spawn_crates } from '/src/classes/Crate.js';
 import { explode_zippies } from '/src/classes/Zippy.js';
+import { collide_debris } from '/src/classes/Debris.js';
+import { collide_bullets } from '/src/classes/Bullet.js';
 
 import { getRandomInt } from '/src/common.js';
 import { floor, sk8r_floor } from '/src/constants.js';
@@ -34,11 +36,11 @@ import { create_key_listener } from '/src/key_listener.js';
 import { create_click_listener } from '/src/click_listener.js';
 
 export function get_canvas_height() {
-        return game.canvas.height;
+    return game.canvas.height;
 }
 
 export function get_canvas_width() {
-        return game.canvas.width;
+    return game.canvas.width;
 }
 
 const game = {
@@ -83,9 +85,9 @@ const game = {
         this.buttons = [];
 
         // Add start game button.
-        // let start_game = function() {this.has_started = true;}
-        // this.buttons.push(new StartButton(this.canvas.width/2, this.canvas.height*1/3, game.context,
-        //                              loader.images.startbutton, "Start", start_game.bind(this), true));
+        let start_game = function() {this.has_started = true;}
+        this.buttons.push(new StartButton(this.canvas.width/2, this.canvas.height*1/3, game.context,
+                                     loader.images.startbutton, "Start", start_game.bind(this), true));
 
         let prev_sk8r = function() {this.sk8r.prev_sprite(); this.sk8r_label.setText(this.sk8r.getName());}
         this.buttons.push(new ArrowButton(sk8r_x-4, sk8r_floor+45, game.context,
@@ -116,7 +118,6 @@ const game = {
 
         // List of zombie cops on the screen at any given time.
         this.cops = [];
-        this.cops.push(new Cop(150, 30, game.context, loader.images.cop[0]));
         this.bullets = [];
         this.scooters = [];
 
@@ -124,6 +125,7 @@ const game = {
         this.crates = [];
         this.timeSinceLastCrate = 0;
         this.crateCoolDown = 40;
+        this.last_spawned_obstacle = "";
 
         this.cars = [];
 
@@ -191,6 +193,7 @@ const game = {
         this.zippyCoolDown = 10;
 
         this.cops = [];
+        this.scooters = [];
         this.bullets = [];
 
         this.explosions = [];
@@ -304,6 +307,13 @@ const game = {
                 deb.render();
             });
             despawn_sprites(game.debris);
+
+            let hitPosList = collide_debris(game.debris, game.cops, game.scooters);
+            hitPosList.forEach((pos, i) => {
+                let x_pos = pos[0];
+                let y_pos = pos[1]-2;
+                game.scooters.push(new Scooter(x_pos, y_pos, game.context, loader.images.scooter[0]));
+            });
         }
 
         if (game.tires.length > 0) {
@@ -365,6 +375,11 @@ const game = {
             });
             despawn_sprites(game.bullets);
         }
+        let hitPos = collide_bullets(game.sk8r, game.bullets);
+        if (hitPos != null) {
+            game.explosions.push(new Explosion(hitPos[0], hitPos[1], game.context, loader.images.explosion, 0, 0));
+        }
+
 
         // Calculate zippy cooldown clock.
         if (game.timeSinceLastZippy > 0) {
@@ -400,10 +415,12 @@ const game = {
                 if (randInt > 697) {
                     game.cars.push(new Car(get_canvas_width(), floor+1, game.context, loader.images.car));
                     game.timeSinceLastCrate = 1;
+                    game.last_spawned_obstacle = "car";
 
-                } else if (randInt > 690) {
+                } else if (randInt > 695 && game.last_spawned_obstacle != "cop") {
                     game.cops.push(new Cop(get_canvas_width(), sk8r_floor-6, game.context, loader.images.cop[0]));
                     game.timeSinceLastCrate = 1;
+                    game.last_spawned_obstacle = "cop";
 
                 // Else, move on to possibly spawn crate.
                 } else {
@@ -417,6 +434,7 @@ const game = {
                     if (stack_width > 0) {
                         spawn_crates(game.context, loader.images.crates, game.crates, stack_width);
                         game.timeSinceLastCrate = 1;
+                        game.last_spawned_obstacle = "crate";
                     }
                 }
             }

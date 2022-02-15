@@ -1,5 +1,6 @@
 import Sprite from '/src/Sprite.js';
 import { sk8r_floor } from '/src/constants.js';
+import { getRandomInt } from '/src/common.js';
 
 export default class Scooter extends Sprite {
 
@@ -38,11 +39,32 @@ export default class Scooter extends Sprite {
       this.is_animation_done = false;
   }
 
+  animate_break() {
+      this.row = 2;
+      this.width = 29;
+      this.frames = 6;
+      this.frameIndex = 0;
+      this.loop_animation = false;
+      this.is_animation_done = false;
+  }
+
+  break () {
+      this.isBroken = true;
+      this.velocity_x = 1.2;
+      this.animate_break();
+  }
+
   update_scooter() {
       super.update();
 
-      if (this.is_animation_done) {
-          this.animate_ride();
+      if (this.row == 0 && this.is_animation_done) {
+
+          let animation_type = getRandomInt(0, 1);
+          if (animation_type > 0) {
+              this.animate_ride();
+          } else {
+              this.break();
+          }
       }
 
       if (!this.isBroken) {
@@ -50,6 +72,17 @@ export default class Scooter extends Sprite {
 
           if (this.row == 1) {
               this.y -= 0.02;
+          }
+      }
+
+      // If scooter is broken, move shards forwards.
+      if (this.isBroken && this.velocity_x > 0) {
+
+          this.x += this.velocity_x;
+          this.velocity_x -= this.velocity_x / 30;
+
+          if (this.velocity_x < 0.3) {
+              this.velocity_x = 0;
           }
       }
   }

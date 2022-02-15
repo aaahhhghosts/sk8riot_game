@@ -69,3 +69,33 @@ export default class Debris extends Sprite {
         }
     }
 }
+
+export function collide_debris(debris, cops, scooters) {
+
+    // Declare list to hold the position of every crate break, if any.
+    let hitPosList = [];
+
+    debris.forEach((deb, i) => {
+
+        // Check for cop collisions.
+        cops.filter(cop => cop.isAlive).forEach((cop, j) => {
+
+            if (deb.x >= cop.x-23 && deb.x <= cop.x+cop.width-7) {
+
+                let hitcop = deb.x >= (cop.x-5) && deb.x <= (cop.x+cop.width) &&
+                             deb.y >= (cop.y-2) && deb.y < (cop.y+cop.height);
+
+                // If deb collided with cop.
+                if (hitcop) {
+
+                   // If cop is alive on collision, blow up that cop ass.
+                   if (cop.isAlive) {
+                       cop.kill(1);
+                       hitPosList.push([Math.floor(deb.x+9), Math.floor(cop.y)]);
+                   }
+                }
+            }
+        });
+    });
+    return hitPosList;
+}
