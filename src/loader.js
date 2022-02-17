@@ -11,6 +11,7 @@ import Logo from '/src/menus/Logo.js';
 import Leaderboard from '/src/menus/Leaderboard.js';
 import Inputbox from '/src/menus/Inputbox.js';
 import SmallFont from '/src/menus/SmallFont.js';
+import KALabel from '/src/menus/KALabel.js';
 import SaveButton from '/src/menus/SaveButton.js';
 import ArrowButton from '/src/menus/ArrowButton.js';
 import Label from '/src/menus/Label.js';
@@ -64,6 +65,7 @@ export const loader = {
         loader.add('leaderboard', [Leaderboard.src]);
         loader.add('inputbox', [Inputbox.src]);
         loader.add('smallfont', [SmallFont.src]);
+        loader.add('karmatic_arcade_font', [KALabel.src]);
         loader.add('savebutton', [SaveButton.src]);
         loader.add('arrowbuttons', [ArrowButton.src_0, ArrowButton.src_1]);
         loader.add('label', [Label.src]);

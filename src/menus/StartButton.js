@@ -1,30 +1,22 @@
 import { get_canvas_height } from '/src/Main.js';
+import KALabel from '/src/menus/KALabel.js';
 
 export default class Button {
 
   static src = '/sprites/button.png';
 
-  constructor (x, y, context, image, text, action, remove_on_fire) {
+  constructor (x, y, context, btn_image, font_image, text, action, remove_on_fire) {
 
     this.width = 82;
     this.height = 24;
-
     this.x = Math.floor(x - this.width/2);
     this.y = Math.floor(y - this.height/2);
-
     this.ctx = context;
-    this.image = image[0];
+    this.btn_image = btn_image[0];
     this.row = 0;
 
-    this.text = text;
-
-    let letter_width = 8.5;
-    let x_buffer = (this.width-this.text.length*letter_width)/2;
-    this.text_x = this.x + x_buffer;
-    this.text_y = this.y+10;
-
+    this.kalabel = new KALabel(context, this.x, this.y, font_image, text, this.width);
     this.is_highlighted = false;
-
     this.fire = action;
     this.remove_on_fire = remove_on_fire;
   }
@@ -34,22 +26,16 @@ export default class Button {
 
   //Function to check whether a point is inside a rectangle
   isInside (pos) {
-     //console.log("x: " + pos.x + " y: " + pos.y);
-      //console.log(pos.y + " > " + (this.y+2) + " && " + pos.y + " < " + (this.y+this.height))
       let within_x_bounds = pos.x > this.x && pos.x < this.x+this.width;
       let within_y_bounds = pos.y > this.y+2 && pos.y < this.y+this.height;
       return (within_x_bounds && within_y_bounds);
   }
 
   render() {
-    this.ctx.webkitImageSmoothingEnabled = false;
-    this.ctx.mozImageSmoothingEnabled = false;
-    this.ctx.imageSmoothingEnabled = false;
 
-    var canvas_height = Math.floor(get_canvas_height());
-
+    let canvas_height = Math.floor(get_canvas_height());
     this.ctx.drawImage(
-        this.image,
+        this.btn_image,
         0, // The x-axis coordinate of the top left corner
         this.row*this.height, // The y-axis coordinate of the top left corner
         this.width, // The width of the sub-rectangle
@@ -60,11 +46,6 @@ export default class Button {
         this.height // The height to draw the image
     );
 
-    this.ctx.font = "10px Arcade_BG";
-    this.ctx.fillStyle = "#ffffff";
-    this.ctx.fillText(this.text, this.text_x, canvas_height - (this.text_y));
-    this.ctx.fillStyle = "#000000";
-    this.ctx.font = "10px Arcade";
-    this.ctx.fillText(this.text, this.text_x, canvas_height - (this.text_y));
+    this.kalabel.draw_string(this.is_highlighted);
   }
 }

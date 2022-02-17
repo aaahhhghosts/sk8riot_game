@@ -7,7 +7,7 @@ import Crate from '/src/classes/Crate.js';
 import Zippy from '/src/classes/Zippy.js';
 import Board from '/src/classes/Board.js';
 
-import Textbox from '/src/Textbox.js';
+import Scorebox from '/src/menus/Scorebox.js';
 import StartButton from '/src/menus/StartButton.js';
 import Logo from '/src/menus/Logo.js';
 import Leaderboard from '/src/menus/Leaderboard.js';
@@ -72,7 +72,7 @@ const game = {
         this.sk8r = new Sk8r(sk8r_x, sk8r_floor, this.context, loader.images.sk8r, 0);
 
         // Score textbox
-        this.scorebox = new Textbox(155.5, 10.5, this.context, 100, 50, "");
+        this.scorebox = new Scorebox(this.context, 10, 5, loader.images.karmatic_arcade_font);
         this.score = 0;
 
         // Opening title art
@@ -87,7 +87,8 @@ const game = {
         // Add start game button.
         let start_game = function() {this.has_started = true;}
         this.buttons.push(new StartButton(this.canvas.width/2, this.canvas.height*1/3, game.context,
-                                     loader.images.startbutton, "Start", start_game.bind(this), true));
+                                     loader.images.startbutton, loader.images.karmatic_arcade_font,
+                                     "Start", start_game.bind(this), true));
 
         let prev_sk8r = function() {this.sk8r.prev_sprite(); this.sk8r_label.setText(this.sk8r.getName());}
         this.buttons.push(new ArrowButton(sk8r_x-4, sk8r_floor+45, game.context,
@@ -141,7 +142,7 @@ const game = {
     // Add point to score counter.
     increment_scorebox() {
         this.score += 1;
-        this.scorebox.setText(this.score);
+        this.scorebox.setText(this.score.toString());
     },
 
     update_background() {
@@ -325,6 +326,7 @@ const game = {
         }
 
         // Await new Promise(r => setTimeout(r, 180));
+        game.scorebox.render();
         game.sk8r.render();
         if (!game.sk8r.isAlive) {
 
@@ -394,7 +396,6 @@ const game = {
         if (game.sk8r.isAlive && game.has_started) {
 
             // Add point to score and draw.
-            game.scorebox.update();
             game.increment_scorebox();
 
             if (game.timeSinceLastCrate > 0) {
@@ -500,7 +501,8 @@ const game = {
         // Create and add restart button.
         let restart_game = function() {this.restart_game();}
         game.buttons.push(new StartButton(menu_xpos, get_canvas_height()*1/3, game.context,
-                          loader.images.startbutton, "Restart", restart_game.bind(this), true));
+                          loader.images.startbutton, loader.images.karmatic_arcade_font,
+                          "Restart", restart_game.bind(this), true));
 
         // Create and add leaderboard and usernae input box.
         game.leaderboard = new Leaderboard(menu_xpos, menu_ypos, game.context, loader.images.leaderboard,
