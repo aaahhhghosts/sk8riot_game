@@ -15,6 +15,7 @@ import KALabel from '/src/menus/KALabel.js';
 import SaveButton from '/src/menus/SaveButton.js';
 import ArrowButton from '/src/menus/ArrowButton.js';
 import Label from '/src/menus/Label.js';
+import Instruct from '/src/menus/Instruct.js';
 import Explosion from '/src/classes/Explosion.js';
 import Debris from '/src/classes/Debris.js';
 import Car from '/src/classes/Car.js';
@@ -76,5 +77,6 @@ export const loader = {
         loader.add('cop', Cop.src);
         loader.add('bullet', Bullet.src);
         loader.add('scooter', Scooter.src);
+        loader.add('instruct', Instruct.src)
     }
 };

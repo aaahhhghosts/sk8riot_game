@@ -15,6 +15,7 @@ import Inputbox from '/src/menus/Inputbox.js';
 import SaveButton from '/src/menus/SaveButton.js';
 import ArrowButton from '/src/menus/ArrowButton.js';
 import Label from '/src/menus/Label.js';
+import Instruct from '/src/menus/Instruct.js'
 import Explosion from '/src/classes/Explosion.js';
 import Debris from '/src/classes/Debris.js';
 import Car from '/src/classes/Car.js';
@@ -79,6 +80,7 @@ const game = {
         this.showing_logo = true;
         this.logo = new Logo(this.canvas.width/2, this.canvas.height*3/4, game.context, loader.images.logo);
         this.sk8r_label = new Label(sk8r_x+15, sk8r_floor+45, game.context, loader.images.label[0], loader.images.smallfont, this.sk8r.getName());
+        this.instructs = new Instruct(this.canvas.width-46, 13, game.context, loader.images.instruct[0]);
         this.has_started = false;
 
         // List of buttons on the screen at any given time.
@@ -175,7 +177,10 @@ const game = {
 
         this.score = 0;
 
+        this.logo = null;
+        this.instructs = null;
         this.buttons = [];
+        this.showing_logo = false;
         this.showing_restart_menu = false;
         this.leaderboard = null;
         this.inputbox = null;
@@ -470,6 +475,19 @@ const game = {
 
             if (game.logo.off_screen) {
                 game.logo = null;
+            }
+        }
+
+        if (game.instructs != null) {
+            game.instructs.update_instructs();
+            game.instructs.render();
+
+            if (game.score > 0) {
+              game.instructs.nudge_off_screen();
+            }
+
+            if (game.instructs.off_screen) {
+                game.instructs = null;
             }
         }
 

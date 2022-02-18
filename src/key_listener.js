@@ -6,17 +6,17 @@ export function create_key_listener(game) {
     document.addEventListener('keydown', event => {
 
       // Add space key listener for jumping.
-      if (event.code === 'Space') {
-        game.sk8r.jump();
+      if (event.code === 'Space' || event.code === 'ArrowUp') {
+          game.sk8r.jump();
       }
 
       // Add right arrow key listener for zippies.
-      if (event.code === 'ArrowRight') {
+      if (event.code === 'ArrowRight' || event.code === 'KeyW') {
 
           if (game.timeSinceLastZippy <= 0 && game.sk8r.isAlive) {
 
               // Spawn zippy.
-              throw_zippy(game.sk8r.x+20, game.sk8r.y+26, game.context,
+              throw_zippy(game.sk8r.x+20, game.sk8r.y+27, game.context,
                           loader.images.zippy, game.zippies);
 
               game.timeSinceLastZippy = 1;
@@ -25,7 +25,7 @@ export function create_key_listener(game) {
 
       // If user is prompted, enable typing out words (can't believe I have to
       // implement a whole ass input text box from scratch wtf).
-      if (game.is_prompting_for_input) {
+      if (game.is_prompting_for_input && game.inputbox.is_highlighted) {
 
           // Get current input string.
           var input_str = game.inputbox.getText();
@@ -90,6 +90,10 @@ export function create_key_listener(game) {
               // Stop if character has been matched and added.
               if (key_found) {game.inputbox.setText(input_str); return;}
           }
+
+       // Restart game when R key is pressed outside of input box and start menu.
+       } else if (game.has_started && event.code === 'KeyR') {
+           game.restart_game();
        }
     });
 
