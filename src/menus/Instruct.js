@@ -6,7 +6,7 @@ export default class Instruct {
 
   constructor (x, y, context, image) {
 
-    this.width = 43;
+    this.width = 45;
     this.height = 71;
     this.x = x;
     this.y = y;

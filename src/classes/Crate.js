@@ -32,6 +32,15 @@ export default class Crate extends Sprite {
         this.isBroken = false;
     }
 
+    getTypeName() {
+        let name = "unknown";
+        switch(this.type) {
+            case 0: name = "wood crate"; break;
+            case 1: name = "steel crate"; break;
+        }
+        return name;
+    }
+
     // Stack list of crates below this crate.
     stackOn(crates) {
         crates.forEach((crate, i) => {

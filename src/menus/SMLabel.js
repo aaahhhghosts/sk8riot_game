@@ -1,20 +1,18 @@
 import { get_canvas_height } from '/src/Main.js';
-import { karmatic_arcade_alpha_dict, ka_char_width, ka_char_height } from '/src/constants.js';
+import { small_font_alpha_dict, sm_char_width, sm_char_height } from '/src/constants.js';
 
-export default class KALabel {
-
-  static src = ['/fonts/karmatic_arcade_font.png'];
+export default class SMLabel {
 
   constructor(context, x, y, font_image, str, width) {
 
       this.x = x;
       this.y = y+7;
       this.ctx = context;
-      this.font_image = font_image[0];
+      this.font_image = font_image;
       this.str = str.toUpperCase();
 
-      this.char_width = ka_char_width;
-      this.char_height = ka_char_height;
+      this.char_width = sm_char_width;
+      this.char_height = sm_char_height;
       this.str_length = 0;
       this.char_coords = [];
 
@@ -31,34 +29,24 @@ export default class KALabel {
 
       // Center text within given width, if provided.
       if (width != undefined) {
-          this.x += Math.floor((width-this.str_length)/2);
+          this.x += Math.floor((width-this.str_length)/2)+1;
       }
   }
 
   get_char_coords(char) {
 
       // Get index and row of char on the sprite sheet.
-      let char_data = karmatic_arcade_alpha_dict.get(char);
-      let char_num = char_data[0];
-
+      let char_num = small_font_alpha_dict.get(char);
       let index = char_num % 100;
       let row = Math.floor(char_num/100);
 
-      let x_buffer = 0;
-      if (char_data[1] != undefined) {
-          x_buffer = char_data[1];
-      }
-
-      let coords = [this.str_length-x_buffer, row, index];
-      this.str_length += (this.char_width-2-x_buffer);
+      let coords = [this.str_length, row, index];
+      this.str_length += this.char_width;
       return coords;
   }
 
   // Method for drawing individual characters.
-  draw_string(is_highlight) {
-
-      let y_buffer = 0;
-      if (is_highlight) {y_buffer = 1;}
+  draw_string() {
 
       let canvas_height = Math.floor(get_canvas_height());
       this.char_coords.forEach((coord, i) => {
@@ -75,7 +63,7 @@ export default class KALabel {
               this.char_width, // The width of the sub-rectangle
               this.char_height, // The height of the sub-rectangle
               this.x+x_pos, // The x coordinate
-              canvas_height-(this.y+this.char_height)+y_buffer, // The y coordinate
+              canvas_height-(this.y+this.char_height), // The y coordinate
               this.char_width, // The width to draw the image
               this.char_height, // The height to draw the image
           );

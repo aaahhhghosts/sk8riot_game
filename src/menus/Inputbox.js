@@ -1,5 +1,5 @@
 import { get_canvas_height } from '/src/Main.js';
-import SmallFont from '/src/menus/SmallFont.js';
+import SMFont from '/src/menus/SMFont.js';
 
 export default class Inputbox {
 
@@ -14,11 +14,11 @@ export default class Inputbox {
     this.y = Math.floor(y - this.height/2)+2;
 
     this.ctx = context;
-    this.background_image = background_image[0];
+    this.background_image = background_image;
     this.row = 0;
 
     // Set up font variables.
-    this.small_font = new SmallFont(context, font_image);
+    this.small_font = new SMFont(context, font_image);
     this.text = "yo-name";
     this.max_chars = 8;
     this.hold_shift = false;

@@ -3,7 +3,7 @@ import { sk8r_floor } from '/src/constants.js';
 
 export default class Sk8r extends Sprite {
 
-  static src = ['/sprites/scuub.png', '/sprites/bluboy.png'];
+  static src = ['/sprites/scuub.png', '/sprites/bluboy.png', '/sprites/joecool.png'];
 
   constructor(x, y, context, images, img_num) {
       super({
@@ -22,7 +22,7 @@ export default class Sk8r extends Sprite {
           hasGravity: true
       });
 
-      this.names = [" scuub ", "blueboy"];
+      this.names = ["scuub", "blueboy", "joecool"];
       this.cur_name = this.names[img_num];
       this.images = images;
       this.img_num = img_num;
@@ -35,6 +35,7 @@ export default class Sk8r extends Sprite {
 
       this.isAlive = true;
       this.death_floor = sk8r_floor;
+      this.cause_of_death = "unknown";
       this.timeSinceJump = 0;
   }
 
@@ -55,6 +56,8 @@ export default class Sk8r extends Sprite {
   getName() {return this.cur_name;}
   setName(name) {this.cur_name = name;}
 
+  get_autopsy() {return (this.cur_name + " was killed by " + this.cause_of_death + "!").substring(0, 34);}
+
   animate_ride() {
       this.row = 0;
       this.frames = 6;
@@ -68,7 +71,7 @@ export default class Sk8r extends Sprite {
   }
 
   animate_death() {
-      this.width = 35;
+      this.width = 36;
       this.row = 2;
       this.frames = 4;
       this.frameIndex = 0;
@@ -85,8 +88,9 @@ export default class Sk8r extends Sprite {
       }
   }
 
-  kill() {
+  kill(cause) {
       this.isAlive = false;
+      this.cause_of_death = cause;
       this.animate_death();
       this.throw_off_board();
   }
@@ -172,7 +176,8 @@ export default class Sk8r extends Sprite {
               // If sk8r is below the top of crate, they have hit a wall.
               // Kill sk8r and break out of loop.
               if (this.y < top_of_crate-2 && this.x-3 >= crate.x-crate.width*2) {
-                  this.kill();
+
+                  this.kill(crate.getTypeName());
                   return true;
               }
 
@@ -200,7 +205,7 @@ export default class Sk8r extends Sprite {
               // If sk8r is below the top of car, they have hit a wall.
               // Kill sk8r and break out of loop.
               if (this.y < top_of_car-2) {
-                  this.kill();
+                  this.kill(car.getTypeName());
                   return true;
               }
 

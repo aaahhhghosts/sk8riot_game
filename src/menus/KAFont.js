@@ -7,16 +7,11 @@ export default class Scorebox {
 
   constructor(context, x, y, image) {
 
-      this.x = x;
-      this.y = y;
       this.ctx = context;
       this.image = image[0];
-      this.row = 2;
 
-      this.text = "";
-      this.char_width = 11;
-      this.char_height = 11;
-      this.char_coords = [];
+      this.char_width = 4;
+      this.char_height = 6;
   }
 
   setText(text) {

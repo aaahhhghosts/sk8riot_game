@@ -26,8 +26,20 @@ export default class Car extends Sprite {
       });
 
       this.stackedOn = [];
+      this.isBurning = false;
       this.isBroken = false;
       this.health = 4;
+  }
+
+  getTypeName() {
+      let name = "squad car";
+      if (this.isBurning) {name = "burning car";}
+      return name;
+  }
+
+  animateOnFire() {
+      this.row = 2;
+      this.ticksPerFrame = 7;
   }
 
   damage() {
@@ -36,7 +48,7 @@ export default class Car extends Sprite {
 
       this.health -= 1;
 
-      if (this.health < 2) {this.row = 2; this.ticksPerFrame = 7;}
+      if (this.health < 2) {this.isBurning = true; this.animateOnFire()}
       if (this.health <= 0) {
           this.break();
       }

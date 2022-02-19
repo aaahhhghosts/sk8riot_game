@@ -14,7 +14,8 @@ import Leaderboard from '/src/menus/Leaderboard.js';
 import Inputbox from '/src/menus/Inputbox.js';
 import SaveButton from '/src/menus/SaveButton.js';
 import ArrowButton from '/src/menus/ArrowButton.js';
-import Label from '/src/menus/Label.js';
+import Sk8rNameLabel from '/src/menus/Sk8rNameLabel.js';
+import DeathMsgLabel from '/src/menus/DeathMsgLabel.js';
 import Instruct from '/src/menus/Instruct.js'
 import Explosion from '/src/classes/Explosion.js';
 import Debris from '/src/classes/Debris.js';
@@ -79,8 +80,8 @@ const game = {
         // Opening title art
         this.showing_logo = true;
         this.logo = new Logo(this.canvas.width/2, this.canvas.height*3/4, game.context, loader.images.logo);
-        this.sk8r_label = new Label(sk8r_x+15, sk8r_floor+45, game.context, loader.images.label[0], loader.images.smallfont, this.sk8r.getName());
-        this.instructs = new Instruct(this.canvas.width-46, 13, game.context, loader.images.instruct[0]);
+        this.sk8r_label = new Sk8rNameLabel(game.context, sk8r_x+15, sk8r_floor+47, loader.images.name_label[0], loader.images.smfont[0], this.sk8r.getName());
+        this.instructs = new Instruct(this.canvas.width-47, 10, game.context, loader.images.instruct[0]);
         this.has_started = false;
 
         // List of buttons on the screen at any given time.
@@ -92,11 +93,11 @@ const game = {
                                      loader.images.startbutton, loader.images.karmatic_arcade_font,
                                      "Start", start_game.bind(this), true));
 
-        let prev_sk8r = function() {this.sk8r.prev_sprite(); this.sk8r_label.setText(this.sk8r.getName());}
+        let prev_sk8r = function() {this.sk8r.prev_sprite(); this.sk8r_label.setName(this.sk8r.getName());}
         this.buttons.push(new ArrowButton(sk8r_x-4, sk8r_floor+45, game.context,
                                           loader.images.arrowbuttons[0], prev_sk8r.bind(this), false));
 
-        let next_sk8r = function() {this.sk8r.next_sprite(); this.sk8r_label.setText(this.sk8r.getName());}
+        let next_sk8r = function() {this.sk8r.next_sprite(); this.sk8r_label.setName(this.sk8r.getName());}
         this.buttons.push(new ArrowButton(sk8r_x+33, sk8r_floor+45, game.context,
                                           loader.images.arrowbuttons[1], next_sk8r.bind(this), false));
 
@@ -104,6 +105,7 @@ const game = {
         this.showing_restart_menu = false;
         this.leaderboard = null;
         this.inputbox = null;
+        this.death_label = null;
         this.is_prompting_for_input = false;
 
         // Create game background.
@@ -183,6 +185,7 @@ const game = {
         this.showing_logo = false;
         this.showing_restart_menu = false;
         this.leaderboard = null;
+        this.death_label = null;
         this.inputbox = null;
         this.is_prompting_for_input = false;
 
@@ -299,14 +302,6 @@ const game = {
           despawn_sprites(game.zippies);
         }
 
-        if (game.explosions.length > 0) {
-            game.explosions.forEach((ex, i) => {
-                ex.update_explosion();
-                ex.render();
-            });
-            despawn_sprites(game.explosions);
-        }
-
         if (game.debris.length > 0) {
             game.debris.forEach((deb, i) => {
                 deb.update_debris();
@@ -382,6 +377,15 @@ const game = {
             });
             despawn_sprites(game.bullets);
         }
+
+        if (game.explosions.length > 0) {
+            game.explosions.forEach((ex, i) => {
+                ex.update_explosion();
+                ex.render();
+            });
+            despawn_sprites(game.explosions);
+        }
+
         let hitPos = collide_bullets(game.sk8r, game.bullets);
         if (hitPos != null) {
             game.explosions.push(new Explosion(hitPos[0], hitPos[1], game.context, loader.images.explosion, 0, 0));
@@ -451,6 +455,7 @@ const game = {
             game.leaderboard.render();
             game.inputbox.update_inputbox();
             game.inputbox.render();
+            game.death_label.render();
 
             // Check if user is being prompted for input.
             if (game.inputbox.is_highlighted) {
@@ -523,9 +528,10 @@ const game = {
                           "Restart", restart_game.bind(this), true));
 
         // Create and add leaderboard and usernae input box.
-        game.leaderboard = new Leaderboard(menu_xpos, menu_ypos, game.context, loader.images.leaderboard,
-                                           loader.images.smallfont, loader.saved_data);
-        game.inputbox = new Inputbox(menu_xpos, menu_ypos-21, game.context, loader.images.inputbox, loader.images.smallfont);
+        game.leaderboard = new Leaderboard(menu_xpos, menu_ypos, game.context, loader.images.leaderboard[0],
+                                           loader.images.smfont[0], loader.saved_data);
+        game.inputbox = new Inputbox(menu_xpos, menu_ypos-21, game.context, loader.images.inputbox[0], loader.images.smfont[0]);
+        game.death_label = new DeathMsgLabel(game.context, get_canvas_width()/2, 5, loader.images.death_label[0], loader.images.smfont[0], game.sk8r.get_autopsy());
 
         // Create and add save high score button.
         let save_highscore = function() {this.restart_game();}
