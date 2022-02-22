@@ -3,7 +3,7 @@ import SMLabel from '/src/menus/SMLabel.js';
 
 export default class Sk8rNameLabel {
 
-  static src = ['/sprites/name_label.png'];
+  static src = ['/sprites/menu/name_label.png'];
 
   constructor (context, x, y, label_image, font_image, text) {
 

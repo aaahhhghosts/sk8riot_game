@@ -3,7 +3,7 @@ import SMFont from '/src/menus/SMFont.js';
 
 export default class Inputbox {
 
-  static src = '/sprites/input_box.png';
+  static src = '/sprites/menu/input_box.png';
 
   constructor (x, y, context, background_image, font_image) {
 

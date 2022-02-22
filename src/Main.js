@@ -7,7 +7,7 @@ import Crate from '/src/classes/Crate.js';
 import Zippy from '/src/classes/Zippy.js';
 import Board from '/src/classes/Board.js';
 
-import Scorebox from '/src/menus/Scorebox.js';
+import KAFont from '/src/menus/KAFont.js';
 import StartButton from '/src/menus/StartButton.js';
 import Logo from '/src/menus/Logo.js';
 import Leaderboard from '/src/menus/Leaderboard.js';
@@ -74,7 +74,7 @@ const game = {
         this.sk8r = new Sk8r(sk8r_x, sk8r_floor, this.context, loader.images.sk8r, 0);
 
         // Score textbox
-        this.scorebox = new Scorebox(this.context, 10, 5, loader.images.karmatic_arcade_font);
+        this.scorebox = new KAFont(this.context, 10, 5, loader.images.karmatic_arcade_font);
         this.score = 0;
 
         // Opening title art
@@ -331,7 +331,7 @@ const game = {
         if (!game.sk8r.isAlive) {
 
             if (game.board == null) {
-                game.board = new Board(18, game.sk8r.y, game.context, loader.images.board, game.crates, game.cars);
+                game.board = new Board(18, game.sk8r.y, game.context, game.sk8r.image, game.crates, game.cars);
             } else {
                 game.board.render();
                 game.board.update_board();

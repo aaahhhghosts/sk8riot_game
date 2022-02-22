@@ -3,7 +3,7 @@ import KALabel from '/src/menus/KALabel.js';
 
 export default class Button {
 
-  static src = '/sprites/button.png';
+  static src = '/sprites/menu/button.png';
 
   constructor (x, y, context, btn_image, font_image, text, action, remove_on_fire) {
 

@@ -2,7 +2,7 @@ import { get_canvas_height } from '/src/Main.js';
 
 export default class SaveButton {
 
-  static src = '/sprites/save_button.png';
+  static src = '/sprites/menu/save_button.png';
 
   constructor (x, y, context, background_image, action, remove_on_fire) {
 

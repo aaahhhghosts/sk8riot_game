@@ -2,7 +2,7 @@ import { get_canvas_width, get_canvas_height } from '/src/Main.js';
 
 export default class Instruct {
 
-  static src = ['/sprites/instruct.png'];
+  static src = ['/sprites/menu/instruct.png'];
 
   constructor (x, y, context, image) {
 

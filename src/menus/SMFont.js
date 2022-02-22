@@ -3,7 +3,7 @@ import { small_font_alpha_dict, sm_char_width, sm_char_height } from '/src/const
 
 export default class SMFont {
 
-  static src = ['/fonts/small_font.png'];
+  static src = ['/sprites/menu/small_font.png'];
 
   constructor(context, font_image) {
 

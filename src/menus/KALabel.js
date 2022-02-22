@@ -3,8 +3,6 @@ import { karmatic_arcade_alpha_dict, ka_char_width, ka_char_height } from '/src/
 
 export default class KALabel {
 
-  static src = ['/fonts/karmatic_arcade_font.png'];
-
   constructor(context, x, y, font_image, str, width) {
 
       this.x = x;

@@ -1,17 +1,20 @@
 import { get_canvas_width, get_canvas_height } from '/src/Main.js';
-import { karmatic_arcade_alpha_dict } from '/src/constants.js';
+import { karmatic_arcade_alpha_dict, ka_char_width, ka_char_height } from '/src/constants.js';
 
-export default class Scorebox {
+export default class KAFont {
 
-  static src = '/fonts/karmatic_arcade_font.png';
+  static src = '/sprites/menu/karmatic_arcade_font.png';
 
   constructor(context, x, y, image) {
 
+      this.x = x;
+      this.y = y;
       this.ctx = context;
       this.image = image[0];
 
-      this.char_width = 4;
-      this.char_height = 6;
+      this.char_width = ka_char_width;
+      this.char_height = ka_char_height;
+      this.text = "";
   }
 
   setText(text) {
@@ -30,12 +33,13 @@ export default class Scorebox {
 
           if (char == " ") {
               cursor_x += this.char_width;
-          } else if (char.match(/[0-9]/)) {
+          } else if (char.match(/[A-Z0-9!?\-]/)) {
 
               // Get index of character from font sheet.
               let char_data = karmatic_arcade_alpha_dict.get(char);
               let char_num = char_data[0];
               let index = char_num % 100;
+              let row = Math.floor(char_num/100);
 
               // Set character's x position and update string length.
               let x_pos = cursor_x;
@@ -45,7 +49,7 @@ export default class Scorebox {
               this.ctx.drawImage(
                   this.image,
                   index*this.char_width, // The x-axis coordinate of the top left corner
-                  this.row*this.char_height, // The y-axis coordinate of the top left corner
+                  row*this.char_height, // The y-axis coordinate of the top left corner
                   this.char_width, // The width of the sub-rectangle
                   this.char_height, // The height of the sub-rectangle
                   canvas_width+(x_pos-string_length)-this.x, // The x coordinate

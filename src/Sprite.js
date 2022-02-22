@@ -107,7 +107,7 @@ export default class Sprite {
             this.width, // The width of the sub-rectangle
             this.height, // The height of the sub-rectangle
             this.x, // The x coordinate
-            get_canvas_height() - (this.y+this.height),// The y coordinate
+            canvas_height - (this.y+this.height),// The y coordinate
             this.width, // The width to draw the image
             this.height // The width to draw the image
         );

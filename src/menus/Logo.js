@@ -2,7 +2,7 @@ import { get_canvas_height } from '/src/Main.js';
 
 export default class Logo {
 
-  static src = '/sprites/logo.png';
+  static src = '/sprites/menu/logo.png';
 
   constructor (x, y, context, image) {
 

@@ -3,7 +3,7 @@ import SMLabel from '/src/menus/SMLabel.js';
 
 export default class DeathMsgLabel {
 
-  static src = ['/sprites/death_label.png'];
+  static src = ['/sprites/menu/death_label.png'];
 
   constructor (context, x, y, label_image, font_image, text) {
 
@@ -16,7 +16,7 @@ export default class DeathMsgLabel {
       this.font_image = font_image;
       this.row = 0;
 
-      this.smlabel = new SMLabel(context, this.x+3, this.y-5, font_image, text);
+      this.smlabel = new SMLabel(context, this.x, this.y-5, font_image, text, this.width);
   }
 
   render() {

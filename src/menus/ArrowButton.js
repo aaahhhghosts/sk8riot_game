@@ -2,8 +2,7 @@ import { get_canvas_height } from '/src/Main.js';
 
 export default class ArrowButton {
 
-  static src_0 = '/sprites/arrow_button_left.png';
-  static src_1 = '/sprites/arrow_button_right.png';
+  static src = ['/sprites/menu/arrow_button_left.png', '/sprites/menu/arrow_button_right.png'];
 
   constructor (x, y, context, background_image, action, remove_on_fire) {
 

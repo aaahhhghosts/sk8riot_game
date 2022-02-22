@@ -1,14 +1,13 @@
 import Sprite from '/src/Sprite.js';
 import { sk8r_floor } from '/src/constants.js';
+import { get_canvas_height } from '/src/Main.js';
 
 export default class Board extends Sprite {
-
-  static src = '/sprites/board.png';
 
   constructor(x, y, context, image, crates, cars) {
       super({
           context: context,
-          image: image[0],
+          image: image,
           x: x,
           y: y,
           width: 27,
@@ -69,7 +68,6 @@ export default class Board extends Sprite {
 
   update_board() {
 
-
       if (this.car_beneath != null && this.frameIndex >= this.frames-1) {
 
           if (this.car_beneath.isBroken) {
@@ -85,5 +83,21 @@ export default class Board extends Sprite {
           }
       }
       super.update();
+  }
+
+  render() {
+
+      let canvas_height = Math.floor(get_canvas_height());
+      this.context.drawImage(
+          this.image,
+          this.frameIndex * this.width, // The x-axis coordinate of the top left corner
+          this.image.height-this.height, // The y-axis coordinate of the top left corner
+          this.width, // The width of the sub-rectangle
+          this.height, // The height of the sub-rectangle
+          this.x, // The x coordinate
+          canvas_height - (this.y+this.height),// The y coordinate
+          this.width, // The width to draw the image
+          this.height // The width to draw the image
+      );
   }
 }

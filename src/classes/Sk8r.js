@@ -1,9 +1,9 @@
 import Sprite from '/src/Sprite.js';
-import { sk8r_floor } from '/src/constants.js';
+import { sk8r_floor, player_names } from '/src/constants.js';
 
 export default class Sk8r extends Sprite {
 
-  static src = ['/sprites/scuub.png', '/sprites/bluboy.png', '/sprites/joecool.png'];
+  static src = player_names.map(name => `/sprites/players/${name}.png`);
 
   constructor(x, y, context, images, img_num) {
       super({
@@ -22,8 +22,7 @@ export default class Sk8r extends Sprite {
           hasGravity: true
       });
 
-      this.names = ["scuub", "blueboy", "joecool"];
-      this.cur_name = this.names[img_num];
+      this.name = player_names[img_num];
       this.images = images;
       this.img_num = img_num;
 
@@ -40,23 +39,31 @@ export default class Sk8r extends Sprite {
   }
 
   next_sprite() {
-      if (this.img_num < this.images.length-1) {this.img_num += 1};
-      this.cur_name = this.names[this.img_num];
+      if (this.img_num < this.images.length-1) {
+          this.img_num += 1;
+      } else {
+          this.img_num = 0;
+      }
+      this.name = player_names[this.img_num];
       this.image = this.images[this.img_num];
   }
 
   prev_sprite() {
-      if (this.img_num > 0) {this.img_num -= 1};
-      this.cur_name = this.names[this.img_num];
+      if (this.img_num > 0) {
+          this.img_num -= 1;
+      } else {
+          this.img_num = this.images.length-1;
+      }
+      this.name = player_names[this.img_num];
       this.image = this.images[this.img_num];
   }
 
   get_floor() {return this.floor;}
   set_floor(floor) {this.floor = floor;}
-  getName() {return this.cur_name;}
-  setName(name) {this.cur_name = name;}
+  getName() {return this.name;}
+  setName(name) {this.name = name;}
 
-  get_autopsy() {return (this.cur_name + " was killed by " + this.cause_of_death + "!").substring(0, 34);}
+  get_autopsy() {return (this.name + " was killed by " + this.cause_of_death + "!").substring(0, 34);}
 
   animate_ride() {
       this.row = 0;

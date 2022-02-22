@@ -61,7 +61,6 @@ export const loader = {
         loader.add('cityscape', [Cityscape.src]);
         loader.add('crates', [Crate.src_0, Crate.src_1]);
         loader.add('zippy', [Zippy.src]);
-        loader.add('board', [Board.src]);
         loader.add('startbutton', [StartButton.src]);
         loader.add('logo', [Logo.src]);
         loader.add('leaderboard', [Leaderboard.src]);
@@ -69,7 +68,7 @@ export const loader = {
         loader.add('smfont', SMFont.src);
         loader.add('karmatic_arcade_font', [KAFont.src]);
         loader.add('savebutton', [SaveButton.src]);
-        loader.add('arrowbuttons', [ArrowButton.src_0, ArrowButton.src_1]);
+        loader.add('arrowbuttons', ArrowButton.src);
         loader.add('name_label', Sk8rNameLabel.src);
         loader.add('death_label', DeathMsgLabel.src);
         loader.add('explosion', Explosion.src);
