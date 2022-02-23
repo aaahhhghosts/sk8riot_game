@@ -18,6 +18,7 @@ import Sk8rNameLabel from '/src/menus/Sk8rNameLabel.js';
 import DeathMsgLabel from '/src/menus/DeathMsgLabel.js';
 import FullscreenButton from '/src/menus/FullscreenButton.js';
 import ZippyCooldownBar from '/src/menus/ZippyCooldownBar.js';
+import Version from '/src/menus/Version.js';
 import Instruct from '/src/menus/Instruct.js'
 import Explosion from '/src/classes/Explosion.js';
 import Debris from '/src/classes/Debris.js';
@@ -80,13 +81,14 @@ const game = {
         this.score = 0;
 
         // Zippy cooldown board
-        this.zcooldown_bar = new ZippyCooldownBar(this.context, 4, Math.floor(this.canvas.height/2)-20, loader.images.zippy_cooldown_bar[0]);
+        this.zcooldown_bar = new ZippyCooldownBar(this.context, 3, Math.floor(this.canvas.height/2), loader.images.zippy_cooldown_bar[0]);
 
         // Opening title art
         this.showing_logo = true;
         this.logo = new Logo(this.canvas.width/2, this.canvas.height*3/4, game.context, loader.images.logo);
         this.sk8r_label = new Sk8rNameLabel(game.context, sk8r_x+15, sk8r_floor+47, loader.images.name_label[0], loader.images.smfont[0], this.sk8r.getName());
         this.instructs = new Instruct(this.canvas.width-47, 10, game.context, loader.images.instruct[0]);
+        this.version = new Version(game.context, this.canvas.width-24, this.canvas.height-11, loader.images.version[0]);
         this.is_fullscreen = false;
         this.has_started = false;
 
@@ -107,7 +109,7 @@ const game = {
         this.buttons.push(new ArrowButton(sk8r_x+33, sk8r_floor+45, game.context,
                                           loader.images.arrowbuttons[1], next_sk8r.bind(this), false));
 
-        this.fsbutton = new FullscreenButton(8, this.canvas.height-10, game.context, loader.images.fullscreen_button[0],
+        this.fsbutton = new FullscreenButton(7, this.canvas.height-9, game.context, loader.images.fullscreen_button[0],
                                                toggleFullscreen.bind(this));
         this.buttons.push(this.fsbutton);
         // Boolean for when to show the end of game menu.
@@ -189,6 +191,7 @@ const game = {
         this.score = 0;
 
         this.logo = null;
+        this.version = null;
         this.instructs = null;
         game.buttons = game.buttons.filter(btn => btn === game.fsbutton);
         this.buttons.push(this.fsbutton);
@@ -520,8 +523,10 @@ const game = {
         if (game.has_started && game.sk8r_label != null) {
             game.sk8r_label = null;
             game.buttons = game.buttons.filter(btn => btn === game.fsbutton);
+            game.version = null;
         } else if (game.sk8r_label != null) {
             game.sk8r_label.render();
+            game.version.render();
         }
 
         // Draw this frame to true canvas.

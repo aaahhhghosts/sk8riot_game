@@ -14,7 +14,7 @@ export default class ZippyCooldownBar {
       this.image = image;
       this.row = 0;
       this.level = 0;
-      this.levels_per_increase = 4;
+      this.levels_per_increase = 3;
       this.max_level = 44;
 
       this.row = 0;
