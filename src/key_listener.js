@@ -13,12 +13,15 @@ export function create_key_listener(game) {
       // Add right arrow key listener for zippies.
       if (event.code === 'ArrowRight' || event.code === 'KeyW') {
 
-          if (game.timeSinceLastZippy <= 0 && game.sk8r.isAlive) {
+          if (game.sk8r.isAlive && game.timeSinceLastZippy <= 0 && !game.zcooldown_bar.is_frozen) {
 
               // Spawn zippy.
               throw_zippy(game.sk8r.x+20, game.sk8r.y+27, game.context,
                           loader.images.zippy, game.zippies);
 
+              if (game.has_started) {
+                  game.zcooldown_bar.increase_level();
+              }
               game.timeSinceLastZippy = 1;
           }
       }

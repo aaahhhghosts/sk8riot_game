@@ -17,6 +17,7 @@ import ArrowButton from '/src/menus/ArrowButton.js';
 import Sk8rNameLabel from '/src/menus/Sk8rNameLabel.js';
 import DeathMsgLabel from '/src/menus/DeathMsgLabel.js';
 import FullscreenButton from '/src/menus/FullscreenButton.js';
+import ZippyCooldownBar from '/src/menus/ZippyCooldownBar.js';
 import Instruct from '/src/menus/Instruct.js'
 import Explosion from '/src/classes/Explosion.js';
 import Debris from '/src/classes/Debris.js';
@@ -77,6 +78,9 @@ const game = {
         // Score textbox
         this.scorebox = new KAFont(this.context, 10, 5, loader.images.karmatic_arcade_font);
         this.score = 0;
+
+        // Zippy cooldown board
+        this.zcooldown_bar = new ZippyCooldownBar(this.context, 4, Math.floor(this.canvas.height/2)-20, loader.images.zippy_cooldown_bar[0]);
 
         // Opening title art
         this.showing_logo = true;
@@ -397,6 +401,10 @@ const game = {
             game.explosions.push(new Explosion(hitPos[0], hitPos[1], game.context, loader.images.explosion, 0, 0));
         }
 
+        // Decrease zippy cool down bar.
+        if (game.score % 7 == 0 || !game.sk8r.isAlive) {
+            game.zcooldown_bar.decrease_level();
+        }
 
         // Calculate zippy cooldown clock.
         if (game.timeSinceLastZippy > 0) {
@@ -475,6 +483,13 @@ const game = {
         game.buttons.forEach((button, i) => {
             button.render();
         });
+
+        if (game.has_started) {
+            if (game.sk8r.isAlive || !game.showing_restart_menu) {
+                game.zcooldown_bar.update_zippy_cooldown_bar();
+                game.zcooldown_bar.render();
+            }
+        }
 
         // Render logo as long as it exists and is on screen.
         if (game.logo != null) {

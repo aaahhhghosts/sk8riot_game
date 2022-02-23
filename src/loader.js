@@ -18,6 +18,7 @@ import Sk8rNameLabel from '/src/menus/Sk8rNameLabel.js';
 import DeathMsgLabel from '/src/menus/DeathMsgLabel.js';
 import Instruct from '/src/menus/Instruct.js';
 import FullscreenButton from '/src/menus/FullscreenButton.js';
+import ZippyCooldownBar from '/src/menus/ZippyCooldownBar.js';
 import Explosion from '/src/classes/Explosion.js';
 import Debris from '/src/classes/Debris.js';
 import Car from '/src/classes/Car.js';
@@ -81,5 +82,6 @@ export const loader = {
         loader.add('bullet', Bullet.src);
         loader.add('scooter', Scooter.src);
         loader.add('instruct', Instruct.src)
+        loader.add('zippy_cooldown_bar', ZippyCooldownBar.src);
     }
 };

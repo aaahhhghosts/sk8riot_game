@@ -42,8 +42,16 @@ export function create_click_listener(game) {
             if (mousePos.x < get_canvas_width()/2) {
                 game.sk8r.jump();
             } else if (mousePos.x < get_canvas_width()) {
-                throw_zippy(game.sk8r.x+20, game.sk8r.y+27, game.context,
-                            loader.images.zippy, game.zippies);
+
+                if (game.timeSinceLastZippy <= 0 && !game.zcooldown_bar.is_frozen) {
+                    throw_zippy(game.sk8r.x+20, game.sk8r.y+27, game.context,
+                                loader.images.zippy, game.zippies);
+                }
+
+                if (game.has_started) {
+                    game.zcooldown_bar.increase_level();
+                }
+                game.timeSinceLastZippy = 1;
             }
         }
     }, false);
