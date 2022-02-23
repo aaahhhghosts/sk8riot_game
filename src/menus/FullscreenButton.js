@@ -1,19 +1,20 @@
 import { get_canvas_height } from '/src/Main.js';
 
-export default class SaveButton {
+export default class FullscreenButton {
 
-  static src = '/sprites/menu/save_button.png';
+  static src = ['/sprites/menu/fullscreen_button.png'];
 
   constructor (x, y, context, btn_image, action) {
 
-    this.width = 21;
-    this.height = 11;
+    this.width = 11;
+    this.height = 12;
 
     this.x =  Math.floor(x - this.width/2);
     this.y = Math.floor(y - this.height/2)+2;
 
     this.ctx = context;
-    this.btn_image = btn_image[0];
+    this.btn_image = btn_image;
+    this.column = 0;
     this.row = 0;
 
     this.is_highlighted = true;
@@ -32,6 +33,11 @@ export default class SaveButton {
       this.row = 0;
   }
 
+  update_icon(is_fullscreen) {
+      if (is_fullscreen) {this.column = 1;}
+      else {this.column = 0;}
+  }
+
   //Function to check whether a point is inside a rectangle
   isInside (pos) {
       let within_x_bounds = pos.x > this.x && pos.x < this.x+this.width;
@@ -47,7 +53,7 @@ export default class SaveButton {
       // Draw image background
       this.ctx.drawImage(
           this.btn_image,
-          0, // The x-axis coordinate of the top left corner
+          this.column*this.width, // The x-axis coordinate of the top left corner
           this.row*this.height, // The y-axis coordinate of the top left corner
           this.width, // The width of the sub-rectangle
           this.height, // The height of the sub-rectangle

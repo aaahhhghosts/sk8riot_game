@@ -1,4 +1,5 @@
 import Scenery from '/src/Scenery.js';
+import { get_canvas_width } from '/src/Main.js';
 
 export default class Road extends Scenery {
 
@@ -10,7 +11,7 @@ export default class Road extends Scenery {
             image: image[0],
             x: x,
             y: y,
-            width: 400,
+            width: 448,
             height: 14,
             frameIndex: 0,
             column: 0,
@@ -19,7 +20,7 @@ export default class Road extends Scenery {
             frames: 1
         });
 
-        this.set_scroll(true, 2, true, 200);
+        this.set_scroll(true, 2, true, get_canvas_width());
     }
 
     update_road() {
@@ -28,6 +29,6 @@ export default class Road extends Scenery {
 
     reset_road() {
         super.reset();
-        this.set_scroll(true, 2, true, 200);
+        this.set_scroll(true, 2, true, get_canvas_width());
     }
 }

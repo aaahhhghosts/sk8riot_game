@@ -1,4 +1,5 @@
 import Scenery from '/src/Scenery.js';
+import { get_canvas_width } from '/src/Main.js';
 
 export default class Smog extends Scenery {
 
@@ -10,8 +11,8 @@ export default class Smog extends Scenery {
           image: image[0],
           x: x,
           y: y,
-          width: 600,
-          height: 125,
+          width: 824,
+          height: 126,
           frameIndex: 0,
           column: 0,
           tickCount: 0,
@@ -19,7 +20,7 @@ export default class Smog extends Scenery {
           frames: 2
       });
 
-      this.set_scroll(true, 0.75, true, 400);
+      this.set_scroll(true, 0.75, true, 2*get_canvas_width());
   }
 
   update_smog() {
@@ -29,6 +30,6 @@ export default class Smog extends Scenery {
 
   reset_smog() {
       super.reset();
-      this.set_scroll(true, 0.75, true, 400);
+      this.set_scroll(true, 0.75, true, 2*get_canvas_width());
   }
 }

@@ -16,6 +16,7 @@ import SaveButton from '/src/menus/SaveButton.js';
 import ArrowButton from '/src/menus/ArrowButton.js';
 import Sk8rNameLabel from '/src/menus/Sk8rNameLabel.js';
 import DeathMsgLabel from '/src/menus/DeathMsgLabel.js';
+import FullscreenButton from '/src/menus/FullscreenButton.js';
 import Instruct from '/src/menus/Instruct.js'
 import Explosion from '/src/classes/Explosion.js';
 import Debris from '/src/classes/Debris.js';
@@ -56,8 +57,8 @@ const game = {
         // True canvas to display game at full size.
         this.trueCanvas = document.getElementById("canvas");
         this.trueContext = this.trueCanvas.getContext("2d");
-        this.trueCanvas.width = 400;
-        this.trueCanvas.height = 250;
+        this.trueCanvas.width = 448;
+        this.trueCanvas.height = 252;
 
         // Smaller canvas to draw game onto and resize later.
         this.canvas = document.getElementById("mini_canvas");
@@ -82,6 +83,7 @@ const game = {
         this.logo = new Logo(this.canvas.width/2, this.canvas.height*3/4, game.context, loader.images.logo);
         this.sk8r_label = new Sk8rNameLabel(game.context, sk8r_x+15, sk8r_floor+47, loader.images.name_label[0], loader.images.smfont[0], this.sk8r.getName());
         this.instructs = new Instruct(this.canvas.width-47, 10, game.context, loader.images.instruct[0]);
+        this.is_fullscreen = false;
         this.has_started = false;
 
         // List of buttons on the screen at any given time.
@@ -101,6 +103,9 @@ const game = {
         this.buttons.push(new ArrowButton(sk8r_x+33, sk8r_floor+45, game.context,
                                           loader.images.arrowbuttons[1], next_sk8r.bind(this), false));
 
+        this.fsbutton = new FullscreenButton(8, this.canvas.height-10, game.context, loader.images.fullscreen_button[0],
+                                               toggleFullscreen.bind(this));
+        this.buttons.push(this.fsbutton);
         // Boolean for when to show the end of game menu.
         this.showing_restart_menu = false;
         this.leaderboard = null;
@@ -181,7 +186,8 @@ const game = {
 
         this.logo = null;
         this.instructs = null;
-        this.buttons = [];
+        game.buttons = game.buttons.filter(btn => btn === game.fsbutton);
+        this.buttons.push(this.fsbutton);
         this.showing_logo = false;
         this.showing_restart_menu = false;
         this.leaderboard = null;
@@ -498,7 +504,7 @@ const game = {
 
         if (game.has_started && game.sk8r_label != null) {
             game.sk8r_label = null;
-            game.buttons = [];
+            game.buttons = game.buttons.filter(btn => btn === game.fsbutton);
         } else if (game.sk8r_label != null) {
             game.sk8r_label.render();
         }
@@ -536,7 +542,7 @@ const game = {
         // Create and add save high score button.
         let save_highscore = function() {this.restart_game();}
         game.buttons.push(new SaveButton(menu_xpos+34, menu_ypos-20, game.context,
-                          loader.images.savebutton, save_highscore.bind(this), true));
+                          loader.images.savebutton, save_highscore.bind(this)));
     }
 };
 
@@ -550,8 +556,9 @@ function start_game() {
 
 // Resize mini drawing canvas to fit true canvas.
 function resizeGame() {
-    var gameArea = document.getElementById('canvas');
-    var widthToHeight = 4 / 2.5;
+    let gameArea = document.getElementById('canvas');
+    let widthToHeight = 16/9;
+    //var widthToHeight = 4 / 2.5;
     var newWidth = window.innerWidth * 0.95;
     var newHeight = window.innerHeight * 0.95;
     var newWidthToHeight = newWidth / newHeight;
@@ -569,14 +576,42 @@ function resizeGame() {
     gameArea.style.marginTop = (-newHeight / 2) + 'px';
     gameArea.style.marginLeft = (-newWidth / 2) + 'px';
 
-    //var gameCanvas = document.getElementById('canvas');
     game.canvas.style.width = newWidth / 4;
     game.canvas.style.height = newHeight / 4;
 
-    //game.context.scale(2, 2);
     game.trueContext.webkitImageSmoothingEnabled = false;
     game.trueContext.mozImageSmoothingEnabled = false;
     game.trueContext.imageSmoothingEnabled = false;
+}
+
+function toggleFullscreen() {
+
+    console.log("toggle " + game.is_fullscreen);
+
+    let canvas = game.canvas;
+    if (game.is_fullscreen) {
+        game.is_fullscreen = false;
+        game.fsbutton.update_icon(false);
+
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        } else if(document.mozCancelFullScreen) {
+            document.mozCancelFullScreen();
+        } else if(document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+        }
+    } else {
+        game.is_fullscreen = true;
+        game.fsbutton.update_icon(true);
+
+        if (canvas.requestFullScreen) {
+            canvas.requestFullScreen();
+        } else if (canvas.webkitRequestFullScreen) {
+            canvas.webkitRequestFullScreen();
+        } else if (canvas.mozRequestFullScreen) {
+            canvas.mozRequestFullScreen();
+        }
+    }
 }
 
 // Resize game as browser size changes.

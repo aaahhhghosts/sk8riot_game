@@ -17,6 +17,7 @@ import ArrowButton from '/src/menus/ArrowButton.js';
 import Sk8rNameLabel from '/src/menus/Sk8rNameLabel.js';
 import DeathMsgLabel from '/src/menus/DeathMsgLabel.js';
 import Instruct from '/src/menus/Instruct.js';
+import FullscreenButton from '/src/menus/FullscreenButton.js';
 import Explosion from '/src/classes/Explosion.js';
 import Debris from '/src/classes/Debris.js';
 import Car from '/src/classes/Car.js';
@@ -71,6 +72,7 @@ export const loader = {
         loader.add('arrowbuttons', ArrowButton.src);
         loader.add('name_label', Sk8rNameLabel.src);
         loader.add('death_label', DeathMsgLabel.src);
+        loader.add('fullscreen_button', FullscreenButton.src)
         loader.add('explosion', Explosion.src);
         loader.add('debris', Debris.src);
         loader.add('car', [Car.src]);
