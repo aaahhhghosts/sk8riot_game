@@ -70,7 +70,7 @@ export default class Debris extends Sprite {
     }
 }
 
-export function collide_debris(debris, cops, scooters) {
+export function collide_debris(debris, cops) {
 
     // Declare list to hold the position of every crate break, if any.
     let hitPosList = [];

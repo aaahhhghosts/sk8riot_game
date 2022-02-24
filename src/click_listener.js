@@ -1,6 +1,5 @@
 import { get_canvas_width, get_canvas_height } from '/src/Main.js';
-import { throw_zippy } from '/src/classes/Zippy.js';
-import { loader } from '/src/loader.js';
+import { attempt_to_throw_zippy } from '/src/Main.js';
 
 export function create_click_listener(game) {
 
@@ -40,18 +39,11 @@ export function create_click_listener(game) {
         if (game.sk8r.isAlive && in_screen(mousePos)) {
 
             if (mousePos.x < get_canvas_width()/2) {
+
                 game.sk8r.jump();
             } else if (mousePos.x < get_canvas_width()) {
-
-                if (game.timeSinceLastZippy <= 0 && !game.zcooldown_bar.is_frozen) {
-                    throw_zippy(game.sk8r.x+20, game.sk8r.y+27, game.context,
-                                loader.images.zippy, game.zippies);
-                }
-
-                if (game.has_started) {
-                    game.zcooldown_bar.increase_level();
-                }
-                game.timeSinceLastZippy = 1;
+              
+                attempt_to_throw_zippy();
             }
         }
     }, false);

@@ -6,7 +6,7 @@ export default class Zippy extends Sprite {
 
     static src = '/sprites/zippy.png';
 
-    constructor(x, y, context, image) {
+    constructor(x, y, x_velocity_boost, context, image) {
         super({
             context: context,
             image: image[0],
@@ -25,6 +25,9 @@ export default class Zippy extends Sprite {
 
         this.floor = floor;
         this.velocity_y = 1;
+        this.velocity_x = 1.5+x_velocity_boost;
+        if (this.velocity_x > 3.5) {this.velocity_x = 3.5;}
+
         this.set_scroll(false, 0);
 
         this.isAirborn = true;
@@ -55,13 +58,13 @@ export default class Zippy extends Sprite {
     update_zippy() {
 
         super.update();
-        if (this.isAirborn) {this.x += 1.5;}
+        if (this.isAirborn) {this.x += this.velocity_x;}
     }
 }
 
 // Spawn zippy.
-export function throw_zippy(x, y, context, img, zippies) {
-    zippies.push(new Zippy(x, y, context, img));
+export function throw_zippy(x, y, x_velocity_boost, context, img, zippies) {
+    zippies.push(new Zippy(x, y, x_velocity_boost, context, img));
 }
 
 export function explode_zippies(zippies, crates, cars, cops) {
