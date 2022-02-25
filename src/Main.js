@@ -226,6 +226,8 @@ const game = {
         this.time_since_last_zippy = 0;
         this.zippy_throw_delay = 10;
 
+        this.zcooldown_bar.reset();
+
         // Reset obstacles.
         this.cars = [];
         this.crates = [];
@@ -285,7 +287,8 @@ const game = {
         if (this.zippies.length > 0) {
 
           // Explode zippies and get crate break locations, if any.
-          let breakPosList = explode_zippies(this.zippies, this.crates, this.cars, this.cops);
+          let breakPosList = explode_zippies(this.zippies, this.crates, this.cars, this.cops,
+                                             loader.audio.ex_zippy_sounds, loader.audio.zombie_death[0]);
 
             // Spawn explosions/effects at each crate break location.
             let spawned_tire = false;
@@ -374,7 +377,7 @@ const game = {
             despawn_sprites(this.debris);
 
             // Check for and apply any collisions with enemies.
-            let hitPosList = collide_debris(this.debris, this.cops);
+            let hitPosList = collide_debris(this.debris, this.cops, loader.audio.zombie_death[0]);
             hitPosList.forEach((pos, i) => {
                 let x_pos = pos[0];
                 let y_pos = pos[1]-2;
@@ -429,12 +432,18 @@ const game = {
         if (this.cops.length > 0) {
             this.cops.forEach((cop, i) => {
 
-                // If cop firing timer is up, shoot bullet.
-                if (cop.readyToFire) {
+                // If cop is on screen and firing timer is up, shoot bullet.
+                if (cop.readyToFire && cop.x < this.canvas.width+10) {
                     this.bullets.push(new Bullet(cop.x, cop.y+24, this.context, loader.images.bullet[0]));
                     this.explosions.push(new Explosion(cop.x-5, cop.y+20, this.context, loader.images.explosion, 1, 0));
                     cop.timeSinceFire = 0;
                     cop.readyToFire = false;
+
+                    // Play gun fired sfx.
+                    let gunfire_sounds = loader.audio.gunfire;
+                    let rand_int = getRandomInt(0,gunfire_sounds.length-1);
+                    let shoot_sfx = gunfire_sounds[rand_int].cloneNode(false);
+                    shoot_sfx.play();
                 }
 
                 // Change direction cop is facing, if behind player.
@@ -443,7 +452,7 @@ const game = {
                 }
 
                 // Update and render cop.
-                cop.update_cop()
+                cop.update_cop(loader.audio.ex_zippy_sounds[1]);
                 cop.render();
             });
             despawn_sprites(this.cops);
@@ -483,7 +492,7 @@ const game = {
             despawn_sprites(this.bullets);
 
             // Check for and apply collisions with player, if any.
-            let hitPos = collide_bullets(this.sk8r, this.bullets);
+            let hitPos = collide_bullets(this.sk8r, this.bullets, loader.audio.player_hit[0]);
             if (hitPos != null) {
                 this.explosions.push(new Explosion(hitPos[0], hitPos[1], this.context, loader.images.explosion, 0, 0));
             }
@@ -655,7 +664,7 @@ const game = {
         game.update_and_render_obstacles(); // Update/render obstacles
 
         // Player and Friendly Projectiles.
-        game.sk8r.update_sk8r(game.crates, game.cars); // Update player.
+        game.sk8r.update_sk8r(game.crates, game.cars, loader.audio.player_hit[0], loader.audio.gameover[0]); // Update player.
         game.update_render_and_explode_zippies(); // Update, render, and explode zippy fireworks on obstacles and enemies.
         game.update_and_render_zippy_cooldown_bar(); // Update and render zippy cooldown bar.
         game.update_render_and_collide_debris(); // Update, render, and collide debris with enemies.
@@ -674,8 +683,7 @@ const game = {
             game.try_to_spawn_obj_emy();
         }
 
-        // Menus.
-        game.try_to_update_and_render_start_menu(); // Update and render the start menu, if any of its element exist.
+        // Gameover menu.
         let just_became_gameover = (!game.sk8r.isAlive && game.sk8r.velocity_x == 0 && !game.showing_restart_menu);
         if (just_became_gameover) {game.create_gameover_menu();}
         game.try_to_update_and_render_gameover_menu(); // Update and render gameover menu, if any of its element exist.
@@ -684,6 +692,9 @@ const game = {
         game.buttons.forEach((button, i) => {
             button.render();
         });
+
+        // Start menu.
+        game.try_to_update_and_render_start_menu(); // Update and render the start menu, if any of its element exist.
 
         // Draw this frame to true canvas.
         game.trueContext.drawImage(game.canvas, 0, 0, game.canvas.width, game.canvas.height, 0, 0, scale_width, scale_height);
@@ -695,23 +706,46 @@ const game = {
     }
 };
 
+// Function to make player jump, if alive and on ground.
+export function attempt_to_jump() {
+
+    // If player successfully jumped, play sfx.
+    if (game.sk8r.isGrounded && game.sk8r.isAlive) {
+        let jump_sounds = loader.audio.jump;
+        let rand_int = getRandomInt(0,jump_sounds.length-1);
+        let jump_sfx = jump_sounds[rand_int].cloneNode(false);
+        game.sk8r.jump(jump_sfx);
+    }
+}
+
 // Function to spawn zippy, if zippy cooldown/clock and player state allows it.
 export function attempt_to_throw_zippy() {
 
-    if (game.sk8r.isAlive && game.time_since_last_zippy <= 0 && !game.zcooldown_bar.is_frozen) {
+    if (game.sk8r.isAlive && game.time_since_last_zippy <= 0) {
 
-        // Spawn zippy with greater x velocity the higher the player is.
-        let x_velocity_boost = Math.floor((game.sk8r.y-sk8r_floor)/30);
-        throw_zippy(game.sk8r.x+20, game.sk8r.y+27, x_velocity_boost, game.context,
-                    loader.images.zippy[0], game.zippies);
+        if (game.zcooldown_bar.is_frozen) {
 
-        // If throwing zippy during game, increase cooldown bar level.
-        if (game.has_started) {
-            game.zcooldown_bar.increase_level();
+            let cant_throw_sfx = loader.audio.cant_throw_z[0];
+            cant_throw_sfx.cloneNode(false).play();
+        } else {
+
+            let throw_sounds = loader.audio.throw_zippy;
+            let rand_int = getRandomInt(0,throw_sounds.length-1);
+            let throw_sfx = throw_sounds[rand_int].cloneNode(false);
+
+            // Spawn zippy with greater x velocity the higher the player is.
+            let x_velocity_boost = Math.floor((game.sk8r.y-sk8r_floor)/30);
+            throw_zippy(game.sk8r.x+20, game.sk8r.y+27, x_velocity_boost, game.context,
+                        loader.images.zippy[0], game.zippies, throw_sfx);
+
+            // If throwing zippy during game, increase cooldown bar level.
+            if (game.has_started) {
+                game.zcooldown_bar.increase_level(loader.audio.zippy_overheat[0]);
+            }
+
+            // Reset zippy timing clock.
+            game.time_since_last_zippy = 1;
         }
-
-        // Reset zippy timing clock.
-        game.time_since_last_zippy = 1;
     }
 }
 

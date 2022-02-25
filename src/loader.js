@@ -45,21 +45,32 @@ import Scooter from '/src/classes/Scooter.js';
 
 // Image resource loader.
 export const loader = {
-    count: 0,
     images: {},
+    audio: {},
     saved_data: null,
 
     // Load image into object from file path.
-    add(title, src_list) {
+    add_img(title, src_list) {
 
-        var img_list = [];
+        let img_list = [];
         src_list.forEach((src, i) => {
             const image = new Image();
             image.src = src;
             img_list.push(image);
-            this.count++;
         });
         this.images[title] = img_list;
+    },
+
+    // Load image into object from file path.
+    add_wav(title, src_list) {
+
+        let wav_list = [];
+        src_list.forEach((src, i) => {
+            const audio = new Audio();
+            audio.src = `/audio/${src}.wav`
+            wav_list.push(audio);
+        });
+        this.audio[title] = wav_list;
     },
 
     // Load highscores from json file.
@@ -71,50 +82,76 @@ export const loader = {
     },
 
     init() {
-      
+
+        /* ===== Loading Images ===== */
         // Player
         loader.load_scores(Leaderboard.saved_src);
-        loader.add('sk8r', Sk8r.src);
+        loader.add_img('sk8r', Sk8r.src);
 
         // Enviroment.
-        loader.add('road', Road.src);
-        loader.add('downtown', Downtown.src);
-        loader.add('smog', Smog.src);
-        loader.add('cityscape', Cityscape.src);
+        loader.add_img('road', Road.src);
+        loader.add_img('downtown', Downtown.src);
+        loader.add_img('smog', Smog.src);
+        loader.add_img('cityscape', Cityscape.src);
 
         // Start Menu.
-        loader.add('logo', Logo.src);
-        loader.add('version', Version.src);
-        loader.add('instruct', Instruct.src);
-        loader.add('name_label', Sk8rNameLabel.src);
-        loader.add('arrowbuttons', ArrowButton.src);
-        loader.add('startbutton', StartButton.src);
+        loader.add_img('logo', Logo.src);
+        loader.add_img('version', Version.src);
+        loader.add_img('instruct', Instruct.src);
+        loader.add_img('name_label', Sk8rNameLabel.src);
+        loader.add_img('arrowbuttons', ArrowButton.src);
+        loader.add_img('startbutton', StartButton.src);
 
         // In-Game Menu Elements.
-        loader.add('karmatic_arcade_font', KAFont.src);
-        loader.add('fullscreen_button', FullscreenButton.src)
-        loader.add('zippy_cooldown_bar', ZippyCooldownBar.src);
+        loader.add_img('karmatic_arcade_font', KAFont.src);
+        loader.add_img('fullscreen_button', FullscreenButton.src)
+        loader.add_img('zippy_cooldown_bar', ZippyCooldownBar.src);
 
         // Gameover Menu.
-        loader.add('leaderboard', Leaderboard.src);
-        loader.add('inputbox', Inputbox.src);
-        loader.add('savebutton', SaveButton.src);
-        loader.add('smfont', SMFont.src);
-        loader.add('death_label', DeathMsgLabel.src);
+        loader.add_img('leaderboard', Leaderboard.src);
+        loader.add_img('inputbox', Inputbox.src);
+        loader.add_img('savebutton', SaveButton.src);
+        loader.add_img('smfont', SMFont.src);
+        loader.add_img('death_label', DeathMsgLabel.src);
 
         // Projectiles and Effects.
-        loader.add('zippy', Zippy.src);
-        loader.add('bullet', Bullet.src);
-        loader.add('debris', Debris.src);
-        loader.add('tire', Tire.src);
-        loader.add('explosion', Explosion.src);
+        loader.add_img('zippy', Zippy.src);
+        loader.add_img('bullet', Bullet.src);
+        loader.add_img('debris', Debris.src);
+        loader.add_img('tire', Tire.src);
+        loader.add_img('explosion', Explosion.src);
 
         // Obstacles.
-        loader.add('crates', Crate.src);
-        loader.add('car', Car.src);
+        loader.add_img('crates', Crate.src);
+        loader.add_img('car', Car.src);
 
         // Enemies.
-        loader.add('cop', Cop.src);
-        loader.add('scooter', Scooter.src);
+        loader.add_img('cop', Cop.src);
+        loader.add_img('scooter', Scooter.src);
+
+        /* ===== Loading Audio ===== */
+        loader.add_wav('jump', ['jump_1',
+                                'jump_2']);
+
+        loader.add_wav('throw_zippy', ['throw_zippy_1',
+                                       'throw_zippy_2',
+                                       'throw_zippy_3']);
+
+        loader.add_wav('ex_zippy_sounds', ['explode_z_1',
+                                           'explode_z_2',
+                                           'explode_z_3_dud',
+                                           'explode_z_4_car_damage',
+                                           'explode_z_5_car_destroy',]);
+        loader.add_wav('cant_throw_z', ['cant_throw_zippy']);
+        loader.add_wav('zippy_overheat', ['zippy_overheat']);
+
+        loader.add_wav('zombie_death', ['zombie_death']);
+        loader.add_wav('gunfire', ['gunfire_1', 'gunfire_2']);
+
+        loader.add_wav('player_hit', ['player_hit']);
+
+        loader.add_wav('gameover', ['gameover']);
+
+        loader.add_wav('click_button', ['click_button']);
     }
 };

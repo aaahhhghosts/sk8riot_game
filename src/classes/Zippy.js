@@ -63,11 +63,12 @@ export default class Zippy extends Sprite {
 }
 
 // Spawn zippy.
-export function throw_zippy(x, y, x_velocity_boost, context, img, zippies) {
+export function throw_zippy(x, y, x_velocity_boost, context, img, zippies, throw_sfx) {
     zippies.push(new Zippy(x, y, x_velocity_boost, context, img));
+    throw_sfx.play();
 }
 
-export function explode_zippies(zippies, crates, cars, cops) {
+export function explode_zippies(zippies, crates, cars, cops, ex_zippy_sounds, zombie_death_sfx) {
 
     // Declare list to hold the position of every crate break, if any.
     let breakPosList = [];
@@ -92,6 +93,18 @@ export function explode_zippies(zippies, crates, cars, cops) {
                     crate.break();
                     zippy.brokeCrate = true;
                     breakPosList.push([Math.floor(crate.x), Math.floor(crate.y), 0]);
+
+                    // Play one of two crate explosion sfx.
+                    let rand_int = getRandomInt(0,1);
+                    let explode_sfx = ex_zippy_sounds[rand_int].cloneNode(false);
+                    explode_sfx.play();
+
+                // Else if crate is steel, play dud sfx.
+                } else if (crate.type == 1) {
+
+                    // Play dud sfx.
+                    let dud_sfx = ex_zippy_sounds[2].cloneNode(false);
+                    dud_sfx.play();
                 }
             }
         });
@@ -122,6 +135,11 @@ export function explode_zippies(zippies, crates, cars, cops) {
                    // If car is wooden and unbroken, break.
                    if (!car.isBroken) {
                        car.damage();
+
+                       // Play car damage sfx.
+                       let car_damage_sfx = ex_zippy_sounds[3].cloneNode(false);
+                       car_damage_sfx.play();
+
                        zippy.brokeCrate = true;
                        breakPosList.push([Math.floor(zippy.x), Math.floor(car.y)]);
 
@@ -130,6 +148,10 @@ export function explode_zippies(zippies, crates, cars, cops) {
                            breakPosList.push([Math.floor(car.x+20), Math.floor(car.y+10), 1]);
                            breakPosList.push([Math.floor(car.x+40), Math.floor(car.y+7), 1]);
                            breakPosList.push([Math.floor(car.x+60), Math.floor(car.y+3), 1]);
+
+                           // Play car destroy sfx.
+                           let car_destroy_sfx = ex_zippy_sounds[4].cloneNode(false);
+                           car_destroy_sfx.play();
                        }
                    }
                 }
@@ -151,11 +173,18 @@ export function explode_zippies(zippies, crates, cars, cops) {
                    // which will trigger a landing event next update.
                    zippy.floor = cop.y+cop.height;
 
-                   // If cop is alive on collision, blow up that cop ass.
+                   // If cop is alive on collision, blow up that police ass.
                    if (cop.isAlive) {
                        cop.kill(0);
                        breakPosList.push([Math.floor(zippy.x+9), Math.floor(cop.y), 2]);
                        zippy.brokeCrate = true;
+
+                       // Play dud sfx.
+                       let dud_sfx = ex_zippy_sounds[2].cloneNode(false);
+                       dud_sfx.play();
+
+                       // Play zombie death sfx
+                       zombie_death_sfx.cloneNode(false).play();
                    }
                 }
             }

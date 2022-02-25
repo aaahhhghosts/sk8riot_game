@@ -24,7 +24,14 @@ export default class ZippyCooldownBar {
       this.x_buffer = 0;
   }
 
-  increase_level() {
+  reset() {
+    this.level = 0;
+    this.row = 0;
+    this.is_frozen = false;
+    this.x_buffer = 0;
+  }
+
+  increase_level(overheat_sfx) {
 
       if (!this.is_frozen) {
           let next_level = this.level + this.levels_per_increase;
@@ -33,6 +40,7 @@ export default class ZippyCooldownBar {
           } else {
 
               this.freeze_bar();
+              overheat_sfx.play();
           }
       }
   }

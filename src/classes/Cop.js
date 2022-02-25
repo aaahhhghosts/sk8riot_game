@@ -32,6 +32,8 @@ export default class Cop extends Sprite {
       this.death_floor = floor;
       this.timeSinceFire = 70;
       this.readyToFire = false;
+
+      this.played_landing_sfx = false;
   }
 
   get_floor() {return this.floor;}
@@ -76,7 +78,7 @@ export default class Cop extends Sprite {
     this.y += 3;
   }
 
-  update_cop() {
+  update_cop(landing_sfx) {
       super.update();
 
       if (this.isAlive) {
@@ -102,6 +104,12 @@ export default class Cop extends Sprite {
                   this.velocity_x = 0;
               }
           }
+      }
+
+      // Play crash sfx upon landing death.
+      if (!this.isAlive && this.isGrounded && !this.played_landing_sfx) {
+          landing_sfx.cloneNode(false).play();
+          this.played_landing_sfx = true;
       }
   }
 }

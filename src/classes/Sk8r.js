@@ -27,6 +27,7 @@ export default class Sk8r extends Sprite {
       this.img_num = img_num;
 
       this.isGrounded = true;
+      this.played_gameover_sfx = false;
       this.gravity = 0.3;
       this.velocity_y = 0;
       this.velocity_x = 0;
@@ -86,13 +87,12 @@ export default class Sk8r extends Sprite {
       this.loop_animation = false;
   }
 
-  jump() {
-      if (this.isGrounded && this.isAlive) {
-        this.isGrounded = false;
-        this.animate_jump();
-        this.velocity_y = 4;
-        this.y += 3;
-      }
+  jump(jump_sfx) {
+      this.isGrounded = false;
+      this.animate_jump();
+      this.velocity_y = 4;
+      this.y += 3;
+      jump_sfx.play();
   }
 
   kill(cause) {
@@ -113,21 +113,39 @@ export default class Sk8r extends Sprite {
     this.velocity_x = 1.5;
   }
 
-  update_sk8r(crates, cars) {
+  update_sk8r(crates, cars, player_hit_sfx, gameover_sfx) {
       super.update();
 
       // Update current floor as long as player is alive.
       if (this.isAlive) {
-          this.update_floor(crates, cars);
+          this.update_floor(crates, cars, player_hit_sfx);
+      }
+
+      // If sk8r is dead, move body forwards.
+      if (!this.isAlive && this.velocity_x > 0) {
+
+          this.x += this.velocity_x;
+          if (this.y <= sk8r_floor-12) {
+              this.velocity_x -= this.velocity_x / 30;
+
+              if (this.velocity_x < 0.1) {
+                  this.velocity_x = 0;
+              }
+          }
+      }
+
+      if (!this.isAlive && this.isGrounded && !this.played_gameover_sfx) {
+          gameover_sfx.cloneNode(false).play();
+          this.played_gameover_sfx = true;
       }
   }
 
   apply_gravity() {
 
-      if (this.y > this.floor-2 && (this.y > sk8r_floor || !this.isAlive)) {
+      if ((this.y > this.floor-2 && this.y > sk8r_floor) || !this.isAlive) {
 
           this.timeSinceJump += 1;
-          var now = this.timeSinceJump;
+          let now = this.timeSinceJump;
 
           this.y += (
               ((this.velocity_y * now)
@@ -151,22 +169,9 @@ export default class Sk8r extends Sprite {
               this.velocity_y = 0;
           }
       }
-
-      // If sk8r is dead, move body forwards.
-      if (!this.isAlive && this.velocity_x > 0) {
-
-          this.x += this.velocity_x;
-          if (this.y <= sk8r_floor-12) {
-              this.velocity_x -= this.velocity_x / 30;
-
-              if (this.velocity_x < 0.1) {
-                  this.velocity_x = 0;
-              }
-          }
-      }
   }
 
-  update_floor(crates, cars) {
+  update_floor(crates, cars, player_hit_sfx) {
 
       // Reset floor.
       this.set_floor(sk8r_floor);
@@ -185,6 +190,7 @@ export default class Sk8r extends Sprite {
               if (this.y < top_of_crate-2 && this.x-3 >= crate.x-crate.width*2) {
 
                   this.kill(crate.getTypeName());
+                  player_hit_sfx.cloneNode(false).play();
                   return true;
               }
 
@@ -213,6 +219,7 @@ export default class Sk8r extends Sprite {
               // Kill sk8r and break out of loop.
               if (this.y < top_of_car-2) {
                   this.kill(car.getTypeName());
+                  player_hit_sfx.cloneNode(false).play();
                   return true;
               }
 
@@ -228,6 +235,7 @@ export default class Sk8r extends Sprite {
       super.reset();
 
       this.isAlive = true;
+      this.played_gameover_sfx = false;
       this.isGrounded = true;
       this.velocity_y = 0;
       this.velocity_x = 0;

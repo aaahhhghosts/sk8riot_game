@@ -1,12 +1,12 @@
 import { alphabet } from '/src/constants.js';
-import { attempt_to_throw_zippy } from '/src/Main.js';
+import { attempt_to_jump, attempt_to_throw_zippy } from '/src/Main.js';
 
 export function create_key_listener(game) {
     document.addEventListener('keydown', event => {
 
       // Add space key listener for jumping.
       if (event.code === 'Space' || event.code === 'ArrowUp') {
-          game.sk8r.jump();
+          attempt_to_jump();
       }
 
       // Add right arrow key listener for zippies.

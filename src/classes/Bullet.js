@@ -54,7 +54,7 @@ export default class Bullet extends Sprite {
   }
 }
 
-export function collide_bullets(sk8r, bullets) {
+export function collide_bullets(sk8r, bullets, player_hit_sfx) {
 
     // Get y coord of the top of sk8r.
     let top_of_sk8r = sk8r.y+sk8r.height/2-1;
@@ -76,6 +76,7 @@ export function collide_bullets(sk8r, bullets) {
                    sk8r.kill("zombie cop");
                    bullet.break();
                    hitPos = [Math.floor(bullet.x), Math.floor(bullet.y)];
+                   player_hit_sfx.cloneNode(false).play();
                }
             }
         }

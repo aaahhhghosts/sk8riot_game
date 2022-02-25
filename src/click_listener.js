@@ -1,5 +1,6 @@
 import { get_canvas_width, get_canvas_height } from '/src/Main.js';
-import { attempt_to_throw_zippy } from '/src/Main.js';
+import { attempt_to_jump, attempt_to_throw_zippy } from '/src/Main.js';
+import { loader } from '/src/loader.js';
 
 export function create_click_listener(game) {
 
@@ -14,6 +15,8 @@ export function create_click_listener(game) {
             if (button.isInside(mousePos)) {
                 button.fire();
                 click_done = true;
+                let click_sfx = loader.audio.click_button[0].cloneNode(false);
+                click_sfx.play();
 
                 if (button.remove_on_fire) {
                     let i = game.buttons.indexOf(button);
@@ -39,10 +42,8 @@ export function create_click_listener(game) {
         if (game.sk8r.isAlive && in_screen(mousePos)) {
 
             if (mousePos.x < get_canvas_width()/2) {
-
-                game.sk8r.jump();
+                attempt_to_jump();
             } else if (mousePos.x < get_canvas_width()) {
-              
                 attempt_to_throw_zippy();
             }
         }
