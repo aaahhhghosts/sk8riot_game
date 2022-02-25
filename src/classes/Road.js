@@ -3,12 +3,12 @@ import { get_canvas_width } from '/src/Main.js';
 
 export default class Road extends Scenery {
 
-    static src = '/sprites/road.png';
+    static src = ['/sprites/road.png'];
 
     constructor(x, y, context, image) {
         super({
             context: context,
-            image: image[0],
+            image: image,
             x: x,
             y: y,
             width: 448,

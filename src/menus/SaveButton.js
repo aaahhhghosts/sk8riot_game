@@ -2,7 +2,7 @@ import { get_canvas_height } from '/src/Main.js';
 
 export default class SaveButton {
 
-  static src = '/sprites/menu/save_button.png';
+  static src = ['/sprites/menu/save_button.png'];
 
   constructor (x, y, context, btn_image, action) {
 
@@ -13,7 +13,7 @@ export default class SaveButton {
     this.y = Math.floor(y - this.height/2)+2;
 
     this.ctx = context;
-    this.btn_image = btn_image[0];
+    this.btn_image = btn_image;
     this.row = 0;
 
     this.is_highlighted = true;

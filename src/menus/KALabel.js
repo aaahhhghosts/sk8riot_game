@@ -8,7 +8,7 @@ export default class KALabel {
       this.x = x;
       this.y = y+7;
       this.ctx = context;
-      this.font_image = font_image[0];
+      this.font_image = font_image;
       this.str = str.toUpperCase();
 
       this.char_width = ka_char_width;

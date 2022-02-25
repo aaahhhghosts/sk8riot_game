@@ -3,7 +3,7 @@ import KALabel from '/src/menus/KALabel.js';
 
 export default class Button {
 
-  static src = '/sprites/menu/button.png';
+  static src = ['/sprites/menu/button.png'];
 
   constructor (x, y, context, btn_image, font_image, text, action, remove_on_fire) {
 
@@ -12,7 +12,7 @@ export default class Button {
     this.x = Math.floor(x - this.width/2);
     this.y = Math.floor(y - this.height/2);
     this.ctx = context;
-    this.btn_image = btn_image[0];
+    this.btn_image = btn_image;
     this.row = 0;
 
     this.kalabel = new KALabel(context, this.x, this.y, font_image, text, this.width);

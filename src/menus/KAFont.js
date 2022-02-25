@@ -3,14 +3,14 @@ import { karmatic_arcade_alpha_dict, ka_char_width, ka_char_height } from '/src/
 
 export default class KAFont {
 
-  static src = '/sprites/menu/karmatic_arcade_font.png';
+  static src = ['/sprites/menu/karmatic_arcade_font.png'];
 
   constructor(context, x, y, image) {
 
       this.x = x;
       this.y = y;
       this.ctx = context;
-      this.image = image[0];
+      this.image = image;
 
       this.char_width = ka_char_width;
       this.char_height = ka_char_height;

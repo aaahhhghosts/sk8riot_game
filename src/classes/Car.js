@@ -5,13 +5,13 @@ import { get_canvas_width } from '/src/Main.js';
 
 export default class Car extends Sprite {
 
-  static src = '/sprites/cop_car.png';
+  static src = ['/sprites/cop_car.png'];
 
   constructor(x, y, context, image) {
 
       super({
           context: context,
-          image: image[0],
+          image: image,
           x: x,
           y: y,
           width: 83,

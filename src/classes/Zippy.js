@@ -4,12 +4,12 @@ import { floor } from '/src/constants.js';
 
 export default class Zippy extends Sprite {
 
-    static src = '/sprites/zippy.png';
+    static src = ['/sprites/zippy.png'];
 
     constructor(x, y, x_velocity_boost, context, image) {
         super({
             context: context,
-            image: image[0],
+            image: image,
             x: x,
             y: y,
             width: 9,
@@ -26,7 +26,7 @@ export default class Zippy extends Sprite {
         this.floor = floor;
         this.velocity_y = 1;
         this.velocity_x = 1.5+x_velocity_boost;
-        if (this.velocity_x > 3.5) {this.velocity_x = 3.5;}
+        if (this.velocity_x > 3.2) {this.velocity_x = 3.2;}
 
         this.set_scroll(false, 0);
 

@@ -3,12 +3,12 @@ import { get_canvas_width } from '/src/Main.js';
 
 export default class Smog extends Scenery {
 
-  static src = '/sprites/smog.png';
+  static src = ['/sprites/smog.png'];
 
   constructor(x, y, context, image) {
       super({
           context: context,
-          image: image[0],
+          image: image,
           x: x,
           y: y,
           width: 824,
@@ -25,7 +25,6 @@ export default class Smog extends Scenery {
 
   update_smog() {
       super.update();
-
   }
 
   reset_smog() {

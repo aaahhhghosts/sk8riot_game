@@ -2,12 +2,12 @@ import Scenery from '/src/Scenery.js';
 
 export default class Downtown extends Scenery {
 
-    static src = '/sprites/downtown.png';
+    static src = ['/sprites/downtown.png'];
 
     constructor(x, y, context, image) {
         super({
             context: context,
-            image: image[0],
+            image: image,
             x: x,
             y: y,
             width: 824,

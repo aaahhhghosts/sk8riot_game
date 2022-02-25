@@ -1,4 +1,4 @@
-// Player
+// Player.
 import Sk8r from '/src/classes/Sk8r.js';
 import Board from '/src/classes/Board.js';
 import { floor, sk8r_floor } from '/src/constants.js';
@@ -13,8 +13,8 @@ import Cityscape from '/src/classes/Cityscape.js';
 import Logo from '/src/menus/Logo.js';
 import Version from '/src/menus/Version.js';
 import Instruct from '/src/menus/Instruct.js'
-import ArrowButton from '/src/menus/ArrowButton.js';
 import Sk8rNameLabel from '/src/menus/Sk8rNameLabel.js';
+import ArrowButton from '/src/menus/ArrowButton.js';
 import StartButton from '/src/menus/StartButton.js';
 
 // In-Game Menu Elements.
@@ -104,13 +104,13 @@ const game = {
         this.is_prompting_for_input = false;
 
         // Create Enviroment.
-        this.road = new Road(0, 0, this.context, loader.images.road);
-        this.downtown = new Downtown(0, 0, this.context, loader.images.downtown);
-        this.smog = new Smog(0, 0, this.context, loader.images.smog);
-        this.cityscape = new Cityscape(0, 0, this.context, loader.images.cityscape);
+        this.road = new Road(0, 0, this.context, loader.images.road[0]);
+        this.downtown = new Downtown(0, 0, this.context, loader.images.downtown[0]);
+        this.smog = new Smog(0, 0, this.context, loader.images.smog[0]);
+        this.cityscape = new Cityscape(0, 0, this.context, loader.images.cityscape[0]);
 
         // Create start menu.
-        this.logo = new Logo(this.canvas.width/2, this.canvas.height*3/4, game.context, loader.images.logo);
+        this.logo = new Logo(this.canvas.width/2, this.canvas.height*3/4, game.context, loader.images.logo[0]);
         this.version = new Version(game.context, this.canvas.width-24, this.canvas.height-11, loader.images.version[0]);
         this.instructs = new Instruct(this.canvas.width-47, 10, game.context, loader.images.instruct[0]);
         this.sk8r_label = new Sk8rNameLabel(game.context, sk8r_x+15, sk8r_floor+47, loader.images.name_label[0], loader.images.smfont[0], this.sk8r.getName());
@@ -121,7 +121,7 @@ const game = {
         // Create and add start game button.
         let start_game = function() {this.has_started = true;}
         this.buttons.push(new StartButton(this.canvas.width/2, this.canvas.height*1/3, game.context,
-                                     loader.images.startbutton, loader.images.karmatic_arcade_font,
+                                     loader.images.startbutton[0], loader.images.karmatic_arcade_font[0],
                                      "Start", start_game.bind(this), true));
 
         // Create and add buttons for character selection.
@@ -133,7 +133,7 @@ const game = {
                                           loader.images.arrowbuttons[1], next_sk8r.bind(this), false));
 
         // Create in-game menu elements.
-        this.scorebox = new KAFont(this.context, 10, 5, loader.images.karmatic_arcade_font);
+        this.scorebox = new KAFont(this.context, 10, 5, loader.images.karmatic_arcade_font[0]);
         this.zcooldown_bar = new ZippyCooldownBar(this.context, 3, Math.floor(this.canvas.height/2), loader.images.zippy_cooldown_bar[0]);
         this.fsbutton = new FullscreenButton(7, this.canvas.height-9, game.context, loader.images.fullscreen_button[0], toggleFullscreen.bind(this));
         this.buttons.push(this.fsbutton);
@@ -512,7 +512,7 @@ const game = {
 
             // Odds are 3/700 of spawning car.
             if (randInt > 697) {
-                this.cars.push(new Car(get_canvas_width(), floor+1, this.context, loader.images.car));
+                this.cars.push(new Car(get_canvas_width(), floor+1, this.context, loader.images.car[0]));
                 this.time_since_last_obs_emy = 1;
                 this.last_spawned_obstacle = "car";
 
@@ -555,9 +555,9 @@ const game = {
         let menu_ypos = get_canvas_height()*2/3;
 
         // Create and add restart button.
-        let restart_game = function() {this.restart_this();}
+        let restart_game = function() {this.restart_game();}
         this.buttons.push(new StartButton(menu_xpos, get_canvas_height()*1/3, this.context,
-                          loader.images.startbutton, loader.images.karmatic_arcade_font,
+                          loader.images.startbutton[0], loader.images.karmatic_arcade_font[0],
                           "Restart", restart_game.bind(this), true));
 
         // Create and add leaderboard and usernae input box.
@@ -569,7 +569,7 @@ const game = {
         // Create and add save high score button.
         let save_highscore = function() {this.restart_game();}
         this.buttons.push(new SaveButton(menu_xpos+34, menu_ypos-20, this.context,
-                          loader.images.savebutton, save_highscore.bind(this)));
+                          loader.images.savebutton[0], save_highscore.bind(this)));
     },
 
     // Function for updating and rendering start menu, if it exists.
@@ -703,7 +703,7 @@ export function attempt_to_throw_zippy() {
         // Spawn zippy with greater x velocity the higher the player is.
         let x_velocity_boost = Math.floor((game.sk8r.y-sk8r_floor)/30);
         throw_zippy(game.sk8r.x+20, game.sk8r.y+27, x_velocity_boost, game.context,
-                    loader.images.zippy, game.zippies);
+                    loader.images.zippy[0], game.zippies);
 
         // If throwing zippy during game, increase cooldown bar level.
         if (game.has_started) {
@@ -728,12 +728,12 @@ function resizeGame() {
     // Maintain game canvas aspect ratio.
     if (newWidthToHeight > widthToHeight) {
         newWidth = newHeight * widthToHeight;
-        gameArea.style.height = newHeight + 'px';
-        gameArea.style.width = newWidth + 'px';
+        gameArea.style.height = Math.floor(newHeight) + 'px';
+        gameArea.style.width = Math.floor(newWidth) + 'px';
     } else {
         newHeight = newWidth / widthToHeight;
-        gameArea.style.width = newWidth + 'px';
-        gameArea.style.height = newHeight + 'px';
+        gameArea.style.width = Math.floor(newWidth) + 'px';
+        gameArea.style.height = Math.floor(newHeight) + 'px';
     }
 
     // Draw canvas margin line.
