@@ -130,13 +130,17 @@ export const loader = {
         loader.add_img('scooter', Scooter.src);
 
         /* ===== Loading Audio ===== */
+
+        // Player.
         loader.add_wav('jump', ['jump_1',
                                 'jump_2']);
+        loader.add_wav('player_hit', ['player_hit']);
+        loader.add_wav('gameover', ['gameover']);
 
+        // Zippy.
         loader.add_wav('throw_zippy', ['throw_zippy_1',
                                        'throw_zippy_2',
                                        'throw_zippy_3']);
-
         loader.add_wav('ex_zippy_sounds', ['explode_z_1',
                                            'explode_z_2',
                                            'explode_z_3_dud',
@@ -145,13 +149,11 @@ export const loader = {
         loader.add_wav('cant_throw_z', ['cant_throw_zippy']);
         loader.add_wav('zippy_overheat', ['zippy_overheat']);
 
+        // Enemies.
         loader.add_wav('zombie_death', ['zombie_death']);
         loader.add_wav('gunfire', ['gunfire_1', 'gunfire_2']);
 
-        loader.add_wav('player_hit', ['player_hit']);
-
-        loader.add_wav('gameover', ['gameover']);
-
+        // Menu.
         loader.add_wav('click_button', ['click_button']);
     }
 };

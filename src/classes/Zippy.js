@@ -31,8 +31,7 @@ export default class Zippy extends Sprite {
         this.set_scroll(false, 0);
 
         this.isAirborn = true;
-        this.doneExploding = false;
-        this.brokeCrate = false;
+        this.exploded = false;
     }
 
     animate_throw() {
@@ -50,9 +49,13 @@ export default class Zippy extends Sprite {
         this.ticksPerFrame = 2;
     }
 
+    explode() {
+        this.exploded = true;
+        this.animate_explode();
+    }
+
     animate_land() {
         this.y -= getRandomInt(0, 4);
-        this.animate_explode();
     }
 
     update_zippy() {
@@ -73,7 +76,17 @@ export function explode_zippies(zippies, crates, cars, cops, ex_zippy_sounds, zo
     // Declare list to hold the position of every crate break, if any.
     let breakPosList = [];
 
-    zippies.filter(zippy => zippy.isAirborn).forEach((zippy, i) => {
+    zippies.filter(zippy => !zippy.exploded).forEach((zippy, i) => {
+
+        // If zippy has landed on ground, explode.
+        if (!zippy.isAirborn) {
+            zippy.explode();
+
+            // Play dud sfx.
+            let dud_sfx = ex_zippy_sounds[2].cloneNode(false);
+            dud_sfx.play();
+            return;
+        }
 
         // Check for crate collisions.
         crates.filter(crate => !crate.isBroken).forEach((crate, j) => {
@@ -82,7 +95,7 @@ export function explode_zippies(zippies, crates, cars, cops, ex_zippy_sounds, zo
                            zippy.y >= (crate.y-2) && zippy.y < crate.y+crate.height);
 
             // If zippy collided with crate.
-            if (hitCrate && !zippy.brokeCrate) {
+            if (hitCrate && !zippy.exploded) {
 
                 // Set zippy's floor to the top of the crate,
                 // which will trigger a landing event next update.
@@ -91,7 +104,7 @@ export function explode_zippies(zippies, crates, cars, cops, ex_zippy_sounds, zo
                 // If crate is wooden and unbroken, break.
                 if (crate.type == 0) {
                     crate.break();
-                    zippy.brokeCrate = true;
+                    zippy.explode();
                     breakPosList.push([Math.floor(crate.x), Math.floor(crate.y), 0]);
 
                     // Play one of two crate explosion sfx.
@@ -108,6 +121,7 @@ export function explode_zippies(zippies, crates, cars, cops, ex_zippy_sounds, zo
                 }
             }
         });
+        if (zippy.exploded) {return breakPosList;}
 
         // Check for car collisions.
         cars.filter(car => !car.isBroken).forEach((car, j) => {
@@ -126,7 +140,7 @@ export function explode_zippies(zippies, crates, cars, cops, ex_zippy_sounds, zo
                              zippy.y >= (car.y-2) && zippy.y < top_of_car;
 
                 // If zippy collided with car.
-                if (hitCar && !zippy.brokeCrate) {
+                if (hitCar && !zippy.exploded) {
 
                    // Set zippy's floor to the top of the car,
                    // which will trigger a landing event next update.
@@ -140,7 +154,7 @@ export function explode_zippies(zippies, crates, cars, cops, ex_zippy_sounds, zo
                        let car_damage_sfx = ex_zippy_sounds[3].cloneNode(false);
                        car_damage_sfx.play();
 
-                       zippy.brokeCrate = true;
+                       zippy.explode();
                        breakPosList.push([Math.floor(zippy.x), Math.floor(car.y)]);
 
                        if (car.isBroken) {
@@ -157,6 +171,7 @@ export function explode_zippies(zippies, crates, cars, cops, ex_zippy_sounds, zo
                 }
             }
         });
+        if (zippy.exploded) {return breakPosList;}
 
         // Check for cop collisions.
         cops.filter(cop => cop.isAlive).forEach((cop, j) => {
@@ -167,7 +182,7 @@ export function explode_zippies(zippies, crates, cars, cops, ex_zippy_sounds, zo
                                zippy.y >= (cop.y-2) && zippy.y < (cop.y+cop.height);
 
                 // If zippy collided with cop.
-                if (hitcop && !zippy.brokeCrate) {
+                if (hitcop && !zippy.exploded) {
 
                    // Set zippy's floor to the top of the cop,
                    // which will trigger a landing event next update.
@@ -177,7 +192,7 @@ export function explode_zippies(zippies, crates, cars, cops, ex_zippy_sounds, zo
                    if (cop.isAlive) {
                        cop.kill(0);
                        breakPosList.push([Math.floor(zippy.x+9), Math.floor(cop.y), 2]);
-                       zippy.brokeCrate = true;
+                       zippy.explode();
 
                        // Play dud sfx.
                        let dud_sfx = ex_zippy_sounds[2].cloneNode(false);

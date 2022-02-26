@@ -84,7 +84,9 @@ export function create_key_listener(game) {
 
        // Restart game when R key is pressed outside of input box and start menu.
        } else if (game.has_started && event.code === 'KeyR') {
-           game.restart_game();
+            if (game.score > 10) {
+                game.restart_game();
+            }
        }
     });
 
