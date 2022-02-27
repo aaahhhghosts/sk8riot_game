@@ -1,5 +1,5 @@
-import { get_canvas_height } from '/src/Main.js';
-import KALabel from '/src/menus/KALabel.js';
+import { get_canvas_height } from '../Main.js';
+import KALabel from './KALabel.js';
 
 export default class Button {
 

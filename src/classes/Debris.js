@@ -1,6 +1,6 @@
-import Sprite from '/src/Sprite.js';
-import { getRandomInt } from '/src/common.js';
-import { floor } from '/src/constants.js';
+import Sprite from '../Sprite.js';
+import { getRandomInt } from '../common.js';
+import { floor } from '../constants.js';
 
 export default class Debris extends Sprite {
 

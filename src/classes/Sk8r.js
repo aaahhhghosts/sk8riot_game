@@ -1,5 +1,5 @@
-import Sprite from '/src/Sprite.js';
-import { sk8r_floor, player_names } from '/src/constants.js';
+import Sprite from '../Sprite.js';
+import { sk8r_floor, player_names } from '../constants.js';
 
 export default class Sk8r extends Sprite {
 

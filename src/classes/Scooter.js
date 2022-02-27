@@ -1,6 +1,6 @@
-import Sprite from '/src/Sprite.js';
-import { sk8r_floor } from '/src/constants.js';
-import { getRandomInt } from '/src/common.js';
+import Sprite from '../Sprite.js';
+import { sk8r_floor } from '../constants.js';
+import { getRandomInt } from '../common.js';
 
 export default class Scooter extends Sprite {
 

@@ -1,5 +1,5 @@
-import { get_canvas_height } from '/src/Main.js';
-import SMLabel from '/src/menus/SMLabel.js';
+import { get_canvas_height } from '../Main.js';
+import SMLabel from './SMLabel.js';
 
 export default class DeathMsgLabel {
 

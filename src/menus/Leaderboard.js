@@ -1,6 +1,6 @@
-import { get_canvas_height } from '/src/Main.js';
-import { sm_char_width, sm_char_height } from '/src/constants.js';
-import SMLabel from '/src/menus/SMLabel.js';
+import { get_canvas_height } from '../Main.js';
+import { sm_char_width, sm_char_height } from '../constants.js';
+import SMLabel from './SMLabel.js';
 
 export default class Leaderboard {
 

@@ -1,5 +1,5 @@
-import { get_canvas_height, get_canvas_width } from '/src/Main.js';
-import { gravity, floor } from '/src/constants.js';
+import { get_canvas_height, get_canvas_width } from './Main.js';
+import { gravity, floor } from './constants.js';
 
 export default class Sprite {
 

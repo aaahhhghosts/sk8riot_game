@@ -1,5 +1,5 @@
-import { alphabet } from '/src/constants.js';
-import { attempt_to_jump, attempt_to_throw_zippy } from '/src/Main.js';
+import { alphabet } from './constants.js';
+import { attempt_to_jump, attempt_to_throw_zippy } from './Main.js';
 
 export function create_key_listener(game) {
     document.addEventListener('keydown', event => {

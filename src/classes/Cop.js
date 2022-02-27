@@ -1,5 +1,5 @@
-import Sprite from '/src/Sprite.js';
-import { sk8r_floor, floor } from '/src/constants.js';
+import Sprite from '../Sprite.js';
+import { sk8r_floor, floor } from '../constants.js';
 
 export default class Cop extends Sprite {
 

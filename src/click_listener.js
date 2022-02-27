@@ -1,6 +1,6 @@
-import { get_canvas_width, get_canvas_height } from '/src/Main.js';
-import { attempt_to_jump, attempt_to_throw_zippy } from '/src/Main.js';
-import { loader } from '/src/loader.js';
+import { get_canvas_width, get_canvas_height } from './Main.js';
+import { attempt_to_jump, attempt_to_throw_zippy } from './Main.js';
+import { loader } from './loader.js';
 
 export function create_click_listener(game) {
 

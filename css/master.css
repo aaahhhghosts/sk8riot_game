@@ -8,8 +8,8 @@ body {
 
 #canvas {
   position: absolute;
-  left:     50%;
-  top:      50%;
+  padding: 0;
+  align: center;
 
   image-rendering: pixelated;
   image-rendering: optimizeSpeed;

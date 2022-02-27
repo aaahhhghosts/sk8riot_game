@@ -1,5 +1,5 @@
-import { get_canvas_height } from '/src/Main.js';
-import { small_font_alpha_dict, sm_char_width, sm_char_height } from '/src/constants.js';
+import { get_canvas_height } from '../Main.js';
+import { small_font_alpha_dict, sm_char_width, sm_char_height } from '../constants.js';
 
 export default class SMLabel {
 

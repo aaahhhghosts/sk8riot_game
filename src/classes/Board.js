@@ -1,6 +1,6 @@
-import Sprite from '/src/Sprite.js';
-import { sk8r_floor } from '/src/constants.js';
-import { get_canvas_height } from '/src/Main.js';
+import Sprite from '../Sprite.js';
+import { sk8r_floor } from '../constants.js';
+import { get_canvas_height } from '../Main.js';
 
 export default class Board extends Sprite {
 

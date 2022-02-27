@@ -1,4 +1,4 @@
-import Scenery from '/src/Scenery.js';
+import Scenery from '../Scenery.js';
 
 export default class Downtown extends Scenery {
 

@@ -1,59 +1,60 @@
 // Player.
-import Sk8r from '/src/classes/Sk8r.js';
-import Board from '/src/classes/Board.js';
-import { floor, sk8r_floor } from '/src/constants.js';
+import Sk8r from './classes/Sk8r.js';
+import Board from './classes/Board.js';
+import { floor, sk8r_floor } from './constants.js';
 
 // Enviroment.
-import Road from '/src/classes/Road.js';
-import Downtown from '/src/classes/Downtown.js';
-import Smog from '/src/classes/Smog.js';
-import Cityscape from '/src/classes/Cityscape.js';
+import Road from './classes/Road.js';
+import Downtown from './classes/Downtown.js';
+import Smog from './classes/Smog.js';
+import Cityscape from './classes/Cityscape.js';
 
 // Start Menu.
-import Logo from '/src/menus/Logo.js';
-import Version from '/src/menus/Version.js';
-import Instruct from '/src/menus/Instruct.js'
-import Sk8rNameLabel from '/src/menus/Sk8rNameLabel.js';
-import ArrowButton from '/src/menus/ArrowButton.js';
-import StartButton from '/src/menus/StartButton.js';
+import Logo from './menus/Logo.js';
+import Version from './menus/Version.js';
+import Instruct from './menus/Instruct.js'
+import Sk8rNameLabel from './menus/Sk8rNameLabel.js';
+import ArrowButton from './menus/ArrowButton.js';
+import StartButton from './menus/StartButton.js';
 
 // In-Game Menu Elements.
-import KAFont from '/src/menus/KAFont.js';
-import FullscreenButton from '/src/menus/FullscreenButton.js';
-import ZippyCooldownBar from '/src/menus/ZippyCooldownBar.js';
+import KAFont from './menus/KAFont.js';
+import FullscreenButton from './menus/FullscreenButton.js';
+import ZippyCooldownBar from './menus/ZippyCooldownBar.js';
 
 // Gameover Menu.
-import Leaderboard from '/src/menus/Leaderboard.js';
-import Inputbox from '/src/menus/Inputbox.js';
-import SaveButton from '/src/menus/SaveButton.js';
-import DeathMsgLabel from '/src/menus/DeathMsgLabel.js';
+import Leaderboard from './menus/Leaderboard.js';
+import Inputbox from './menus/Inputbox.js';
+import SaveButton from './menus/SaveButton.js';
+import DeathMsgLabel from './menus/DeathMsgLabel.js';
 
 // Projectiles and Effects.
-import Zippy from '/src/classes/Zippy.js';
-import Bullet from '/src/classes/Bullet.js';
-import Debris from '/src/classes/Debris.js';
-import Tire from '/src/classes/Tire.js';
-import Explosion from '/src/classes/Explosion.js';
-import { explode_zippies } from '/src/classes/Zippy.js';
-import { collide_debris } from '/src/classes/Debris.js';
-import { collide_bullets } from '/src/classes/Bullet.js';
-import { throw_zippy } from '/src/classes/Zippy.js';
+import Zippy from './classes/Zippy.js';
+import Bullet from './classes/Bullet.js';
+import Debris from './classes/Debris.js';
+import Tire from './classes/Tire.js';
+import Explosion from './classes/Explosion.js';
+import { explode_zippies } from './classes/Zippy.js';
+import { collide_debris } from './classes/Debris.js';
+import { collide_bullets } from './classes/Bullet.js';
+import { throw_zippy } from './classes/Zippy.js';
 
 // Obstacles.
-import Crate from '/src/classes/Crate.js';
-import Car from '/src/classes/Car.js';
-import { despawn_sprites } from '/src/Sprite.js';
-import { spawn_crates } from '/src/classes/Crate.js';
+import Crate from './classes/Crate.js';
+import Car from './classes/Car.js';
+import { despawn_sprites } from './Sprite.js';
+import { spawn_crates } from './classes/Crate.js';
 
 // Enemies.
-import Cop from '/src/classes/Cop.js';
-import Scooter from '/src/classes/Scooter.js';
+import Cop from './classes/Cop.js';
+import Scooter from './classes/Scooter.js';
 
 // Misc & Utility.
-import { loader } from '/src/loader.js';
-import { create_key_listener } from '/src/key_listener.js';
-import { create_click_listener } from '/src/click_listener.js';
-import { getRandomInt } from '/src/common.js';
+import { loader_dev } from './loader_dev.js';
+// import { loader } from './loader.js';
+import { create_key_listener } from './key_listener.js';
+import { create_click_listener } from './click_listener.js';
+import { getRandomInt } from './common.js';
 
 // Function for getting current height of HTML5 canvas.
 export function get_canvas_height() {

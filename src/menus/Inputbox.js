@@ -1,5 +1,5 @@
-import { get_canvas_height } from '/src/Main.js';
-import SMFont from '/src/menus/SMFont.js';
+import { get_canvas_height } from '../Main.js';
+import SMFont from '../menus/SMFont.js';
 
 export default class Inputbox {
 

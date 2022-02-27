@@ -1,4 +1,4 @@
-import { get_canvas_height } from '/src/Main.js';
+import { get_canvas_height } from '../Main.js';
 
 export default class Logo {
 

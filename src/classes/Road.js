@@ -1,5 +1,5 @@
-import Scenery from '/src/Scenery.js';
-import { get_canvas_width } from '/src/Main.js';
+import Scenery from '../Scenery.js';
+import { get_canvas_width } from '../Main.js';
 
 export default class Road extends Scenery {
 

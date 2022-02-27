@@ -1,5 +1,5 @@
-import { get_canvas_width, get_canvas_height } from '/src/Main.js';
-import { karmatic_arcade_alpha_dict, ka_char_width, ka_char_height } from '/src/constants.js';
+import { get_canvas_width, get_canvas_height } from '../Main.js';
+import { karmatic_arcade_alpha_dict, ka_char_width, ka_char_height } from '../constants.js';
 
 export default class KAFont {
 

@@ -1,7 +1,7 @@
-import Sprite from '/src/Sprite.js';
-import { floor } from '/src/constants.js';
-import { getRandomInt, add } from '/src/common.js';
-import { get_canvas_width } from '/src/Main.js';
+import Sprite from '../Sprite.js';
+import { floor } from '../constants.js';
+import { getRandomInt, add } from '../common.js';
+import { get_canvas_width } from '../Main.js';
 
 export default class Bullet extends Sprite {
 
