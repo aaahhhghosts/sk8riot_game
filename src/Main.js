@@ -50,8 +50,8 @@ import Cop from './classes/Cop.js';
 import Scooter from './classes/Scooter.js';
 
 // Misc & Utility.
-import { loader_dev } from './loader_dev.js';
-// import { loader } from './loader.js';
+import { loader } from './loader.js';
+//import { loader } from './loader.js';
 import { create_key_listener } from './key_listener.js';
 import { create_click_listener } from './click_listener.js';
 import { getRandomInt } from './common.js';
@@ -104,6 +104,11 @@ const game = {
         this.showing_restart_menu = false;
         this.is_prompting_for_input = false;
 
+        // Game music.
+        this.opening_song_started = false;
+        this.start_menu_song = loader.audio.start_menu_song[0];
+        this.gameplay_song = loader.audio.gameplay_song[0];
+
         // Create Enviroment.
         this.road = new Road(0, 0, this.context, loader.images.road[0]);
         this.downtown = new Downtown(0, 0, this.context, loader.images.downtown[0]);
@@ -120,7 +125,7 @@ const game = {
         this.buttons = [];
 
         // Create and add start game button.
-        let start_game = function() {this.has_started = true;}
+        let start_game = function() {this.has_started = true; this.remove_start_menu();}
         this.buttons.push(new StartButton(this.canvas.width/2, this.canvas.height*1/3, game.context,
                                      loader.images.startbutton[0], loader.images.karmatic_arcade_font[0],
                                      "Start", start_game.bind(this), true));
@@ -170,6 +175,21 @@ const game = {
 
         // Start game.
         this.drawingLoop();
+    },
+
+    remove_start_menu() {
+
+        // Remove start menu elements that are disabled immediately once the game starts.
+        this.sk8r_label = null;
+        this.version = null;
+        this.buttons = this.buttons.filter(btn => btn === this.fsbutton);
+
+        // Stop start menu music.
+        game.start_menu_song.pause();
+        game.start_menu_song.currentTime = 0;
+
+        // Start playing music for gameplay.
+        game.gameplay_song.play();
     },
 
     // Function to halt scrolling game elements.
@@ -242,6 +262,9 @@ const game = {
         // Reset player and player effects.
         this.sk8r.reset_sk8r();
         this.board = null;
+
+        // Restart gameplay music.
+        //game.gameplay_song.currentTime = 0;
     },
 
     // Function to update and render enviroment elements.
@@ -606,20 +629,12 @@ const game = {
             if (this.instructs.off_screen) {this.instructs = null;}
         }
 
-        // Check if character selection name label an version icon exist.
+        // Check if character selection name label and version icon exist.
         if (this.sk8r_label != null && this.version != null) {
 
-            // If these start menu elements still exist and the this has just started, remove them.
-            if (this.has_started) {
-                this.sk8r_label = null;
-                this.version = null;
-                this.buttons = this.buttons.filter(btn => btn === this.fsbutton);
-
-            // Else, if still idling on the start menu, update and render elements.
-            } else {
-                this.sk8r_label.render();
-                this.version.render();
-            }
+            // Is so, render them.
+            this.sk8r_label.render();
+            this.version.render();
         }
     },
 
@@ -697,6 +712,13 @@ const game = {
         // Start menu.
         game.try_to_update_and_render_start_menu(); // Update and render the start menu, if any of its element exist.
 
+        // Draw game as faded out until first interaction.
+        if (!game.opening_song_started) {
+            game.trueContext.globalAlpha = 0.8;
+        } else {
+            game.trueContext.globalAlpha = 1;
+        }
+
         // Draw this frame to true canvas.
         game.trueContext.drawImage(game.canvas, 0, 0, game.canvas.width, game.canvas.height, 0, 0, scale_width, scale_height);
 
@@ -772,8 +794,8 @@ function resizeGame() {
     }
 
     // Draw canvas margin line.
-    gameArea.style.marginTop = (-newHeight / 2) + 'px';
-    gameArea.style.marginLeft = (-newWidth / 2) + 'px';
+//    gameArea.style.marginTop = (-newHeight / 2) + 'px';
+//    gameArea.style.marginLeft = (-newWidth / 2) + 'px';
 
     // Set game's screen dimensions.
     game.canvas.style.width = newWidth / 4;

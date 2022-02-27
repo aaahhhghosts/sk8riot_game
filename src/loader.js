@@ -55,19 +55,34 @@ export const loader = {
         let img_list = [];
         src_list.forEach((src, i) => {
             const image = new Image();
-            image.src = `../${src}`;
+            image.src = `/static/sk8riot_the_game/${src}`;
             img_list.push(image);
         });
         this.images[title] = img_list;
     },
 
     // Load image into object from file path.
-    add_wav(title, src_list) {
+    add_wav(title, loop, src_list) {
 
         let wav_list = [];
         src_list.forEach((src, i) => {
             const audio = new Audio();
-            audio.src = `../audio/${src}.wav`;
+            audio.src = `/static/sk8riot_the_game/audio/${src}.wav`;
+
+            // If audio looping is enabled, set looping property to true.
+            // Apparently this feature has spotty compatibility with browsers,
+            // so we will attempt two methods.
+            if (loop) {
+                if (typeof audio.loop == 'boolean') {
+                    audio.loop = true;
+                } else {
+                    audio.addEventListener('ended', function() {
+                        this.currentTime = 0;
+                        this.play();
+                    }, false);
+                }
+            }
+
             wav_list.push(audio);
         });
         this.audio[title] = wav_list;
@@ -132,28 +147,30 @@ export const loader = {
         /* ===== Loading Audio ===== */
 
         // Player.
-        loader.add_wav('jump', ['jump_1',
-                                'jump_2']);
-        loader.add_wav('player_hit', ['player_hit']);
-        loader.add_wav('gameover', ['gameover']);
+        loader.add_wav('jump', false, ['jump_1',
+                                       'jump_2']);
+        loader.add_wav('player_hit', false, ['player_hit']);
+        loader.add_wav('gameover', false, ['gameover']);
 
         // Zippy.
-        loader.add_wav('throw_zippy', ['throw_zippy_1',
-                                       'throw_zippy_2',
-                                       'throw_zippy_3']);
-        loader.add_wav('ex_zippy_sounds', ['explode_z_1',
-                                           'explode_z_2',
-                                           'explode_z_3_dud',
-                                           'explode_z_4_car_damage',
-                                           'explode_z_5_car_destroy',]);
-        loader.add_wav('cant_throw_z', ['cant_throw_zippy']);
-        loader.add_wav('zippy_overheat', ['zippy_overheat']);
+        loader.add_wav('throw_zippy', false, ['throw_zippy_1',
+                                              'throw_zippy_2',
+                                              'throw_zippy_3']);
+        loader.add_wav('ex_zippy_sounds', false, ['explode_z_1',
+                                                  'explode_z_2',
+                                                  'explode_z_3_dud',
+                                                  'explode_z_4_car_damage',
+                                                  'explode_z_5_car_destroy',]);
+        loader.add_wav('cant_throw_z', false, ['cant_throw_zippy']);
+        loader.add_wav('zippy_overheat', false, ['zippy_overheat']);
 
         // Enemies.
-        loader.add_wav('zombie_death', ['zombie_death']);
-        loader.add_wav('gunfire', ['gunfire_1', 'gunfire_2']);
+        loader.add_wav('zombie_death', false, ['zombie_death']);
+        loader.add_wav('gunfire', false, ['gunfire_1', 'gunfire_2']);
 
         // Menu.
-        loader.add_wav('click_button', ['click_button']);
+        loader.add_wav('click_button', false, ['click_button']);
+        loader.add_wav('start_menu_song', true, ['sadboi_8BIT']);
+        loader.add_wav('gameplay_song', true, ['origin8_8BIT']);
     }
 };

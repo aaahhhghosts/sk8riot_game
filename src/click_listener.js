@@ -10,6 +10,15 @@ export function create_click_listener(game) {
         let click_done = false;
         let mousePos = getMousePos(game.trueCanvas, evt);
 
+        // If click occurs anywhere in the screen and the start menu music
+        // has not been played, play the song on loop.
+        if (!game.opening_song_started && in_screen(mousePos)) {
+
+            game.opening_song_started = true;
+            game.start_menu_song.play();
+            return;
+        }
+
         // Fire any buttons, if clicked.
         game.buttons.some((button, i) => {
             if (button.isInside(mousePos)) {
@@ -53,6 +62,12 @@ export function create_click_listener(game) {
     document.addEventListener('mousemove', function(evt) {
         if (game.buttons.length > 0) {
             let mousePos = getMousePos(game.trueCanvas, evt);
+
+            // If movement occurs anywhere in the screen and the start menu music
+            // has not been played, play the song on loop.
+            if (!game.opening_song_started && in_screen(mousePos)) {
+                return;
+            }
 
             // Highlight hovered-on buttons , if any.
             game.buttons.forEach((button, i) => {

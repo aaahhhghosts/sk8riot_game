@@ -7,9 +7,10 @@ body {
 }
 
 #canvas {
-  position: absolute;
+  position: relative;
   padding: 0;
-  align: center;
+  margin: auto;
+  display: block;
 
   image-rendering: pixelated;
   image-rendering: optimizeSpeed;
