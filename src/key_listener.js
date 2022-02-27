@@ -4,6 +4,12 @@ import { attempt_to_jump, attempt_to_throw_zippy } from './Main.js';
 export function create_key_listener(game) {
     document.addEventListener('keydown', event => {
 
+      // If any key is pressed but the start menu music
+      // has not been played, do nothing.
+      if (!game.opening_song_started) {
+          return;
+      }
+
       // Add space key listener for jumping.
       if (event.code === 'Space' || event.code === 'ArrowUp') {
           attempt_to_jump();

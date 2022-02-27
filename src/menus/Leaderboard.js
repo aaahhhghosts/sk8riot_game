@@ -5,7 +5,7 @@ import SMLabel from './SMLabel.js';
 export default class Leaderboard {
 
     static src = ['/sprites/menu/leaderboard.png'];
-    static saved_src = '/saved_data/highscores.json';
+    static saved_src = 'saved_data/highscores.json';
 
     constructor (x, y, context, background_image, font_image, saved_data) {
 

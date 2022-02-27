@@ -64,7 +64,7 @@ export function create_click_listener(game) {
             let mousePos = getMousePos(game.trueCanvas, evt);
 
             // If movement occurs anywhere in the screen and the start menu music
-            // has not been played, play the song on loop.
+            // has not been played, hightlight nothing.
             if (!game.opening_song_started && in_screen(mousePos)) {
                 return;
             }

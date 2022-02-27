@@ -793,10 +793,6 @@ function resizeGame() {
         gameArea.style.height = Math.floor(newHeight) + 'px';
     }
 
-    // Draw canvas margin line.
-//    gameArea.style.marginTop = (-newHeight / 2) + 'px';
-//    gameArea.style.marginLeft = (-newWidth / 2) + 'px';
-
     // Set game's screen dimensions.
     game.canvas.style.width = newWidth / 4;
     game.canvas.style.height = newHeight / 4;
@@ -839,6 +835,13 @@ function toggleFullscreen() {
 // Resize game as browser size changes.
 window.addEventListener('resize', resizeGame, false);
 window.addEventListener('orientationchange', resizeGame, false);
+
+// Prevent spacebar from scrolling page, away from game.
+window.addEventListener('keydown', function(e) {
+  if(e.keyCode == 32 && e.target == document.body) {
+    e.preventDefault();
+  }
+});
 
 // Function to official start game.
 function start_game() {
