@@ -56,6 +56,7 @@ export const loader = {
         src_list.forEach((src, i) => {
             const image = new Image();
             image.src = `/static/sk8riot_the_game/${src}`;
+            //image.src = src;
             img_list.push(image);
         });
         this.images[title] = img_list;
@@ -68,6 +69,7 @@ export const loader = {
         src_list.forEach((src, i) => {
             const audio = new Audio();
             audio.src = `/static/sk8riot_the_game/audio/${src}.wav`;
+            //audio.src = `/audio/${src}.wav`;
 
             // If audio looping is enabled, set looping property to true.
             // Apparently this feature has spotty compatibility with browsers,
@@ -91,6 +93,7 @@ export const loader = {
     // Load highscores from json file.
     async load_scores(scores_path) {
         await fetch(`/static/sk8riot_the_game/${scores_path}`)
+        //await fetch(scores_path)
               .then(response => response.json())
               .then(parsed => {loader.saved_data = parsed;})
               .catch(e => console.log(e));

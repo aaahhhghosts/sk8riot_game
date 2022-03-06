@@ -1,4 +1,4 @@
-import { get_canvas_width, get_canvas_height } from './Main.js';
+import { get_canvas_width, get_canvas_height, get_fullscreen_offsets, get_true_canvas_size } from './Main.js';
 import { attempt_to_jump, attempt_to_throw_zippy } from './Main.js';
 import { loader } from './loader.js';
 
@@ -8,7 +8,7 @@ export function create_click_listener(game) {
     document.addEventListener('click', function(evt) {
 
         let click_done = false;
-        let mousePos = getMousePos(game.trueCanvas, evt);
+        let mousePos = getMousePos(game.trueCanvas, evt, game.is_fullscreen);
 
         // If click occurs anywhere in the screen and the start menu music
         // has not been played, play the song on loop.
@@ -61,7 +61,7 @@ export function create_click_listener(game) {
     // Highlight button if mouse hovers over it.
     document.addEventListener('mousemove', function(evt) {
         if (game.buttons.length > 0) {
-            let mousePos = getMousePos(game.trueCanvas, evt);
+            let mousePos = getMousePos(game.trueCanvas, evt, game.is_fullscreen);
 
             // If movement occurs anywhere in the screen and the start menu music
             // has not been played, hightlight nothing.
@@ -86,11 +86,32 @@ export function create_click_listener(game) {
 }
 
 //Function to get the mouse position
-function getMousePos(canvas, event) {
-    var rect = canvas.getBoundingClientRect();
+function getMousePos(canvas, event, is_fullscreen) {
+    let rect = canvas.getBoundingClientRect();
+
+    let true_can_size = get_true_canvas_size();
+
+    let x_pos = (event.clientX - rect.left) * (true_can_size.width / rect.width);
+    let y_pos = true_can_size.height - (event.clientY - rect.top) * (true_can_size.height / rect.height);
+
+    // Account for black bars of space if game is in fullscreen mode.
+    let width_offset = 0;
+    if (is_fullscreen) {
+        let f_off = get_fullscreen_offsets();
+        x_pos += f_off.x;
+        y_pos += f_off.y;
+
+        width_offset = 2*f_off.x; // idk why I have to do this. I'm sorry. It just works.
+    }
+
+    // Scaled x and y positions so that max y_pos is always 126 (number of in-game pixels),
+    // and likewise for max x_pos (224 in-game pixels).
+    let scaled_y_pos = (get_canvas_height()*y_pos)/true_can_size.height;
+    let scaled_x_pos = ((get_canvas_width()-width_offset)*x_pos)/true_can_size.width;
+
     return {
-        x: (event.clientX - rect.left) * (get_canvas_width() / rect.width),
-        y: get_canvas_height() - (event.clientY - rect.top) * (get_canvas_height() / rect.height)
+        x: scaled_x_pos,
+        y: scaled_y_pos
     };
 }
 

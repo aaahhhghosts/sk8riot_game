@@ -9,8 +9,11 @@ body {
 #canvas {
   position: relative;
   padding: 0;
+  height: 448;
+  width: 252;
   margin: auto;
   display: block;
+  object-fit: contain;
 
   image-rendering: pixelated;
   image-rendering: optimizeSpeed;
@@ -20,24 +23,5 @@ body {
   -ms-interpolation-mode: nearest-neighbor;
 
   border: 5px solid black;
-
-}
-
-#mini_canvas{
-  object-fit: fill;
-  background-color: grey;
-}
-
-@font-face {
-    font-family: 'Arcade';
-    src: url("../fonts/KarmaticArcade.ttf");
-    font-smooth: never;
-    webkit-font-smoothing: none;
-}
-
-@font-face {
-    font-family: 'Arcade_BG';
-    src: url("../fonts/KarmaticArcade_BG.ttf");
-    font-smooth: never;
-    webkit-font-smoothing: none;
+  background-color: black;
 }

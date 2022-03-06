@@ -66,6 +66,22 @@ export function get_canvas_width() {
     return game.canvas.width;
 }
 
+export function get_true_canvas_size() {
+    let can_h = parseFloat(game.trueCanvas.style.height.slice(0, -2)) / 4;
+    let can_w = parseFloat(game.trueCanvas.style.width.slice(0, -2)) / 4;
+    return {
+        width: can_w,
+        height: can_h
+    };
+}
+
+export function get_fullscreen_offsets() {
+    return {
+        x: game.fullscreen_offset_x,
+        y: game.fullscreen_offset_y
+    };
+}
+
 // Game Object.
 const game = {
 
@@ -86,6 +102,8 @@ const game = {
         this.canvas.width = this.trueCanvas.width / 2;
         this.canvas.height = this.trueCanvas.height / 2;
         this.context = this.canvas.getContext("2d");
+        this.fullscreen_offset_x = 0;
+        this.fullscreen_offset_y = 0;
 
         // Load all image resources.
         loader.init();
@@ -778,24 +796,40 @@ function resizeGame() {
     // Get game's HTML5 canvas element and dimensions.
     let gameArea = document.getElementById('canvas');
     let widthToHeight = 16/9;
-    let newWidth = window.innerWidth * 0.95;
+    let newWidth = window.innerWidth;
     let newHeight = window.innerHeight * 0.95;
     let newWidthToHeight = newWidth / newHeight;
 
     // Maintain game canvas aspect ratio.
     if (newWidthToHeight > widthToHeight) {
         newWidth = newHeight * widthToHeight;
-        gameArea.style.height = Math.floor(newHeight) + 'px';
-        gameArea.style.width = Math.floor(newWidth) + 'px';
+        gameArea.style.height = newHeight + 'px';
+        gameArea.style.width = newWidth + 'px';
     } else {
         newHeight = newWidth / widthToHeight;
-        gameArea.style.width = Math.floor(newWidth) + 'px';
-        gameArea.style.height = Math.floor(newHeight) + 'px';
+        gameArea.style.width = newWidth + 'px';
+        gameArea.style.height = newHeight + 'px';
     }
 
-    // Set game's screen dimensions.
-    game.canvas.style.width = newWidth / 4;
-    game.canvas.style.height = newHeight / 4;
+    game.fullscreen_offset_y = 0;
+    game.fullscreen_offset_x = 0;
+
+    // Account for object-fit offset when full screen.
+    if (game.is_fullscreen) {
+        let win_h = window.innerHeight;
+        let win_w = window.innerWidth;
+
+        let can_h = parseFloat(gameArea.style.height.slice(0, -2));
+        let can_w = parseFloat(gameArea.style.width.slice(0, -2));
+
+        if (win_h > can_h) {
+            game.fullscreen_offset_y = (win_h-can_h)/8;
+        }
+        if (win_w > can_w) {
+            // idk why this offset has to just be 4. It just works. Fucking beats me.
+            game.fullscreen_offset_x = 4; //(win_w-can_w)/8;
+        }
+    }
 
     // Disable antialiasing. Otherwise pixel art looks like blurry vomit.
     game.trueContext.webkitImageSmoothingEnabled = false;
@@ -809,7 +843,6 @@ function toggleFullscreen() {
     let canvas = game.canvas;
     if (game.is_fullscreen) {
         game.is_fullscreen = false;
-        game.fsbutton.update_icon(false);
 
         if (document.exitFullscreen) {
             document.exitFullscreen();
@@ -820,7 +853,6 @@ function toggleFullscreen() {
         }
     } else {
         game.is_fullscreen = true;
-        game.fsbutton.update_icon(true);
 
         if (canvas.requestFullScreen) {
             canvas.requestFullScreen();
@@ -830,17 +862,48 @@ function toggleFullscreen() {
             canvas.mozRequestFullScreen();
         }
     }
+
+    // Resize screen to update fullscreen offsets for mouse position.
+    resizeGame();
 }
+
+function toggleFullscreenButton() {
+    game.fsbutton.update_icon(game.is_fullscreen);
+}
+
+/* Standard syntax */
+document.addEventListener("fullscreenchange", function() {
+    toggleFullscreenButton();
+});
+
+/* Firefox */
+document.addEventListener("mozfullscreenchange", function() {
+    toggleFullscreenButton();
+});
+
+/* Chrome, Safari and Opera */
+document.addEventListener("webkitfullscreenchange", function() {
+    toggleFullscreenButton();
+});
+
+/* IE / Edge */
+document.addEventListener("msfullscreenchange", function() {
+    toggleFullscreenButton();
+});
 
 // Resize game as browser size changes.
 window.addEventListener('resize', resizeGame, false);
 window.addEventListener('orientationchange', resizeGame, false);
 
-// Prevent spacebar from scrolling page, away from game.
+// Prevent spacebar or up-arrow from scrolling page, away from game.
 window.addEventListener('keydown', function(e) {
-  if(e.keyCode == 32 && e.target == document.body) {
-    e.preventDefault();
-  }
+    if (e.keyCode == 32 && e.target == document.body) {
+        e.preventDefault();
+    }
+
+    if (e.keyCode == 38 && e.target == document.body) {
+        e.preventDefault();
+    }
 });
 
 // Function to official start game.
