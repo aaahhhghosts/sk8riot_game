@@ -865,8 +865,7 @@ function toggleFullscreen() {
 
     // Resize screen to update fullscreen offsets for mouse position.
     resizeGame();
-    let gameArea = document.getElementById('mini_canvas');
-    gameArea.focus();
+    document.focus();
 }
 
 function toggleFullscreenButton() {
