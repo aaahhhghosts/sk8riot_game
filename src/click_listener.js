@@ -63,6 +63,8 @@ export function create_click_listener(game) {
         if (game.buttons.length > 0) {
             let mousePos = getMousePos(game.trueCanvas, evt, game.is_fullscreen);
 
+            console.log("x " + Math.floor(mousePos.x) + ", y " + Math.floor(mousePos.y));
+
             // If movement occurs anywhere in the screen and the start menu music
             // has not been played, hightlight nothing.
             if (!game.opening_song_started && in_screen(mousePos)) {
