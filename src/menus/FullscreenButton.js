@@ -20,7 +20,6 @@ export default class FullscreenButton {
     this.is_highlighted = true;
 
     this.fire = action;
-    this.remove_on_fire = false;
   }
 
   hightlight() {

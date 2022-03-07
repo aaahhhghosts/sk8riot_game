@@ -4,7 +4,7 @@ export default class ArrowButton {
 
   static src = ['/sprites/menu/arrow_button_left.png', '/sprites/menu/arrow_button_right.png'];
 
-  constructor (x, y, context, background_image, action, remove_on_fire) {
+  constructor (x, y, context, background_image, action) {
 
     this.width = 8;
     this.height = 11;
@@ -19,7 +19,6 @@ export default class ArrowButton {
     this.is_highlighted = true;
 
     this.fire = action;
-    this.remove_on_fire = remove_on_fire;
   }
 
   hightlight() {

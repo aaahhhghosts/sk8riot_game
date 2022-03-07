@@ -8,7 +8,7 @@ export function create_click_listener(game) {
     document.addEventListener('click', function(evt) {
 
         let click_done = false;
-        let mousePos = getMousePos(game.trueCanvas, evt, game.is_fullscreen);
+        let mousePos = getMousePos(game.trueCanvas, evt);
 
         // If click occurs anywhere in the screen and the start menu music
         // has not been played, play the song on loop.
@@ -26,12 +26,6 @@ export function create_click_listener(game) {
                 click_done = true;
                 let click_sfx = loader.audio.click_button[0].cloneNode(false);
                 click_sfx.play();
-
-                if (button.remove_on_fire) {
-                    let i = game.buttons.indexOf(button);
-                    game.buttons.splice(i, 1);
-                    return true;
-                }
             }
         });
         if (click_done) {return;}
@@ -61,9 +55,7 @@ export function create_click_listener(game) {
     // Highlight button if mouse hovers over it.
     document.addEventListener('mousemove', function(evt) {
         if (game.buttons.length > 0) {
-            let mousePos = getMousePos(game.trueCanvas, evt, game.is_fullscreen);
-
-            console.log("yo x " + Math.floor(mousePos.x) + ", y " + Math.floor(mousePos.y));
+            let mousePos = getMousePos(game.trueCanvas, evt);
 
             // If movement occurs anywhere in the screen and the start menu music
             // has not been played, hightlight nothing.
@@ -88,7 +80,7 @@ export function create_click_listener(game) {
 }
 
 //Function to get the mouse position
-function getMousePos(canvas, event, is_fullscreen) {
+function getMousePos(canvas, event) {
     let rect = canvas.getBoundingClientRect();
 
     let true_can_size = get_true_canvas_size();

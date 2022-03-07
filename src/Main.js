@@ -108,7 +108,6 @@ const game = {
 
         // Game state booleans.
         this.showing_logo = true;
-        this.is_fullscreen = false;
         this.has_started = false;
         this.showing_restart_menu = false;
         this.is_prompting_for_input = false;
@@ -137,15 +136,15 @@ const game = {
         let start_game = function() {this.has_started = true; this.remove_start_menu();}
         this.buttons.push(new StartButton(this.canvas.width/2, this.canvas.height*1/3, game.context,
                                      loader.images.startbutton[0], loader.images.karmatic_arcade_font[0],
-                                     "Start", start_game.bind(this), true));
+                                     "Start", start_game.bind(this)));
 
         // Create and add buttons for character selection.
         let prev_sk8r = function() {this.sk8r.prev_sprite(); this.sk8r_label.setName(this.sk8r.getName());}
         let next_sk8r = function() {this.sk8r.next_sprite(); this.sk8r_label.setName(this.sk8r.getName());}
         this.buttons.push(new ArrowButton(sk8r_x-4, sk8r_floor+45, game.context,
-                                          loader.images.arrowbuttons[0], prev_sk8r.bind(this), false));
+                                          loader.images.arrowbuttons[0], prev_sk8r.bind(this)));
         this.buttons.push(new ArrowButton(sk8r_x+33, sk8r_floor+45, game.context,
-                                          loader.images.arrowbuttons[1], next_sk8r.bind(this), false));
+                                          loader.images.arrowbuttons[1], next_sk8r.bind(this)));
 
         // Create in-game menu elements.
         this.scorebox = new KAFont(this.context, 10, 5, loader.images.karmatic_arcade_font[0]);
@@ -191,14 +190,16 @@ const game = {
         // Remove start menu elements that are disabled immediately once the game starts.
         this.sk8r_label = null;
         this.version = null;
+
+        // Remove all buttons except for the fullscreen button.
         this.buttons = this.buttons.filter(btn => btn === this.fsbutton);
 
         // Stop start menu music.
-        game.start_menu_song.pause();
-        game.start_menu_song.currentTime = 0;
+        this.start_menu_song.pause();
+        this.start_menu_song.currentTime = 0;
 
         // Start playing music for gameplay.
-        game.gameplay_song.play();
+        this.gameplay_song.play();
     },
 
     // Function to halt scrolling game elements.
@@ -233,8 +234,8 @@ const game = {
         this.death_label = null;
         this.inputbox = null;
 
-        // Remove all buttons except for full screen button.
-        game.buttons = game.buttons.filter(btn => btn === game.fsbutton);
+        // Remove all buttons except for fullscreen button.
+        this.buttons = this.buttons.filter(btn => btn === this.fsbutton);
 
         // Reset game state booleans.
         this.showing_logo = false;
@@ -271,9 +272,6 @@ const game = {
         // Reset player and player effects.
         this.sk8r.reset_sk8r();
         this.board = null;
-
-        // Restart gameplay music.
-        //game.gameplay_song.currentTime = 0;
     },
 
     // Function to update and render enviroment elements.
@@ -674,7 +672,7 @@ const game = {
         await new Promise(r => setTimeout(r, 15));
 
         // If player dies, trigger game over.
-        if (game.sk8r.isAlive === false) { game.game_over(); }
+        if (game.sk8r.isAlive == false) { game.game_over(); }
 
         // Wipe canvas for new frame.
         game.context.clearRect(0, 0, game.canvas.width, game.canvas.height);
@@ -807,8 +805,11 @@ function resizeGame() {
     gameArea.style.left = '0px';
     gameArea.style.position = 'relative';
 
+    let is_fullscreen = isFullScreen();
+    game.fsbutton.update_icon(is_fullscreen);
+
     // Calculate fullscreen canvas offsets, if in fullscreen mode.
-    if (game.is_fullscreen) {
+    if (is_fullscreen) {
 
         // Get current browser window height & width.
         let win_h = window.innerHeight;
@@ -830,12 +831,15 @@ function resizeGame() {
     game.trueContext.imageSmoothingEnabled = false;
 }
 
+function isFullScreen() {
+     return !!(document.fullscreenElement || document.mozFullScreenElement || document.webkitFullscreenElement || document.msFullscreenElement);
+}
+
 // Toggle whether HTML5 canvas is in fullscreen mode.
 function toggleFullscreen() {
 
     let canvas = game.canvas;
-    if (game.is_fullscreen) {
-        game.is_fullscreen = false;
+    if (isFullScreen()) {
 
         if (document.exitFullscreen) {
             document.exitFullscreen();
@@ -845,7 +849,6 @@ function toggleFullscreen() {
             document.webkitExitFullscreen();
         }
     } else {
-        game.is_fullscreen = true;
 
         if (canvas.requestFullScreen) {
             canvas.requestFullScreen();
@@ -860,29 +863,6 @@ function toggleFullscreen() {
     resizeGame();
 }
 
-function toggleFullscreenButton() {
-    game.fsbutton.update_icon(game.is_fullscreen);
-}
-
-/* Standard syntax */
-document.addEventListener("fullscreenchange", function() {
-    toggleFullscreenButton();
-});
-
-/* Firefox */
-document.addEventListener("mozfullscreenchange", function() {
-    toggleFullscreenButton();
-});
-
-/* Chrome, Safari and Opera */
-document.addEventListener("webkitfullscreenchange", function() {
-    toggleFullscreenButton();
-});
-
-/* IE / Edge */
-document.addEventListener("msfullscreenchange", function() {
-    toggleFullscreenButton();
-});
 
 // Resize game as browser size changes.
 window.addEventListener('resize', resizeGame, false);

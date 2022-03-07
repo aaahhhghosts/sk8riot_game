@@ -5,7 +5,7 @@ export default class Button {
 
   static src = ['/sprites/menu/button.png'];
 
-  constructor (x, y, context, btn_image, font_image, text, action, remove_on_fire) {
+  constructor (x, y, context, btn_image, font_image, text, action) {
 
     this.width = 82;
     this.height = 24;
@@ -18,7 +18,6 @@ export default class Button {
     this.kalabel = new KALabel(context, this.x, this.y, font_image, text, this.width);
     this.is_highlighted = false;
     this.fire = action;
-    this.remove_on_fire = remove_on_fire;
   }
 
   hightlight() {this.is_highlighted = true; this.row = 1; this.text_y-=1;}
