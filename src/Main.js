@@ -75,13 +75,6 @@ export function get_true_canvas_size() {
     };
 }
 
-export function get_fullscreen_offsets() {
-    return {
-        x: game.fullscreen_offset_x,
-        y: game.fullscreen_offset_y
-    };
-}
-
 // Game Object.
 const game = {
 
@@ -99,11 +92,9 @@ const game = {
 
         // Smaller canvas to draw game onto and resize later.
         this.canvas = document.getElementById("mini_canvas");
-        this.canvas.width = this.trueCanvas.width / 2;
-        this.canvas.height = this.trueCanvas.height / 2;
+        this.canvas.width = Math.floor(this.trueCanvas.width / 2);
+        this.canvas.height = Math.floor(this.trueCanvas.height / 2);
         this.context = this.canvas.getContext("2d");
-        this.fullscreen_offset_x = 0;
-        this.fullscreen_offset_y = 0;
 
         // Load all image resources.
         loader.init();
@@ -797,7 +788,7 @@ function resizeGame() {
     let gameArea = document.getElementById('canvas');
     let widthToHeight = 16/9;
     let newWidth = window.innerWidth;
-    let newHeight = window.innerHeight * 0.95;
+    let newHeight = window.innerHeight;
     let newWidthToHeight = newWidth / newHeight;
 
     // Maintain game canvas aspect ratio.
@@ -811,24 +802,26 @@ function resizeGame() {
         gameArea.style.height = newHeight + 'px';
     }
 
-    game.fullscreen_offset_y = 0;
-    game.fullscreen_offset_x = 0;
+    // Reset fullscreen canvas offsets.
+    gameArea.style.top = '0px';
+    gameArea.style.left = '0px';
+    gameArea.style.position = 'relative';
 
-    // Account for object-fit offset when full screen.
+    // Calculate fullscreen canvas offsets, if in fullscreen mode.
     if (game.is_fullscreen) {
+
+        // Get current browser window height & width.
         let win_h = window.innerHeight;
         let win_w = window.innerWidth;
 
+        // Get canvas height& width.
         let can_h = parseFloat(gameArea.style.height.slice(0, -2));
         let can_w = parseFloat(gameArea.style.width.slice(0, -2));
 
-        if (win_h > can_h) {
-            game.fullscreen_offset_y = (win_h-can_h)/8;
-        }
-        if (win_w > can_w) {
-            // idk why this offset has to just be 4. It just works. Fucking beats me.
-            game.fullscreen_offset_x = 4; //(win_w-can_w)/8;
-        }
+        // Reposition canvas element on top of display with correct dimensions
+        gameArea.style.top = (win_h/2 - can_h/2) + 'px';
+        gameArea.style.left = (win_w/2 - can_w/2) + 'px';
+        gameArea.style.position = 'fixed';
     }
 
     // Disable antialiasing. Otherwise pixel art looks like blurry vomit.
@@ -865,7 +858,6 @@ function toggleFullscreen() {
 
     // Resize screen to update fullscreen offsets for mouse position.
     resizeGame();
-    document.focus();
 }
 
 function toggleFullscreenButton() {
