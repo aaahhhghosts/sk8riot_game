@@ -9,6 +9,7 @@ export function create_click_listener(game) {
 
         let click_done = false;
         let mousePos = getMousePos(game.trueCanvas, evt);
+        //console.log("x: " + mousePos.x + ", y: " + mousePos.y);
 
         // If click occurs anywhere in the screen and the start menu music
         // has not been played, play the song on loop.
@@ -30,6 +31,7 @@ export function create_click_listener(game) {
                     let click_sfx = loader.audio.click_button[0].cloneNode(false);
                     click_sfx.play();
                 }
+                return;
             }
         });
         if (click_done) {return;}
@@ -46,21 +48,32 @@ export function create_click_listener(game) {
     }, false);
 
     // Listen for touch events.
-    game.trueCanvas.addEventListener('touchmove', function(event) {
+    game.trueCanvas.addEventListener('touchstart', function(event) {
 
-        // Prevent following click events for quicker response time.
-        event.preventDefault();
-        event.touches.length.forEach(touch => {
+        // For each touch event.
+        for (let i = 0; i < event.targetTouches.length; i++) {
 
-            // Control player depending on which side of screen is clicked
-            if (game.sk8r.isAlive) {
-                if (touch.pageX < get_canvas_width()/2) {
-                    attempt_to_jump();
-                } else if (touch.pageX < get_canvas_width()) {
-                    attempt_to_throw_zippy();
+            // Convert touch event location into pixel coordinates on canvas.
+            let touch = event.targetTouches[i];
+            let touchPos = getMousePos(game.trueCanvas, touch);
+
+            // If during gameplay, and if touchpos is below clickable buttons,
+            // prevent default ensuing click events for quicker response time,
+            // and trigger player controls.
+            if (game.has_started && !game.showing_restart_menu && touchPos.y < 100) {
+
+                event.preventDefault();
+
+                // Control player depending on which side of screen is tapped.
+                if (game.sk8r.isAlive) {
+                    if (touchPos.x < get_canvas_width()/2) {
+                        attempt_to_jump();
+                    } else {
+                        attempt_to_throw_zippy();
+                    }
                 }
             }
-        });
+        }
     }, false);
 
     // Highlight button if mouse hovers over it.

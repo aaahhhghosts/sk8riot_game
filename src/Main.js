@@ -856,6 +856,9 @@ function isFullScreen() {
 // Toggle whether HTML5 canvas is in fullscreen mode.
 function toggleFullscreen() {
 
+    // Resize screen to update fullscreen offsets for mouse position.
+    resizeGame();
+
     let canvas = game.canvas;
     if (isFullScreen()) {
 
@@ -876,9 +879,6 @@ function toggleFullscreen() {
             canvas.mozRequestFullScreen();
         }
     }
-
-    // Resize screen to update fullscreen offsets for mouse position.
-    resizeGame();
 }
 
 // Toggle muting audio.
