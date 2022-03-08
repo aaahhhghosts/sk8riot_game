@@ -76,7 +76,7 @@ export function collide_bullets(sk8r, bullets, player_hit_sfx) {
                    sk8r.kill("zombie cop");
                    bullet.break();
                    hitPos = [Math.floor(bullet.x), Math.floor(bullet.y)];
-                   player_hit_sfx.cloneNode(false).play();
+                   player_hit_sfx.play();
                }
             }
         }

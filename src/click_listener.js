@@ -39,7 +39,14 @@ export function create_click_listener(game) {
         // Enter the inputbox, if clicked.
         if (game.inputbox != null) {
             if (game.inputbox.isInside(mousePos)) {
-                game.inputbox.hightlight()
+
+                // Animate highlighted input box.
+                game.inputbox.hightlight();
+
+                // Set focus to a input element to trigger keyboard on mobile.
+                let inputElement = document.getElementById('mobile_keyboard_trigger');
+                inputElement.focus();
+
                 click_done = true;
             } else {
                 game.inputbox.unhighlight();
