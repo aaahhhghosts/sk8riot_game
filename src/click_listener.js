@@ -21,7 +21,7 @@ export function create_click_listener(game) {
         }
 
         // Fire any buttons, if clicked.
-        game.buttons.some((button, i) => {
+        game.buttons.some(button => {
             if (button.isInside(mousePos)) {
                 button.fire();
                 click_done = true;
@@ -50,6 +50,7 @@ export function create_click_listener(game) {
     // Listen for touch events.
     game.trueCanvas.addEventListener('touchstart', function(event) {
 
+
         // For each touch event.
         for (let i = 0; i < event.targetTouches.length; i++) {
 
@@ -57,7 +58,7 @@ export function create_click_listener(game) {
             let touch = event.targetTouches[i];
             let touchPos = getMousePos(game.trueCanvas, touch);
 
-            // If during gameplay, and if touchpos is below clickable buttons,
+            // If during gameplay, and if touchPos is below clickable buttons,
             // prevent default ensuing click events for quicker response time,
             // and trigger player controls.
             if (game.has_started && !game.showing_restart_menu && touchPos.y < 100) {
@@ -72,12 +73,20 @@ export function create_click_listener(game) {
                         attempt_to_throw_zippy();
                     }
                 }
+
+            // Else, if clicking buttons, set timer for unhighlighting button after click.
+            // This code exists because touch events fail to trigger a mouse move outside of
+            // a highlighted button after click, thus leaving it highlighted forever until the
+            // next touchevent away from button.
+            } else {
+                setTimeout(() => {game.buttons.forEach(button  => button.unhighlight());}, 500);
             }
         }
     }, false);
 
     // Highlight button if mouse hovers over it.
     game.trueCanvas.addEventListener('mousemove', function(evt) {
+
         if (game.buttons.length > 0) {
             let mousePos = getMousePos(game.trueCanvas, evt);
 
@@ -88,7 +97,7 @@ export function create_click_listener(game) {
             }
 
             // Highlight hovered-on buttons , if any.
-            game.buttons.forEach((button, i) => {
+            game.buttons.forEach(button => {
                 if (button.isInside(mousePos)) {
                     if (!button.is_highlighted) {
                         button.hightlight();

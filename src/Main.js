@@ -717,9 +717,7 @@ const game = {
         game.try_to_update_and_render_gameover_menu(); // Update and render gameover menu, if any of its element exist.
 
         // Render buttons, if any.
-        game.buttons.forEach((button, i) => {
-            button.render();
-        });
+        game.buttons.forEach(button => button.render());
 
         // Start menu.
         game.try_to_update_and_render_start_menu(); // Update and render the start menu, if any of its element exist.
