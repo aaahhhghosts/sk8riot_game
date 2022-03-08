@@ -5,14 +5,14 @@ import { loader } from './loader.js';
 export function create_click_listener(game) {
 
     // Fire button if mouse clicks on top of it.
-    document.addEventListener('click', function(evt) {
+    game.trueCanvas.addEventListener('click', function(evt) {
 
         let click_done = false;
         let mousePos = getMousePos(game.trueCanvas, evt);
 
         // If click occurs anywhere in the screen and the start menu music
         // has not been played, play the song on loop.
-        if (!game.opening_song_started && in_screen(mousePos)) {
+        if (!game.opening_song_started) {
 
             game.opening_song_started = true;
             game.start_menu_song.play();
@@ -24,7 +24,7 @@ export function create_click_listener(game) {
             if (button.isInside(mousePos)) {
                 button.fire();
                 click_done = true;
-                
+
                 // Play click sfx, if game isn't muted.
                 if (!game.is_muted) {
                     let click_sfx = loader.audio.click_button[0].cloneNode(false);
@@ -43,27 +43,34 @@ export function create_click_listener(game) {
                 game.inputbox.unhighlight();
             }
         }
-        if (click_done) {return;}
+    }, false);
 
-        // Control player depending on which side of screen is clicked
-        if (game.sk8r.isAlive && in_screen(mousePos)) {
+    // Listen for touch events.
+    game.trueCanvas.addEventListener('touchmove', function(event) {
 
-            if (mousePos.x < get_canvas_width()/2) {
-                attempt_to_jump();
-            } else if (mousePos.x < get_canvas_width()) {
-                attempt_to_throw_zippy();
+        // Prevent following click events for quicker response time.
+        event.preventDefault();
+        event.touches.length.forEach(touch => {
+
+            // Control player depending on which side of screen is clicked
+            if (game.sk8r.isAlive) {
+                if (touch.pageX < get_canvas_width()/2) {
+                    attempt_to_jump();
+                } else if (touch.pageX < get_canvas_width()) {
+                    attempt_to_throw_zippy();
+                }
             }
-        }
+        });
     }, false);
 
     // Highlight button if mouse hovers over it.
-    document.addEventListener('mousemove', function(evt) {
+    game.trueCanvas.addEventListener('mousemove', function(evt) {
         if (game.buttons.length > 0) {
             let mousePos = getMousePos(game.trueCanvas, evt);
 
             // If movement occurs anywhere in the screen and the start menu music
             // has not been played, hightlight nothing.
-            if (!game.opening_song_started && in_screen(mousePos)) {
+            if (!game.opening_song_started) {
                 return;
             }
 
@@ -100,8 +107,4 @@ function getMousePos(canvas, event) {
         x: scaled_x_pos,
         y: scaled_y_pos
     };
-}
-
-function in_screen(pos) {
-    return (pos.x > 0 && pos.x < get_canvas_width() && pos.y > 0 && pos.y < get_canvas_height());
 }
