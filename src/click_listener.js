@@ -79,7 +79,7 @@ export function create_click_listener(game) {
             // a highlighted button after click, thus leaving it highlighted forever until the
             // next touchevent away from button.
             } else {
-                setTimeout(() => {game.buttons.forEach(button  => button.unhighlight());}, 500);
+                setTimeout(() => {game.buttons.forEach(button  => button.unhighlight());}, 250);
             }
         }
     }, false);
