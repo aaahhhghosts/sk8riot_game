@@ -20,6 +20,7 @@ import StartButton from './menus/StartButton.js';
 // In-Game Menu Elements.
 import KAFont from './menus/KAFont.js';
 import FullscreenButton from './menus/FullscreenButton.js';
+import MuteButton from './menus/MuteButton.js';
 import ZippyCooldownBar from './menus/ZippyCooldownBar.js';
 
 // Gameover Menu.
@@ -51,7 +52,6 @@ import Scooter from './classes/Scooter.js';
 
 // Misc & Utility.
 import { loader } from './loader.js';
-//import { loader } from './loader.js';
 import { create_key_listener } from './key_listener.js';
 import { create_click_listener } from './click_listener.js';
 import { getRandomInt } from './common.js';
@@ -66,6 +66,7 @@ export function get_canvas_width() {
     return game.canvas.width;
 }
 
+// Function for getting size of browser window (units: in-game pixels).
 export function get_true_canvas_size() {
     let can_h = parseFloat(game.trueCanvas.style.height.slice(0, -2)) / 4;
     let can_w = parseFloat(game.trueCanvas.style.width.slice(0, -2)) / 4;
@@ -113,6 +114,7 @@ const game = {
         this.is_prompting_for_input = false;
 
         // Game music.
+        this.is_muted = false;
         this.opening_song_started = false;
         this.start_menu_song = loader.audio.start_menu_song[0];
         this.gameplay_song = loader.audio.gameplay_song[0];
@@ -150,7 +152,8 @@ const game = {
         this.scorebox = new KAFont(this.context, 10, 5, loader.images.karmatic_arcade_font[0]);
         this.zcooldown_bar = new ZippyCooldownBar(this.context, 3, Math.floor(this.canvas.height/2), loader.images.zippy_cooldown_bar[0]);
         this.fsbutton = new FullscreenButton(7, this.canvas.height-9, game.context, loader.images.fullscreen_button[0], toggleFullscreen.bind(this));
-        this.buttons.push(this.fsbutton);
+        this.mutebutton = new MuteButton(19, this.canvas.height-9, game.context, loader.images.mute_button[0], toggleMute.bind(this));
+        this.buttons.push(this.fsbutton, this.mutebutton);
 
         // Create variables to contain gameover menu elements.
         this.leaderboard = null;
@@ -192,7 +195,7 @@ const game = {
         this.version = null;
 
         // Remove all buttons except for the fullscreen button.
-        this.buttons = this.buttons.filter(btn => btn === this.fsbutton);
+        this.buttons = this.buttons.filter(btn => (btn === this.fsbutton || btn === this.mutebutton));
 
         // Stop start menu music.
         this.start_menu_song.pause();
@@ -235,7 +238,7 @@ const game = {
         this.inputbox = null;
 
         // Remove all buttons except for fullscreen button.
-        this.buttons = this.buttons.filter(btn => btn === this.fsbutton);
+        this.buttons = this.buttons.filter(btn => (btn === this.fsbutton || btn === this.mutebutton));
 
         // Reset game state booleans.
         this.showing_logo = false;
@@ -319,7 +322,7 @@ const game = {
 
           // Explode zippies and get crate break locations, if any.
           let breakPosList = explode_zippies(this.zippies, this.crates, this.cars, this.cops,
-                                             loader.audio.ex_zippy_sounds, loader.audio.zombie_death[0]);
+                                             loader.audio.ex_zippy_sounds, loader.audio.zombie_death[0], game.is_muted);
 
             // Spawn explosions/effects at each crate break location.
             let spawned_tire = false;
@@ -471,10 +474,12 @@ const game = {
                     cop.readyToFire = false;
 
                     // Play gun fired sfx.
-                    let gunfire_sounds = loader.audio.gunfire;
-                    let rand_int = getRandomInt(0,gunfire_sounds.length-1);
-                    let shoot_sfx = gunfire_sounds[rand_int].cloneNode(false);
-                    shoot_sfx.play();
+                    if (!game.is_muted) {
+                        let gunfire_sounds = loader.audio.gunfire;
+                        let rand_int = getRandomInt(0,gunfire_sounds.length-1);
+                        let shoot_sfx = gunfire_sounds[rand_int].cloneNode(false);
+                        shoot_sfx.play();
+                    }
                 }
 
                 // Change direction cop is facing, if behind player.
@@ -741,10 +746,15 @@ export function attempt_to_jump() {
 
     // If player successfully jumped, play sfx.
     if (game.sk8r.isGrounded && game.sk8r.isAlive) {
-        let jump_sounds = loader.audio.jump;
-        let rand_int = getRandomInt(0,jump_sounds.length-1);
-        let jump_sfx = jump_sounds[rand_int].cloneNode(false);
-        game.sk8r.jump(jump_sfx);
+        game.sk8r.jump();
+
+        // Play jumping sfx if game isn't muted.
+        if (!game.is_muted) {
+            let jump_sounds = loader.audio.jump;
+            let rand_int = getRandomInt(0,jump_sounds.length-1);
+            let jump_sfx = jump_sounds[rand_int].cloneNode(false);
+            jump_sfx.play();
+        }
     }
 }
 
@@ -753,20 +763,28 @@ export function attempt_to_throw_zippy() {
 
     if (game.sk8r.isAlive && game.time_since_last_zippy <= 0) {
 
+        // Check if zippy cooldown bar has overheated yet.
         if (game.zcooldown_bar.is_frozen) {
 
-            let cant_throw_sfx = loader.audio.cant_throw_z[0];
-            cant_throw_sfx.cloneNode(false).play();
+            // Play zippy burnout sfx.
+            if (!game.is_muted) {
+                let cant_throw_sfx = loader.audio.cant_throw_z[0];
+                cant_throw_sfx.cloneNode(false).play();
+            }
         } else {
-
-            let throw_sounds = loader.audio.throw_zippy;
-            let rand_int = getRandomInt(0,throw_sounds.length-1);
-            let throw_sfx = throw_sounds[rand_int].cloneNode(false);
 
             // Spawn zippy with greater x velocity the higher the player is.
             let x_velocity_boost = Math.floor((game.sk8r.y-sk8r_floor)/30);
             throw_zippy(game.sk8r.x+20, game.sk8r.y+27, x_velocity_boost, game.context,
-                        loader.images.zippy[0], game.zippies, throw_sfx);
+                        loader.images.zippy[0], game.zippies);
+
+            // Play zippy throw sfx is game isn't muted.
+            if (!game.is_muted) {
+                let throw_sounds = loader.audio.throw_zippy;
+                let rand_int = getRandomInt(0,throw_sounds.length-1);
+                let throw_sfx = throw_sounds[rand_int].cloneNode(false);
+                throw_sfx.play();
+            }
 
             // If throwing zippy during game, increase cooldown bar level.
             if (game.has_started) {
@@ -863,6 +881,21 @@ function toggleFullscreen() {
     resizeGame();
 }
 
+// Toggle muting audio.
+function toggleMute() {
+
+    // Get and toggle game-state boolean value.
+    let is_muted = game.is_muted;
+    game.is_muted = !is_muted;
+
+    // Mute every sound in stored in loader audio library.
+    for (const [key, value] of Object.entries(loader.audio)) {
+        value.forEach(wav => wav.muted = !is_muted);
+    }
+
+    // Update icon of mute audio button.
+    game.mutebutton.update_icon(!is_muted);
+}
 
 // Resize game as browser size changes.
 window.addEventListener('resize', resizeGame, false);

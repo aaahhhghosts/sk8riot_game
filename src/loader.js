@@ -19,6 +19,7 @@ import StartButton from './menus/StartButton.js';
 // In-Game Menu Elements.
 import KAFont from './menus/KAFont.js';
 import FullscreenButton from './menus/FullscreenButton.js';
+import MuteButton from './menus/MuteButton.js';
 import ZippyCooldownBar from './menus/ZippyCooldownBar.js';
 
 // Gameover Menu.
@@ -122,7 +123,8 @@ export const loader = {
 
         // In-Game Menu Elements.
         loader.add_img('karmatic_arcade_font', KAFont.src);
-        loader.add_img('fullscreen_button', FullscreenButton.src)
+        loader.add_img('fullscreen_button', FullscreenButton.src);
+        loader.add_img('mute_button', MuteButton.src);
         loader.add_img('zippy_cooldown_bar', ZippyCooldownBar.src);
 
         // Gameover Menu.

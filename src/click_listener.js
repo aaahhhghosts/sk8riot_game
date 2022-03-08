@@ -24,8 +24,12 @@ export function create_click_listener(game) {
             if (button.isInside(mousePos)) {
                 button.fire();
                 click_done = true;
-                let click_sfx = loader.audio.click_button[0].cloneNode(false);
-                click_sfx.play();
+                
+                // Play click sfx, if game isn't muted.
+                if (!game.is_muted) {
+                    let click_sfx = loader.audio.click_button[0].cloneNode(false);
+                    click_sfx.play();
+                }
             }
         });
         if (click_done) {return;}

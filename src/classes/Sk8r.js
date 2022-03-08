@@ -87,12 +87,11 @@ export default class Sk8r extends Sprite {
       this.loop_animation = false;
   }
 
-  jump(jump_sfx) {
+  jump() {
       this.isGrounded = false;
       this.animate_jump();
       this.velocity_y = 4;
       this.y += 3;
-      jump_sfx.play();
   }
 
   kill(cause) {
@@ -135,7 +134,7 @@ export default class Sk8r extends Sprite {
       }
 
       if (!this.isAlive && this.isGrounded && !this.played_gameover_sfx) {
-          gameover_sfx.cloneNode(false).play();
+          gameover_sfx.play();
           this.played_gameover_sfx = true;
       }
   }
@@ -190,7 +189,7 @@ export default class Sk8r extends Sprite {
               if (this.y < top_of_crate-2 && this.x-3 >= crate.x-crate.width*2) {
 
                   this.kill(crate.getTypeName());
-                  player_hit_sfx.cloneNode(false).play();
+                  player_hit_sfx.play();
                   return true;
               }
 

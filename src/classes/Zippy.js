@@ -66,12 +66,11 @@ export default class Zippy extends Sprite {
 }
 
 // Spawn zippy.
-export function throw_zippy(x, y, x_velocity_boost, context, img, zippies, throw_sfx) {
+export function throw_zippy(x, y, x_velocity_boost, context, img, zippies) {
     zippies.push(new Zippy(x, y, x_velocity_boost, context, img));
-    throw_sfx.play();
 }
 
-export function explode_zippies(zippies, crates, cars, cops, ex_zippy_sounds, zombie_death_sfx) {
+export function explode_zippies(zippies, crates, cars, cops, ex_zippy_sounds, zombie_death_sfx, is_muted) {
 
     // Declare list to hold the position of every crate break, if any.
     let breakPosList = [];
@@ -83,8 +82,10 @@ export function explode_zippies(zippies, crates, cars, cops, ex_zippy_sounds, zo
             zippy.explode();
 
             // Play dud sfx.
-            let dud_sfx = ex_zippy_sounds[2].cloneNode(false);
-            dud_sfx.play();
+            if (!is_muted) {
+                let dud_sfx = ex_zippy_sounds[2].cloneNode(false);
+                dud_sfx.play();
+            }
             return;
         }
 
@@ -108,16 +109,20 @@ export function explode_zippies(zippies, crates, cars, cops, ex_zippy_sounds, zo
                     breakPosList.push([Math.floor(crate.x), Math.floor(crate.y), 0]);
 
                     // Play one of two crate explosion sfx.
-                    let rand_int = getRandomInt(0,1);
-                    let explode_sfx = ex_zippy_sounds[rand_int].cloneNode(false);
-                    explode_sfx.play();
+                    if (!is_muted) {
+                        let rand_int = getRandomInt(0,1);
+                        let explode_sfx = ex_zippy_sounds[rand_int].cloneNode(false);
+                        explode_sfx.play();
+                    }
 
                 // Else if crate is steel, play dud sfx.
                 } else if (crate.type == 1) {
 
                     // Play dud sfx.
-                    let dud_sfx = ex_zippy_sounds[2].cloneNode(false);
-                    dud_sfx.play();
+                    if (!is_muted) {
+                        let dud_sfx = ex_zippy_sounds[2].cloneNode(false);
+                        dud_sfx.play();
+                    }
                 }
             }
         });
@@ -151,8 +156,10 @@ export function explode_zippies(zippies, crates, cars, cops, ex_zippy_sounds, zo
                        car.damage();
 
                        // Play car damage sfx.
-                       let car_damage_sfx = ex_zippy_sounds[3].cloneNode(false);
-                       car_damage_sfx.play();
+                       if (!is_muted) {
+                           let car_damage_sfx = ex_zippy_sounds[3].cloneNode(false);
+                           car_damage_sfx.play();
+                       }
 
                        zippy.explode();
                        breakPosList.push([Math.floor(zippy.x), Math.floor(car.y)]);
@@ -164,8 +171,10 @@ export function explode_zippies(zippies, crates, cars, cops, ex_zippy_sounds, zo
                            breakPosList.push([Math.floor(car.x+60), Math.floor(car.y+3), 1]);
 
                            // Play car destroy sfx.
-                           let car_destroy_sfx = ex_zippy_sounds[4].cloneNode(false);
-                           car_destroy_sfx.play();
+                           if (!is_muted) {
+                               let car_destroy_sfx = ex_zippy_sounds[4].cloneNode(false);
+                               car_destroy_sfx.play();
+                           }
                        }
                    }
                 }
@@ -194,12 +203,12 @@ export function explode_zippies(zippies, crates, cars, cops, ex_zippy_sounds, zo
                        breakPosList.push([Math.floor(zippy.x+9), Math.floor(cop.y), 2]);
                        zippy.explode();
 
-                       // Play dud sfx.
-                       let dud_sfx = ex_zippy_sounds[2].cloneNode(false);
-                       dud_sfx.play();
-
-                       // Play zombie death sfx
-                       zombie_death_sfx.cloneNode(false).play();
+                       // Play dud and zombie death sfx.
+                       if (!is_muted) {
+                           let dud_sfx = ex_zippy_sounds[2].cloneNode(false);
+                           dud_sfx.play();
+                           zombie_death_sfx.cloneNode(false).play();
+                       }
                    }
                 }
             }
