@@ -43,11 +43,12 @@ export function create_click_listener(game) {
                 // Animate highlighted input box.
                 game.inputbox.hightlight();
 
-                // Set focus to a input element to trigger keyboard on mobile.
-                let inputElement = document.getElementById('mobile_keyboard_trigger');
-                inputElement.focus();
+                // Prompt user for input.
+                let user_input = prompt("Enter Name!").toUpperCase();
 
-                click_done = true;
+                // Set input box text equal to cleaned user input.
+                let cleaned_user_input = user_input.replace(/[^A-Z0-9!?|\-]/g,'').substring(0, 8);
+                game.inputbox.text = cleaned_user_input;
             } else {
                 game.inputbox.unhighlight();
             }

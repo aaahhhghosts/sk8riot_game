@@ -15,7 +15,6 @@ export default class Inputbox {
 
     this.ctx = context;
     this.background_image = background_image;
-    this.row = 1;
 
     // Set up font variables.
     this.small_font = new SMFont(context, font_image);
@@ -25,9 +24,11 @@ export default class Inputbox {
     this.text_x = this.x+4;
     this.text_y = this.y+1;
 
-    this.is_highlighted = false;
-    this.show_cursor = false;
-    this.disable_cursor = true;
+    // Start input box off as active and highlighted.
+    this.row = 0;
+    this.is_highlighted = true;
+    this.show_cursor = true;
+    this.disable_cursor = false;
 
     this.ticksPerBlink = 20; // Speed of cursor animation
     this.tickCount = 0; // How much time has passed
