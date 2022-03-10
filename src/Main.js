@@ -590,7 +590,7 @@ const game = {
     },
 
     // Function to create the gameover menu.
-    create_gameover_menu() {
+    async create_gameover_menu() {
 
         // Set boolean for showing restart menu.
         this.showing_restart_menu = true;
@@ -605,16 +605,43 @@ const game = {
                           loader.images.startbutton[0], loader.images.karmatic_arcade_font[0],
                           "Restart", restart_game.bind(this), true));
 
-        // Create and add leaderboard and usernae input box.
-        this.leaderboard = new Leaderboard(menu_xpos, menu_ypos, this.context, loader.images.leaderboard[0],
-                                           loader.images.smfont[0], loader.saved_data);
-        this.inputbox = new Inputbox(menu_xpos, menu_ypos-21, this.context, loader.images.inputbox[0], loader.images.smfont[0]);
-        this.death_label = new DeathMsgLabel(this.context, get_canvas_width()/2, 5, loader.images.death_label[0], loader.images.smfont[0], this.sk8r.get_autopsy());
+        // Fetch highscores for site.
+        let saved_data_call = await get_highscores();
+        if (saved_data_call != null && saved_data_call[0] == 'success') {
 
-        // Create and add save high score button.
-        let save_highscore = function() {this.restart_game();}
-        this.buttons.push(new SaveButton(menu_xpos+34, menu_ypos-20, this.context,
-                          loader.images.savebutton[0], save_highscore.bind(this)));
+            let highscore_data = JSON.parse(saved_data_call[1]);
+
+            // Create and add leaderboard and usernae input box.
+            this.leaderboard = new Leaderboard(menu_xpos, menu_ypos, this.context, loader.images.leaderboard[0],
+                                               loader.images.smfont[0], highscore_data);
+            this.inputbox = new Inputbox(menu_xpos, menu_ypos-21, this.context, loader.images.inputbox[0], loader.images.smfont[0]);
+            this.death_label = new DeathMsgLabel(this.context, get_canvas_width()/2, 5, loader.images.death_label[0], loader.images.smfont[0], this.sk8r.get_autopsy());
+
+            // Create and add save high score button.
+            let save_highscore = async function() {
+
+                if (game.inputbox != null) {
+
+                    // Await the status of the ajax call which posts the highscore to the site.
+                    let status = await post_highscore(game.inputbox.text, game.score);
+
+                    // If ajax call successful, inform player and update leaderboard.
+                    if (status == 'success') {
+                        console.log("It worked! " + status);
+
+                    // Else, throw error.
+                    } else {
+                        console.log("shit");
+                    }
+                }
+            }
+            this.buttons.push(new SaveButton(menu_xpos+34, menu_ypos-20, this.context,
+                              loader.images.savebutton[0], save_highscore.bind(this)));
+
+        } else {
+
+            console.log("Error fetching the highscores!!");
+        }
     },
 
     // Function for updating and rendering start menu, if it exists.

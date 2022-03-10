@@ -91,15 +91,6 @@ export const loader = {
         this.audio[title] = wav_list;
     },
 
-    // Load highscores from json file.
-    async load_scores(scores_path) {
-        await fetch(`/static/sk8riot_the_game/${scores_path}`)
-        //await fetch(scores_path)
-              .then(response => response.json())
-              .then(parsed => {loader.saved_data = parsed;})
-              .catch(e => console.log(e));
-    },
-
     init() {
 
         /* ===== Loading Images ===== */

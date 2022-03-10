@@ -58,7 +58,6 @@ export function create_click_listener(game) {
     // Listen for touch events.
     game.trueCanvas.addEventListener('touchstart', function(event) {
 
-
         // For each touch event.
         for (let i = 0; i < event.targetTouches.length; i++) {
 

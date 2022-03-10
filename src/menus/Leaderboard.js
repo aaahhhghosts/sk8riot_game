@@ -22,7 +22,7 @@ export default class Leaderboard {
       this.y_buffer = sm_char_height+2;
 
       this.line_char_max = 22;
-      this.saved_data = saved_data["highscores"];
+      this.saved_data = saved_data;
 
       let x_pos = this.x+this.x_buffer;
       this.entry_labels = [];
