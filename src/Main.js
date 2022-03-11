@@ -420,7 +420,7 @@ const game = {
             despawn_sprites(this.debris);
 
             // Check for and apply any collisions with enemies.
-            let hitPosList = collide_debris(this.debris, this.cops, loader.audio.zombie_death[0]);
+            let hitPosList = collide_debris(this.debris, this.cops, loader.audio.zombie_death[0], game.is_muted);
             hitPosList.forEach((pos, i) => {
                 let x_pos = pos[0];
                 let y_pos = pos[1]-2;

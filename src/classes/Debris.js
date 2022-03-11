@@ -70,7 +70,7 @@ export default class Debris extends Sprite {
     }
 }
 
-export function collide_debris(debris, cops, zombie_death_sfx) {
+export function collide_debris(debris, cops, zombie_death_sfx, is_muted) {
 
     // Declare list to hold the position of every crate break, if any.
     let hitPosList = [];
@@ -94,7 +94,9 @@ export function collide_debris(debris, cops, zombie_death_sfx) {
                        hitPosList.push([Math.floor(deb.x+9), Math.floor(cop.y)]);
 
                        // Play zombie death sfx
-                       zombie_death_sfx.cloneNode(false).play();
+                       if (!is_muted) {
+                            zombie_death_sfx.cloneNode(false).play();
+                       }
                    }
                 }
             }
