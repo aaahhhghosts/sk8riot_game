@@ -959,13 +959,10 @@ function toggleMute() {
 window.addEventListener('resize', resizeGame, false);
 window.addEventListener('orientationchange', resizeGame, false);
 
-// Prevent spacebar or up-arrow from scrolling page, away from game.
+// Prevent spacebar or up/down arrow from scrolling page, away from game.
 window.addEventListener('keydown', function(e) {
-    if (e.keyCode == 32 && e.target == document.body) {
-        e.preventDefault();
-    }
-
-    if (e.keyCode == 38 && e.target == document.body) {
+    let is_space_or_arrow = [32,38,40].includes(e.keyCode);
+    if (is_space_or_arrow && e.target == document.body) {
         e.preventDefault();
     }
 });

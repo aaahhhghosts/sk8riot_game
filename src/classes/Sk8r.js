@@ -218,7 +218,7 @@ export default class Sk8r extends Sprite {
               // Kill sk8r and break out of loop.
               if (this.y < top_of_car-2) {
                   this.kill(car.getTypeName());
-                  player_hit_sfx.cloneNode(false).play();
+                  player_hit_sfx.play();
                   return true;
               }
 
