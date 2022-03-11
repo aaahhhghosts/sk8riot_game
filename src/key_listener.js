@@ -22,7 +22,7 @@ export function create_key_listener(game) {
 
       // If user is prompted, enable typing out words (can't believe I have to
       // implement a whole ass input text box from scratch wtf).
-      if (game.is_prompting_for_input && game.inputbox.is_highlighted) {
+      if (game.inputbox != null && game.inputbox.is_highlighted) {
 
           // Get current input string.
           var input_str = game.inputbox.getText();

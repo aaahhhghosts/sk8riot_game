@@ -95,7 +95,6 @@ export const loader = {
 
         /* ===== Loading Images ===== */
         // Player
-        loader.load_scores(Leaderboard.saved_src);
         loader.add_img('sk8r', Sk8r.src);
 
         // Enviroment.

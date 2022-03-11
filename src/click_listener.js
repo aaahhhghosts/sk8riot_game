@@ -44,11 +44,13 @@ export function create_click_listener(game) {
                 game.inputbox.hightlight();
 
                 // Prompt user for input.
-                let user_input = prompt("Enter Name!").toUpperCase();
+                let user_input = prompt("Enter Name!");
+                if (user_input != null) {
 
-                // Set input box text equal to cleaned user input.
-                let cleaned_user_input = user_input.replace(/[^A-Z0-9!?|\-]/g,'').substring(0, 8);
-                game.inputbox.text = cleaned_user_input;
+                    // Set input box text equal to cleaned user input.
+                    let cleaned_user_input = user_input.toUpperCase().replace(/[^A-Z0-9!?|\-]/g,'').substring(0, 8);
+                    game.inputbox.text = cleaned_user_input;
+                }
             } else {
                 game.inputbox.unhighlight();
             }

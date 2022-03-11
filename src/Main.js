@@ -83,7 +83,7 @@ const game = {
     isRunning: true,
 
     // Initialize game.
-    init() {
+    async init() {
 
         // True canvas to display game at full size.
         this.trueCanvas = document.getElementById("canvas");
@@ -107,11 +107,21 @@ const game = {
         // Set starting score.
         this.score = 0;
 
+        // Fetch highscore data.
+        this.highscore_data = null;
+        let saved_data_call = await get_highscores();
+        if (saved_data_call != null && saved_data_call[0] == 'success') {
+            this.highscore_data = JSON.parse(saved_data_call[1]);
+        } else {
+            console.log("Error fetching the saved highscore data :(");
+        }
+        // Declare variable to store save score button.
+        this.save_score_button = null;
+
         // Game state booleans.
         this.showing_logo = true;
         this.has_started = false;
         this.showing_restart_menu = false;
-        this.is_prompting_for_input = false;
 
         // Game music.
         this.is_muted = false;
@@ -243,7 +253,6 @@ const game = {
         // Reset game state booleans.
         this.showing_logo = false;
         this.showing_restart_menu = false;
-        this.is_prompting_for_input = false;
 
         // Reset enviroment elements.
         this.downtown.reset_downtown();
@@ -605,19 +614,29 @@ const game = {
                           loader.images.startbutton[0], loader.images.karmatic_arcade_font[0],
                           "Restart", restart_game.bind(this), true));
 
-        // Fetch highscores for site.
-        let saved_data_call = await get_highscores();
-        if (saved_data_call != null && saved_data_call[0] == 'success') {
+        // Print cause of death.
+        this.death_label = new DeathMsgLabel(this.context, get_canvas_width()/2, 5, loader.images.death_label[0], loader.images.smfont[0], this.sk8r.get_autopsy());
 
-            let highscore_data = JSON.parse(saved_data_call[1]);
+        // Create and add leaderboard.
+        this.leaderboard = new Leaderboard(menu_xpos, menu_ypos, this.context, loader.images.leaderboard[0],
+                                           loader.images.smfont[0], this.highscore_data);
 
-            // Create and add leaderboard and usernae input box.
-            this.leaderboard = new Leaderboard(menu_xpos, menu_ypos, this.context, loader.images.leaderboard[0],
-                                               loader.images.smfont[0], highscore_data);
+        // Determine if player's score is a new highscore.
+        let is_new_highscore = this.highscore_data.some(function(entry) {
+            return game.score > entry.score;
+        });
+
+        // If top 5 highscores data exists, and current score is higher than any one
+        // of them (or if there are less than 5 top scores), prompt user to submit their score.
+        if (this.saved_data_call == null && (is_new_highscore || this.highscore_data.length < 5)) {
+
+            // Set leaderboard to declare "new highscore!" to player.
+            this.leaderboard.congrat_player();
+
+            // Create inputbox for entering player's name.
             this.inputbox = new Inputbox(menu_xpos, menu_ypos-21, this.context, loader.images.inputbox[0], loader.images.smfont[0]);
-            this.death_label = new DeathMsgLabel(this.context, get_canvas_width()/2, 5, loader.images.death_label[0], loader.images.smfont[0], this.sk8r.get_autopsy());
 
-            // Create and add save high score button.
+            // Function executed by the save highscore button.
             let save_highscore = async function() {
 
                 if (game.inputbox != null) {
@@ -627,21 +646,36 @@ const game = {
 
                     // If ajax call successful, inform player and update leaderboard.
                     if (status == 'success') {
-                        console.log("It worked! " + status);
+
+                        // Remove name input box and save button.
+                        this.buttons = this.buttons.filter(b => b !== this.save_score_button);
+                        this.inputbox = null;
+
+                        // Get new and updated highscores;
+                        let saved_data_call = await get_highscores();
+                        if (saved_data_call != null && saved_data_call[0] == 'success') {
+                            this.highscore_data = JSON.parse(saved_data_call[1]);
+
+                        // If cannot fetch new highscores, display error.
+                        } else {this.leaderboard.display_error();}
+
+                        // Refresh leaderboard to display new scores.
+                        this.leaderboard.set_board(this.highscore_data);
 
                     // Else, throw error.
                     } else {
-                        console.log("shit");
+                        console.log("Error saving highscore data :(");
                     }
                 }
             }
-            this.buttons.push(new SaveButton(menu_xpos+34, menu_ypos-20, this.context,
-                              loader.images.savebutton[0], save_highscore.bind(this)));
 
-        } else {
-
-            console.log("Error fetching the highscores!!");
-        }
+            // Create save highscore button.
+            this.save_score_button = new SaveButton(menu_xpos+34, menu_ypos-20, this.context,
+                                                    loader.images.savebutton[0],
+                                                    save_highscore.bind(this));
+            // Add save highscore button to screen.
+            this.buttons.push(this.save_score_button);
+       }
     },
 
     // Function for updating and rendering start menu, if it exists.
@@ -680,19 +714,18 @@ const game = {
     // Function to update and render gameover menu, if any of its elements exist.
     try_to_update_and_render_gameover_menu() {
 
-        let gameover_menu_exists = (this.showing_restart_menu && this.leaderboard != null
-                                    && this.inputbox != null && this.death_label != null);
-        if (gameover_menu_exists) {
-            this.leaderboard.render();
-            this.inputbox.update_inputbox();
-            this.inputbox.render();
-            this.death_label.render();
+        if (this.showing_restart_menu) {
 
-            // Check if user is being prompted for input. If so, highlight input box.
-            if (this.inputbox.is_highlighted) {
-                this.is_prompting_for_input = true;
-            } else {
-                this.is_prompting_for_input = false;
+            // Render leaderboard and death message label, if they exist.
+            if (this.leaderboard != null) {this.leaderboard.render();}
+            if (this.death_label != null) {this.death_label.render();}
+
+            // Check if inputbox exists.
+            if (this.inputbox != null) {
+
+                // Update and render Inputbox.
+                this.inputbox.update_inputbox();
+                this.inputbox.render();
             }
         }
     },
@@ -740,7 +773,7 @@ const game = {
 
         // Gameover menu.
         let just_became_gameover = (!game.sk8r.isAlive && game.sk8r.velocity_x == 0 && !game.showing_restart_menu);
-        if (just_became_gameover) {game.create_gameover_menu();}
+        if (just_became_gameover) {await game.create_gameover_menu();}
         game.try_to_update_and_render_gameover_menu(); // Update and render gameover menu, if any of its element exist.
 
         // Render buttons, if any.
@@ -938,9 +971,9 @@ window.addEventListener('keydown', function(e) {
 });
 
 // Function to official start game.
-function start_game() {
+async function start_game() {
 
-    game.init();
+    await game.init();
     create_key_listener(game);
     create_click_listener(game);
     resizeGame();
