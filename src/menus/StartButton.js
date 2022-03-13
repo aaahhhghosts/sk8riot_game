@@ -17,6 +17,7 @@ export default class Button {
 
     this.kalabel = new KALabel(context, this.x, this.y, font_image, text, this.width);
     this.is_highlighted = false;
+    this.keep_highlighted = false;
     this.fire = action;
   }
 

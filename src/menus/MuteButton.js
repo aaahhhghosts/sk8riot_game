@@ -17,7 +17,8 @@ export default class MuteButton {
     this.column = 0;
     this.row = 0;
 
-    this.is_highlighted = true;
+    this.is_highlighted = false;
+    this.keep_highlighted = false;
     this.fire = action;
   }
 

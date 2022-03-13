@@ -55,6 +55,7 @@ import { loader } from './loader.js';
 import { create_key_listener } from './key_listener.js';
 import { create_click_listener } from './click_listener.js';
 import { getRandomInt } from './common.js';
+import { save_highscore } from './save_highscore.js';
 
 // Function for getting current height of HTML5 canvas.
 export function get_canvas_height() {
@@ -636,43 +637,9 @@ const game = {
             // Create inputbox for entering player's name.
             this.inputbox = new Inputbox(menu_xpos, menu_ypos-21, this.context, loader.images.inputbox[0], loader.images.smfont[0]);
 
-            // Function executed by the save highscore button.
-            let save_highscore = async function() {
-
-                if (game.inputbox != null) {
-
-                    // Await the status of the ajax call which posts the highscore to the site.
-                    let status = await post_highscore(game.inputbox.text, game.score);
-
-                    // If ajax call successful, inform player and update leaderboard.
-                    if (status == 'success') {
-
-                        // Remove name input box and save button.
-                        this.buttons = this.buttons.filter(b => b !== this.save_score_button);
-                        this.inputbox = null;
-
-                        // Get new and updated highscores;
-                        let saved_data_call = await get_highscores();
-                        if (saved_data_call != null && saved_data_call[0] == 'success') {
-                            this.highscore_data = JSON.parse(saved_data_call[1]);
-
-                        // If cannot fetch new highscores, display error.
-                        } else {this.leaderboard.display_error();}
-
-                        // Refresh leaderboard to display new scores.
-                        this.leaderboard.set_board(this.highscore_data);
-
-                    // Else, throw error.
-                    } else {
-                        console.log("Error saving highscore data :(");
-                    }
-                }
-            }
-
             // Create save highscore button.
             this.save_score_button = new SaveButton(menu_xpos+34, menu_ypos-20, this.context,
-                                                    loader.images.savebutton[0],
-                                                    save_highscore.bind(this));
+                                                    loader.images.savebutton[0], save_highscore.bind(this));
             // Add save highscore button to screen.
             this.buttons.push(this.save_score_button);
        }

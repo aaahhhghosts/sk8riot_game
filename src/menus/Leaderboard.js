@@ -79,7 +79,7 @@ export default class Leaderboard {
 
     // Functions to set leaderboard background.
     congrat_player() {this.row = 1;}
-    display_error() {this.row = 2;}
+    display_error() {this.row = 2; this.entry_labels = [];}
 
     render() {
         this.ctx.webkitImageSmoothingEnabled = false;

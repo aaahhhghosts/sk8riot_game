@@ -17,12 +17,25 @@ export function create_click_listener(game) {
 
             game.opening_song_started = true;
             game.start_menu_song.play();
+
+            // Highlight hovered-on buttons, if any.
+            game.buttons.forEach(button => {
+                if (button.isInside(mousePos)) {
+                    if (!button.is_highlighted) {
+                        button.hightlight();
+                    }
+                } else {
+                    if (button.is_highlighted && !button.keep_highlighted) {
+                        button.unhighlight();
+                    }
+                }
+            });
             return;
         }
 
-        // Fire any buttons, if clicked.
+        // Fire any buttons, if clicked and is not in a frozen, "keep highlighted" state.
         game.buttons.some(button => {
-            if (button.isInside(mousePos)) {
+            if (button.isInside(mousePos) && !button.keep_highlighted) {
                 button.fire();
                 click_done = true;
 
@@ -112,7 +125,7 @@ export function create_click_listener(game) {
                         button.hightlight();
                     }
                 } else {
-                    if (button.is_highlighted) {
+                    if (button.is_highlighted && !button.keep_highlighted) {
                         button.unhighlight();
                     }
                 }
