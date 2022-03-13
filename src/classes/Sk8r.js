@@ -124,7 +124,7 @@ export default class Sk8r extends Sprite {
       if (!this.isAlive && this.velocity_x > 0) {
 
           this.x += this.velocity_x;
-          if (this.y <= sk8r_floor-12) {
+          if (this.isGrounded) {
               this.velocity_x -= this.velocity_x / 30;
 
               if (this.velocity_x < 0.1) {
