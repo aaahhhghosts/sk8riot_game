@@ -12,6 +12,7 @@ export default class Sprite {
         this.height = options.height;
         this.frames = options.frames; // Number of frames in a row
         this.frameIndex = options.frameIndex; // Current frame
+        this.startingFrame = 0; // Frame to begin animation from. Used for cases where the first n frames only play once.
         this.row = options.row; // Row of sprites
         this.ticksPerFrame = options.ticksPerFrame; // Speed of animation
         this.tickCount = options.tickCount; // How much time has passed
@@ -82,7 +83,7 @@ export default class Sprite {
             } else {
 
                 if (this.loop_animation) {
-                    this.frameIndex = 0;
+                    this.frameIndex = this.startingFrame;
                 } else {
                     this.is_animation_done = true;
                 }

@@ -26,6 +26,7 @@ export default class Sk8r extends Sprite {
       this.images = images;
       this.img_num = img_num;
 
+      this.isDucking = false;
       this.isGrounded = true;
       this.played_gameover_sfx = false;
       this.gravity = 0.3;
@@ -70,21 +71,36 @@ export default class Sk8r extends Sprite {
       this.row = 0;
       this.frames = 6;
       this.frameIndex = 0;
+      this.startingFrame = 0;
+  }
+
+  animate_duck() {
+      this.row = 1;
+      this.frames = 7;
+      this.frameIndex = 0;
+      this.startingFrame = 1;
   }
 
   animate_jump() {
-      this.row = 1;
+      this.row = 2;
       this.frames = 2;
       this.frameIndex = 0;
+      this.startingFrame = 0;
   }
 
   animate_death() {
       this.width = 36;
-      this.row = 2;
+      this.row = 3;
       this.frames = 4;
       this.frameIndex = 0;
+      this.startingFrame = 0;
       this.ticksPerFrame = 12;
       this.loop_animation = false;
+  }
+
+  duck() {
+      this.isDucking = true;
+      this.animate_duck();
   }
 
   jump() {
@@ -94,8 +110,14 @@ export default class Sk8r extends Sprite {
       this.y += 3;
   }
 
+  stand() {
+      this.isDucking = false;
+      this.animate_ride();
+  }
+
   kill(cause) {
       this.isAlive = false;
+      this.isDucking = false;
       this.cause_of_death = cause;
       this.animate_death();
       this.throw_off_board();
@@ -103,13 +125,13 @@ export default class Sk8r extends Sprite {
 
   throw_off_board() {
 
-    // Send sk8r's body flying.
-    this.death_floor = this.floor;
-    this.set_floor(sk8r_floor-12);
-    this.isGrounded = false;
-    this.velocity_y = 4;
-    this.y += 3;
-    this.velocity_x = 1.5;
+      // Send sk8r's body flying.
+      this.death_floor = this.floor;
+      this.set_floor(sk8r_floor-12);
+      this.isGrounded = false;
+      this.velocity_y = 4;
+      this.y += 3;
+      this.velocity_x = 1.5;
   }
 
   update_sk8r(crates, cars, player_hit_sfx, gameover_sfx) {
@@ -133,6 +155,7 @@ export default class Sk8r extends Sprite {
           }
       }
 
+      // If dead and landed on the ground, play death sfx if it hasn't be played yet.
       if (!this.isAlive && this.isGrounded && !this.played_gameover_sfx) {
           gameover_sfx.play();
           this.played_gameover_sfx = true;
@@ -157,7 +180,15 @@ export default class Sk8r extends Sprite {
               this.isGrounded = true;
 
               if (this.isAlive) {
-                  this.animate_ride();
+
+                  // If player didn't press the duck button while mid-air, return to ride.
+                  if (!this.isDucking) {
+                      this.animate_ride();
+
+                  // Else, duck on landing.
+                  } else {
+                      this.duck();
+                  }
               }
           }
 
@@ -236,6 +267,7 @@ export default class Sk8r extends Sprite {
       this.isAlive = true;
       this.played_gameover_sfx = false;
       this.isGrounded = true;
+      this.isDucking = false;
       this.velocity_y = 0;
       this.velocity_x = 0;
       this.timeSinceJump = 0;

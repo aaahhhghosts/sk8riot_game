@@ -17,6 +17,7 @@ export function create_click_listener(game) {
 
             game.opening_song_started = true;
             game.start_menu_song.play();
+            game.start_menu_song.muted = game.is_muted;
 
             // Highlight hovered-on buttons, if any.
             game.buttons.forEach(button => {

@@ -718,6 +718,8 @@ const game = {
         game.update_and_render_enviroment(); // Update/render enviroment elements.
         game.update_and_render_obstacles(); // Update/render obstacles
 
+        game.update_render_and_collide_bullets(); // Update, render, and collide bullets with player.
+
         // Player and Friendly Projectiles.
         game.sk8r.update_sk8r(game.crates, game.cars, loader.audio.player_hit[0], loader.audio.gameover[0]); // Update player.
         game.update_render_and_explode_zippies(); // Update, render, and explode zippy fireworks on obstacles and enemies.
@@ -731,7 +733,7 @@ const game = {
         // Enemies, Destruction Effects, and Enemy Projectiles.
         game.update_render_and_fire_cops(); // Update, render, and fire the weapons of zombie cop enemies.
         game.update_and_render_explosions(); // Update and render explosion effects.
-        game.update_render_and_collide_bullets(); // Update, render, and collide bullets with player.
+
 
         // If player is still alive and game has begun, continue spawning new obstacles/enemies.
         if (game.sk8r.isAlive && game.has_started) {
@@ -771,6 +773,7 @@ export function attempt_to_jump() {
 
     // If player successfully jumped, play sfx.
     if (game.sk8r.isGrounded && game.sk8r.isAlive) {
+
         game.sk8r.jump();
 
         // Play jumping sfx if game isn't muted.
@@ -788,10 +791,10 @@ export function attempt_to_throw_zippy() {
 
     if (game.sk8r.isAlive && game.time_since_last_zippy <= 0) {
 
-        // Check if zippy cooldown bar has overheated yet.
-        if (game.zcooldown_bar.is_frozen) {
+        // Check if zippy cooldown bar has overheated yet, or player is ducking on the ground.
+        if (game.zcooldown_bar.is_frozen || (game.sk8r.isDucking && game.sk8r.isGrounded)) {
 
-            // Play zippy burnout sfx.
+            // If so, play zippy burnout sfx.
             if (!game.is_muted) {
                 let cant_throw_sfx = loader.audio.cant_throw_z[0];
                 cant_throw_sfx.cloneNode(false).play();
@@ -818,6 +821,22 @@ export function attempt_to_throw_zippy() {
 
             // Reset zippy timing clock.
             game.time_since_last_zippy = 1;
+        }
+    }
+}
+
+// Function to duck, if player is alive, grounded, and not ducking already.
+export function attempt_to_duck() {
+
+    if (game.sk8r.isAlive && !game.sk8r.isDucking) {
+
+        // If player is grounded, go ahead and duck.
+        if (game.sk8r.isGrounded) {
+            game.sk8r.duck();
+
+        // Else, if player is mid-air, set them to duck upon landing.
+        } else {
+            game.sk8r.isDucking = true;
         }
     }
 }

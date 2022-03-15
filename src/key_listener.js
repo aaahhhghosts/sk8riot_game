@@ -1,5 +1,5 @@
 import { alphabet } from './constants.js';
-import { attempt_to_jump, attempt_to_throw_zippy } from './Main.js';
+import { attempt_to_jump, attempt_to_throw_zippy, attempt_to_duck } from './Main.js';
 
 export function create_key_listener(game) {
     document.addEventListener('keydown', event => {
@@ -12,12 +12,18 @@ export function create_key_listener(game) {
 
       // Add space key listener for jumping.
       if (event.code === 'Space' || event.code === 'ArrowUp') {
+
           attempt_to_jump();
       }
 
-      // Add right arrow key listener for zippies.
+      // Add right-arrow/D key listener for zippies.
       if (event.code === 'ArrowRight' || event.code === 'KeyW') {
           attempt_to_throw_zippy();
+      }
+
+      // Add down-arrow/S key listener for ducking.
+      if (event.code === 'ArrowDown' || event.code === 'KeyS') {
+          attempt_to_duck();
       }
 
       // If user is prompted, enable typing out words (can't believe I have to
@@ -103,6 +109,21 @@ export function create_key_listener(game) {
         if (event.code == "ShiftLeft" || event.code == "ShiftRight") {
             game.inputbox.hold_shift = false;
             return;
+        }
+
+        // Check if player ducking has been lifted.
+        if (event.code === 'ArrowDown' || event.code === 'KeyS') {
+
+            if (game.sk8r.isAlive && game.sk8r.isDucking) {
+
+                // No matter what, if a living player lifts the ducking key, set to not ducking.
+                game.sk8r.isDucking = false;
+
+                // If player also happens to be grounded, then stand them up too.
+                if (game.sk8r.isGrounded) {
+                    game.sk8r.stand();
+                }
+            }
         }
     });
 }

@@ -37,9 +37,18 @@ export default class Instruct {
           if (this.frameIndex < this.frames - 1) {
               this.frameIndex += 1;
           } else {
-              this.row = 1 - this.row;
+              this.row = this.get_next_row(this.row);
               this.frameIndex = 0;
           }
+      }
+  }
+
+  // Get next row in animation.
+  get_next_row(current) {
+      if (current < 2) {
+          return current+1;
+      } else {
+          return 0;
       }
   }
 

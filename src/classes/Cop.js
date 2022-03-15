@@ -28,7 +28,7 @@ export default class Cop extends Sprite {
       this.velocity_x = 0;
 
       this.isAlive = true;
-      this.set_floor(sk8r_floor-6);
+      this.set_floor(x);
       this.death_floor = floor;
       this.timeSinceFire = 70;
       this.readyToFire = false;
