@@ -77,6 +77,11 @@ export function get_true_canvas_size() {
     };
 }
 
+// Function for getting the canvas's bounding rectangle.
+export function get_true_canvas_rect() {
+    return game.trueCanvas.getBoundingClientRect();
+}
+
 // Game Object.
 const game = {
 
@@ -839,6 +844,21 @@ export function attempt_to_duck() {
             game.sk8r.isDucking = true;
         }
     }
+}
+
+// Function to stand player up if they stop holding duck.
+export function attempt_to_stand() {
+
+  if (game.sk8r.isAlive && game.sk8r.isDucking) {
+
+      // No matter what, if a living player lifts the ducking key, set to not ducking.
+      game.sk8r.isDucking = false;
+
+      // If player also happens to be grounded, then stand them up too.
+      if (game.sk8r.isGrounded) {
+          game.sk8r.stand();
+      }
+  }
 }
 
 // Function to resize mini drawing canvas to fit true canvas.

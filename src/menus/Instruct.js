@@ -16,7 +16,7 @@ export default class Instruct {
     this.frames = 7; // Number of frames in a row
     this.frameIndex = 0; // Current frame
     this.row = 0; // Row of sprites
-    this.ticksPerFrame = 10; // Speed of animation
+    this.ticksPerFrame = 20; // Speed of animation
     this.tickCount = 0; // How much time has passed
 
     this.off_screen = false;

@@ -1,5 +1,5 @@
 import { alphabet } from './constants.js';
-import { attempt_to_jump, attempt_to_throw_zippy, attempt_to_duck } from './Main.js';
+import { attempt_to_jump, attempt_to_throw_zippy, attempt_to_duck, attempt_to_stand } from './Main.js';
 
 export function create_key_listener(game) {
     document.addEventListener('keydown', event => {
@@ -12,7 +12,6 @@ export function create_key_listener(game) {
 
       // Add space key listener for jumping.
       if (event.code === 'Space' || event.code === 'ArrowUp') {
-
           attempt_to_jump();
       }
 
@@ -113,17 +112,7 @@ export function create_key_listener(game) {
 
         // Check if player ducking has been lifted.
         if (event.code === 'ArrowDown' || event.code === 'KeyS') {
-
-            if (game.sk8r.isAlive && game.sk8r.isDucking) {
-
-                // No matter what, if a living player lifts the ducking key, set to not ducking.
-                game.sk8r.isDucking = false;
-
-                // If player also happens to be grounded, then stand them up too.
-                if (game.sk8r.isGrounded) {
-                    game.sk8r.stand();
-                }
-            }
+            attempt_to_stand();
         }
     });
 }

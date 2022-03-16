@@ -1,5 +1,5 @@
-import { get_canvas_width, get_canvas_height, get_true_canvas_size } from './Main.js';
-import { attempt_to_jump, attempt_to_throw_zippy } from './Main.js';
+import { get_canvas_width, get_canvas_height, get_true_canvas_size, get_true_canvas_rect } from './Main.js';
+import { attempt_to_jump, attempt_to_throw_zippy, attempt_to_duck, attempt_to_stand } from './Main.js';
 import { loader } from './loader.js';
 
 export function create_click_listener(game) {
@@ -8,8 +8,8 @@ export function create_click_listener(game) {
     game.trueCanvas.addEventListener('click', function(evt) {
 
         let click_done = false;
-        let mousePos = getMousePos(game.trueCanvas, evt);
-        //console.log("x: " + mousePos.x + ", y: " + mousePos.y);
+        let mousePos = getMousePos(evt);
+        console.log("x: " + mousePos.x + ", y: " + mousePos.y);
 
         // If click occurs anywhere in the screen and the start menu music
         // has not been played, play the song on loop.
@@ -79,7 +79,7 @@ export function create_click_listener(game) {
 
             // Convert touch event location into pixel coordinates on canvas.
             let touch = event.targetTouches[i];
-            let touchPos = getMousePos(game.trueCanvas, touch);
+            let touchPos = getMousePos(touch);
 
             // If during gameplay, and if touchPos is below clickable buttons,
             // prevent default ensuing click events for quicker response time,
@@ -91,7 +91,17 @@ export function create_click_listener(game) {
                 // Control player depending on which side of screen is tapped.
                 if (game.sk8r.isAlive) {
                     if (touchPos.x < get_canvas_width()/2) {
-                        attempt_to_jump();
+
+                        // If player has tapped upper left, jump.
+                        if (touchPos.y > 40) {
+                            attempt_to_jump();
+
+                        // Else, player is ducking.
+                        } else {
+                            attempt_to_duck();
+                        }
+
+                    // If player taps right screen, throw zippy.
                     } else {
                         attempt_to_throw_zippy();
                     }
@@ -107,11 +117,17 @@ export function create_click_listener(game) {
         }
     }, false);
 
+    // When touch lifts off screen, standing player if they are ducking.
+    game.trueCanvas.addEventListener('touchend', function(event) {
+
+        attempt_to_stand();
+    }, false);
+
     // Highlight button if mouse hovers over it.
     game.trueCanvas.addEventListener('mousemove', function(evt) {
 
         if (game.buttons.length > 0) {
-            let mousePos = getMousePos(game.trueCanvas, evt);
+            let mousePos = getMousePos(evt);
 
             // If movement occurs anywhere in the screen and the start menu music
             // has not been played, hightlight nothing.
@@ -136,8 +152,8 @@ export function create_click_listener(game) {
 }
 
 //Function to get the mouse position
-function getMousePos(canvas, event) {
-    let rect = canvas.getBoundingClientRect();
+function getMousePos(event) {
+    let rect = get_true_canvas_rect();
 
     let true_can_size = get_true_canvas_size();
     let x_pos = (event.clientX - rect.left) * (true_can_size.width / rect.width);

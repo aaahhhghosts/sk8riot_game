@@ -70,7 +70,6 @@ export const loader = {
         src_list.forEach((src, i) => {
             const audio = new Audio();
             audio.src = `/static/sk8riot_the_game/audio/${src}.wav`;
-            //audio.src = `/audio/${src}.wav`;
 
             // If audio looping is enabled, set looping property to true.
             // Apparently this feature has spotty compatibility with browsers,
