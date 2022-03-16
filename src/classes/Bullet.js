@@ -72,7 +72,7 @@ export function collide_bullets(sk8r, bullets, player_hit_sfx) {
             if (hitsk8r) {
 
                // If sk8r is alive on collision, and not on the ground ducking, blow up that sk8r ass.
-               if (sk8r.isAlive && !(sk8r.isDucking && sk8r.y <= sk8r.floor+2)) {
+               if (sk8r.isAlive && !(sk8r.isDucking && sk8r.y <= sk8r.floor)) {
                    sk8r.kill("zombie cop");
                    bullet.break();
                    hitPos = [Math.floor(bullet.x), Math.floor(bullet.y)];
