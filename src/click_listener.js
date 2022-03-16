@@ -9,7 +9,7 @@ export function create_click_listener(game) {
 
         let click_done = false;
         let mousePos = getMousePos(evt);
-        console.log("x: " + mousePos.x + ", y: " + mousePos.y);
+        //console.log("x: " + mousePos.x + ", y: " + mousePos.y);
 
         // If click occurs anywhere in the screen and the start menu music
         // has not been played, play the song on loop.

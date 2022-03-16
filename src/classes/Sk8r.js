@@ -127,7 +127,7 @@ export default class Sk8r extends Sprite {
 
       // Send sk8r's body flying.
       this.death_floor = this.floor;
-      this.set_floor(sk8r_floor-12);
+      this.set_floor(sk8r_floor-13);
       this.isGrounded = false;
       this.velocity_y = 4;
       this.y += 3;
@@ -140,25 +140,34 @@ export default class Sk8r extends Sprite {
       // Update current floor as long as player is alive.
       if (this.isAlive) {
           this.update_floor(crates, cars, player_hit_sfx);
-      }
 
-      // If sk8r is dead, move body forwards.
-      if (!this.isAlive && this.velocity_x > 0) {
+      // Else if player is dead, move into various death logic.
+      } else {
 
-          this.x += this.velocity_x;
-          if (this.isGrounded) {
-              this.velocity_x -= this.velocity_x / 30;
+          // If sk8r is dead, move body forwards.
+          if (this.velocity_x > 0) {
 
-              if (this.velocity_x < 0.1) {
-                  this.velocity_x = 0;
+              this.x += this.velocity_x;
+              if (this.isGrounded) {
+                  this.velocity_x -= this.velocity_x / 30;
+
+                  if (this.velocity_x < 0.1) {
+                      this.velocity_x = 0;
+                  }
               }
           }
-      }
 
-      // If dead and landed on the ground, play death sfx if it hasn't be played yet.
-      if (!this.isAlive && this.isGrounded && !this.played_gameover_sfx) {
-          gameover_sfx.play();
-          this.played_gameover_sfx = true;
+          // If dead and landed on the ground, play death sfx if it hasn't be played yet.
+          if (this.isGrounded && !this.played_gameover_sfx) {
+              gameover_sfx.play();
+              this.played_gameover_sfx = true;
+          }
+
+          // Update player if needed, because for some reason the player's floor
+          // WILL NOT UPDATE and the body will float off screen.
+          if (this.floor > sk8r_floor-13) {
+              this.set_floor(sk8r_floor-13);
+          }
       }
   }
 
