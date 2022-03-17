@@ -37,6 +37,7 @@ export default class Sk8r extends Sprite {
       this.isAlive = true;
       this.death_floor = sk8r_floor;
       this.cause_of_death = "unknown";
+      this.isFalling = false;
       this.timeSinceJump = 0;
   }
 
@@ -75,11 +76,22 @@ export default class Sk8r extends Sprite {
   }
 
   animate_duck() {
+
+      this.frameIndex = 0;
       this.row = 1;
       this.frames = 7;
-      this.frameIndex = 0;
       this.startingFrame = 1;
   }
+
+  animate_duck_midair() {
+
+      // Freeze frame while in air.
+      this.row = 1;
+      this.frameIndex = 2;
+      this.frames = 1;
+  }
+
+  doing_duck_animation() {return this.row == 1;}
 
   animate_jump() {
       this.row = 2;
@@ -103,11 +115,21 @@ export default class Sk8r extends Sprite {
       this.animate_duck();
   }
 
+  duck_midair() {
+      this.isDucking = true;
+      this.animate_duck_midair();
+  }
+
   jump() {
       this.isGrounded = false;
-      this.animate_jump();
+      if (!this.isDucking) {
+          this.animate_jump();
+          this.y += 3;
+      } else {
+          this.animate_duck_midair();
+          this.y += 2;
+      }
       this.velocity_y = 4;
-      this.y += 3;
   }
 
   stand() {
@@ -175,16 +197,25 @@ export default class Sk8r extends Sprite {
 
       if ((this.y > this.floor-2 && this.y > sk8r_floor) || !this.isAlive) {
 
+          // Calculate the current moment in the arch of motion.
           this.timeSinceJump += 1;
           let now = this.timeSinceJump;
 
-          this.y += (
-              ((this.velocity_y * now)
-              - (this.gravity * (Math.pow(now, 2) / 2))) / 10
-          );
+          // Get the next change in y value, be it up or down, and add it to the current y.
+          let next_delta_y = ((this.velocity_y * now)- (this.gravity * (Math.pow(now, 2) / 2))) / 10
+          this.y += next_delta_y;
+
+          // If delta y is positive, then we are moving up in the arch of motion.
+          // If it is negative, we are falling down. Give boolean a bias to lean true.
+          this.isFalling = (next_delta_y > 0.5);
+
+          // Fall faster if ducking.
+          if (this.isDucking) {
+              this.y -= 1.1;
+          }
 
           // If sk8r is alive, return to skating animation on landing.
-          if (this.y <= this.floor+2 && !this.isGrounded) {
+          if (this.y < this.floor && !this.isGrounded) {
 
               this.isGrounded = true;
 
@@ -194,7 +225,7 @@ export default class Sk8r extends Sprite {
                   if (!this.isDucking) {
                       this.animate_ride();
 
-                  // Else, duck on landing.
+                  // Else, duck on landing. If already ducking, end animation freeze on frame 1.
                   } else {
                       this.duck();
                   }
@@ -204,6 +235,7 @@ export default class Sk8r extends Sprite {
           if (this.y <= this.floor) {
               this.y = this.floor;
 
+              this.isFalling = false;
               this.timeSinceJump = 0;
               this.velocity_y = 0;
           }
@@ -279,6 +311,7 @@ export default class Sk8r extends Sprite {
       this.isDucking = false;
       this.velocity_y = 0;
       this.velocity_x = 0;
+      this.isFalling = false;
       this.timeSinceJump = 0;
   }
 }

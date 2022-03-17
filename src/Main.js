@@ -797,7 +797,7 @@ export function attempt_to_throw_zippy() {
     if (game.sk8r.isAlive && game.time_since_last_zippy <= 0) {
 
         // Check if zippy cooldown bar has overheated yet, or player is ducking on the ground.
-        if (game.zcooldown_bar.is_frozen || (game.sk8r.isDucking && game.sk8r.isGrounded)) {
+        if (game.zcooldown_bar.is_frozen || game.sk8r.doing_duck_animation()) {
 
             // If so, play zippy burnout sfx.
             if (!game.is_muted) {
@@ -835,13 +835,12 @@ export function attempt_to_duck() {
 
     if (game.sk8r.isAlive && !game.sk8r.isDucking) {
 
-        // If player is grounded, go ahead and duck.
         if (game.sk8r.isGrounded) {
             game.sk8r.duck();
 
         // Else, if player is mid-air, set them to duck upon landing.
         } else {
-            game.sk8r.isDucking = true;
+            game.sk8r.duck_midair();
         }
     }
 }
@@ -849,16 +848,20 @@ export function attempt_to_duck() {
 // Function to stand player up if they stop holding duck.
 export function attempt_to_stand() {
 
-  if (game.sk8r.isAlive && game.sk8r.isDucking) {
+    if (game.sk8r.isAlive && game.sk8r.isDucking) {
 
-      // No matter what, if a living player lifts the ducking key, set to not ducking.
-      game.sk8r.isDucking = false;
+        // No matter what, if a living player lifts the ducking key, set to not ducking.
+        game.sk8r.isDucking = false;
 
-      // If player also happens to be grounded, then stand them up too.
-      if (game.sk8r.isGrounded) {
-          game.sk8r.stand();
-      }
-  }
+        // If player also happens to be grounded, then stand them up too.
+        if (game.sk8r.isGrounded) {
+            game.sk8r.stand();
+
+        // Else if jumping AND still rising, allow for reverting to jump animation.
+        } else if (!game.sk8r.isFalling) {
+              game.sk8r.animate_jump();
+        }
+    }
 }
 
 // Function to resize mini drawing canvas to fit true canvas.
