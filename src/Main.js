@@ -857,8 +857,8 @@ export function attempt_to_stand() {
         if (game.sk8r.isGrounded) {
             game.sk8r.stand();
 
-        // Else if jumping AND still rising, allow for reverting to jump animation.
-        } else if (!game.sk8r.isFalling) {
+        // Else if jumping, allow for reverting to jump animation.
+        } else {
               game.sk8r.animate_jump();
         }
     }
