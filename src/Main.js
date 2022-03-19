@@ -25,6 +25,7 @@ import ZippyCooldownBar from './menus/ZippyCooldownBar.js';
 
 // Gameover Menu.
 import Leaderboard from './menus/Leaderboard.js';
+import SmallArrowButton from './menus/SmallArrowButton.js';
 import Inputbox from './menus/Inputbox.js';
 import SaveButton from './menus/SaveButton.js';
 import DeathMsgLabel from './menus/DeathMsgLabel.js';
@@ -627,26 +628,43 @@ const game = {
         this.leaderboard = new Leaderboard(menu_xpos, menu_ypos, this.context, loader.images.leaderboard[0],
                                            loader.images.smfont[0], this.highscore_data);
 
-        // Determine if player's score is a new highscore.
-        let is_new_highscore = this.highscore_data.some(function(entry) {
-            return game.score > entry.score;
-        });
+        // If top highscore data was successfully fetched and parsed.
+        if (this.highscore_data != null) {
 
-        // If top 5 highscores data exists, and current score is higher than any one
-        // of them (or if there are less than 5 top scores), prompt user to submit their score.
-        if (this.saved_data_call == null && (is_new_highscore || this.highscore_data.length < 5)) {
+            // Determine if player's score is a new highscore.
+            let hs_index = 0;
+            let is_new_highscore = this.highscore_data.some(function(entry, i) {
+                hs_index = i;
+                return game.score > entry.score;
+            });
 
-            // Set leaderboard to declare "new highscore!" to player.
-            this.leaderboard.congrat_player();
+            // If current score is higher than any one highscore (or if there
+            // are less than 5 top scores), prompt user to submit their score.
+            if (is_new_highscore || this.highscore_data.length < 20) {
 
-            // Create inputbox for entering player's name.
-            this.inputbox = new Inputbox(menu_xpos, menu_ypos-21, this.context, loader.images.inputbox[0], loader.images.smfont[0]);
+                this.leaderboard.page = Math.floor(hs_index / 5);
+                this.leaderboard.refresh_board();
 
-            // Create save highscore button.
-            this.save_score_button = new SaveButton(menu_xpos+34, menu_ypos-20, this.context,
-                                                    loader.images.savebutton[0], save_highscore.bind(this));
-            // Add save highscore button to screen.
-            this.buttons.push(this.save_score_button);
+                // Set leaderboard to declare "new highscore!" to player.
+                this.leaderboard.congrat_player();
+
+                // Create inputbox for entering player's name.
+                this.inputbox = new Inputbox(menu_xpos, menu_ypos-21, this.context, loader.images.inputbox[0], loader.images.smfont[0]);
+
+                // Create save highscore button.
+                this.save_score_button = new SaveButton(menu_xpos+34, menu_ypos-20, this.context,
+                                                        loader.images.savebutton[0], save_highscore.bind(this));
+                // Add save highscore button to screen.
+                this.buttons.push(this.save_score_button);
+           }
+
+           // Create and add buttons for character selection.
+           let prev_page = function() {this.leaderboard.prev_page();}
+           let next_page = function() {this.leaderboard.next_page();}
+           this.buttons.push(new SmallArrowButton(menu_xpos-29, menu_ypos+32, game.context,
+                                             loader.images.smallarrowbuttons[0], prev_page.bind(this)));
+           this.buttons.push(new SmallArrowButton(menu_xpos+29, menu_ypos+32, game.context,
+                                             loader.images.smallarrowbuttons[1], next_page.bind(this)));
        }
     },
 

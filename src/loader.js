@@ -24,6 +24,7 @@ import ZippyCooldownBar from './menus/ZippyCooldownBar.js';
 
 // Gameover Menu.
 import Leaderboard from './menus/Leaderboard.js';
+import SmallArrowButton from './menus/SmallArrowButton.js';
 import Inputbox from './menus/Inputbox.js';
 import SaveButton from './menus/SaveButton.js';
 import DeathMsgLabel from './menus/DeathMsgLabel.js';
@@ -118,6 +119,7 @@ export const loader = {
 
         // Gameover Menu.
         loader.add_img('leaderboard', Leaderboard.src);
+        loader.add_img('smallarrowbuttons', SmallArrowButton.src);
         loader.add_img('inputbox', Inputbox.src);
         loader.add_img('savebutton', SaveButton.src);
         loader.add_img('smfont', SMFont.src);

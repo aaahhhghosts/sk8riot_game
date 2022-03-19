@@ -51,7 +51,7 @@ export async function save_highscore() {
 
                     // Refresh leaderboard to display new scores.
                     this.highscore_data = save_data;
-                    this.leaderboard.set_board(this.highscore_data);
+                    this.leaderboard.update_saved_data(save_data);
                     return;
                 }
             }
