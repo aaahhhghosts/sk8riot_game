@@ -18,7 +18,6 @@ export default class SmallArrowButton {
 
     this.is_highlighted = false;
     this.keep_highlighted = false;
-    this.is_disabled = false;
     this.fire = action;
   }
 
@@ -30,16 +29,6 @@ export default class SmallArrowButton {
   unhighlight() {
       this.is_highlighted = false;
       this.row = 0;
-  }
-
-  disable() {
-      this.keep_highlighted = true;
-      this.is_highlighted = true;
-      this.row = 2;
-  }
-
-  enable() {
-      this.keep_highlighted = false;
   }
 
   //Function to check whether a point is inside a rectangle
