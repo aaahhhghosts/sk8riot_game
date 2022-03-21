@@ -5,11 +5,17 @@ export const gravity = 0.2;
 export const player_names = [
     'scuub',
     'bluboy',
+    'lucid',
     'joecool',
     'benboi',
     'sammyj',
     'josho',
     'izzy',
+    'jonnyb',
+    'kenz',
+    'asher',
+    'becky',
+    'mako',
 ];
 
 export const alphabet = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',

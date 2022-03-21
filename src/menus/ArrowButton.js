@@ -6,19 +6,19 @@ export default class ArrowButton {
 
   constructor (x, y, context, background_image, action) {
 
-    this.width = 8;
-    this.height = 11;
+      this.width = 8;
+      this.height = 11;
 
-    this.x =  Math.floor(x - this.width/2);
-    this.y = Math.floor(y - this.height/2)+2;
+      this.x =  Math.floor(x - this.width/2);
+      this.y = Math.floor(y - this.height/2)+2;
 
-    this.ctx = context;
-    this.background_image = background_image;
-    this.row = 0;
+      this.ctx = context;
+      this.background_image = background_image;
+      this.row = 0;
 
-    this.is_highlighted = false;
-    this.keep_highlighted = false;
-    this.fire = action;
+      this.is_highlighted = false;
+      this.keep_highlighted = false;
+      this.fire = action;
   }
 
   hightlight() {
