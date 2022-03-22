@@ -13,9 +13,18 @@ export const player_names = [
     'izzy',
     'jonnyb',
     'kenz',
+    'bren',
+    'shawn',
+    'g-anne',
     'asher',
+    'noah',
+    'bsimmz',
     'becky',
     'mako',
+    'monica',
+    'walrod',
+    'coolmom',
+    'dopedad',
 ];
 
 export const alphabet = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
