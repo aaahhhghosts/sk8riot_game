@@ -13,6 +13,7 @@ export const player_names = [
     'kenz',
     'joeyyy',
     'katieee',
+    'bmj',
     'jarbear',
     'natalie',
     'bren',
@@ -34,6 +35,8 @@ export const player_names = [
     'blayne',
     'dillon',
     'garret',
+    'charles',
+    'emile',
 ];
 
 export const alphabet = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
