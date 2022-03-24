@@ -36,6 +36,7 @@ export const player_names = [
     'dopedad',
     'watheq',
     'blayne',
+    'wyatt',
     'dillon',
     'garret',
     'charles',
