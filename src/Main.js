@@ -166,7 +166,7 @@ const game = {
                                           loader.images.arrowbuttons[1], next_sk8r.bind(this)));
 
         // Create in-game menu elements.
-        this.scorebox = new KAFont(this.context, 10, 5, loader.images.karmatic_arcade_font[0]);
+        this.scorebox = new KAFont(this.context, 10, 5, loader.images.karmatic_arcade_font[0], '');
         this.zcooldown_bar = new ZippyCooldownBar(this.context, 3, Math.floor(this.canvas.height/2), loader.images.zippy_cooldown_bar[0]);
         this.fsbutton = new FullscreenButton(7, this.canvas.height-9, game.context, loader.images.fullscreen_button[0], toggleFullscreen.bind(this));
         this.mutebutton = new MuteButton(19, this.canvas.height-9, game.context, loader.images.mute_button[0], toggleMute.bind(this));
@@ -178,6 +178,7 @@ const game = {
         this.death_label = null;
 
         // Create lists to hold all projectiles and effects in game at any given time.
+        this.bonus_points = [];
         this.zippies = [];
         this.bullets = [];
         this.explosions = [];
@@ -337,7 +338,7 @@ const game = {
         if (this.zippies.length > 0) {
 
           // Explode zippies and get crate break locations, if any.
-          let breakPosList = explode_zippies(this.zippies, this.crates, this.cars, this.cops,
+          let breakPosList = explode_zippies(this.zippies, this.crates, this.cars, this.cops, this.bonus_points,
                                              loader.audio.ex_zippy_sounds, loader.audio.zombie_death[0], game.is_muted);
 
             // Spawn explosions/effects at each crate break location.
@@ -458,6 +459,39 @@ const game = {
             this.increment_scorebox();
         }
         this.scorebox.render();
+    },
+
+    // Function for updating and rendering bonus points.
+    update_and_render_bonuses() {
+
+        game.bonus_points.forEach(bonus => {
+            bonus.age += 1;
+
+            // If bonus text has lingered too much, remove.
+            if (bonus.age > 50) {
+                let i = game.bonus_points.indexOf(bonus);
+                game.bonus_points.splice(i, 1);
+                return;
+
+            // Else, if bonus still young and on screen
+            } else {
+                // Add a point to the text for the first 20 ticks. Makes for a cool animation.
+                if (bonus.age <= 20) {
+                    bonus.setText((bonus.amount+bonus.age).toString());
+                }
+
+                // Rise up at a ever slower pace.
+                bonus.y -= 7/bonus.age;
+
+                // Scroll while game isn't over.
+                if (game.sk8r.isAlive) {
+                    bonus.x += 1;
+                }
+
+                // Finally, render bonus points.
+                bonus.render();
+            }
+        });
     },
 
     // Function for rendering player and player effects.
@@ -752,11 +786,11 @@ const game = {
         // Score and Player.
         game.render_sk8r(); // Render player.
         game.update_and_render_scorebox(); // Update and render scorebox.
+        game.update_and_render_bonuses();
 
         // Enemies, Destruction Effects, and Enemy Projectiles.
         game.update_render_and_fire_cops(); // Update, render, and fire the weapons of zombie cop enemies.
         game.update_and_render_explosions(); // Update and render explosion effects.
-
 
         // If player is still alive and game has begun, continue spawning new obstacles/enemies.
         if (game.sk8r.isAlive && game.has_started) {
@@ -790,6 +824,12 @@ const game = {
         }
     }
 };
+
+// Function for adding bonus points to the score and screen.
+export function add_bonus_points(amount, x_pos, y_pos) {
+    game.bonus_points.push(new KAFont(game.context, get_canvas_width()-x_pos, get_canvas_height()-y_pos, loader.images.karmatic_arcade_font[0], (amount-20).toString()));
+    game.score += amount;
+}
 
 // Function to make player jump, if alive and on ground.
 export function attempt_to_jump() {

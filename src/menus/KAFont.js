@@ -5,7 +5,7 @@ export default class KAFont {
 
   static src = ['/sprites/menu/karmatic_arcade_font.png'];
 
-  constructor(context, x, y, image) {
+  constructor(context, x, y, image, text) {
 
       this.x = x;
       this.y = y;
@@ -14,7 +14,13 @@ export default class KAFont {
 
       this.char_width = ka_char_width;
       this.char_height = ka_char_height;
-      this.text = "";
+      this.text = text;
+
+      // Attributes for bonus point labels.
+      this.age = 0;
+      this.amount = 0;
+      let text_to_int = parseInt(text);
+      if (!isNaN(text_to_int)) {this.amount = text_to_int;}
   }
 
   setText(text) {

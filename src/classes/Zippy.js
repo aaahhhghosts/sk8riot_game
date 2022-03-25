@@ -1,6 +1,7 @@
 import Sprite from '../Sprite.js';
 import { getRandomInt } from '../common.js';
 import { floor } from '../constants.js';
+import { add_bonus_points } from '../Main.js';
 
 export default class Zippy extends Sprite {
 
@@ -70,7 +71,7 @@ export function throw_zippy(x, y, x_velocity_boost, context, img, zippies) {
     zippies.push(new Zippy(x, y, x_velocity_boost, context, img));
 }
 
-export function explode_zippies(zippies, crates, cars, cops, ex_zippy_sounds, zombie_death_sfx, is_muted) {
+export function explode_zippies(zippies, crates, cars, cops, bonuses, ex_zippy_sounds, zombie_death_sfx, is_muted) {
 
     // Declare list to hold the position of every crate break, if any.
     let breakPosList = [];
@@ -175,6 +176,9 @@ export function explode_zippies(zippies, crates, cars, cops, ex_zippy_sounds, zo
                                let car_destroy_sfx = ex_zippy_sounds[4].cloneNode(false);
                                car_destroy_sfx.play();
                            }
+
+                           // Give player 100 bonus points for blowing up cop car.
+                           add_bonus_points(100, car.x+(car.width/2), zippy.y);
                        }
                    }
                 }
@@ -209,6 +213,9 @@ export function explode_zippies(zippies, crates, cars, cops, ex_zippy_sounds, zo
                            dud_sfx.play();
                            zombie_death_sfx.cloneNode(false).play();
                        }
+
+                       // Give player 150 bonus points for killin a zombie cop with a zippy directly.
+                       add_bonus_points(150, cop.x+(cop.width/2), cop.y+20);
                    }
                 }
             }

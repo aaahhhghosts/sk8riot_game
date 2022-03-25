@@ -1,6 +1,7 @@
 import Sprite from '../Sprite.js';
 import { getRandomInt } from '../common.js';
 import { floor } from '../constants.js';
+import { add_bonus_points } from '../Main.js';
 
 export default class Debris extends Sprite {
 
@@ -97,6 +98,9 @@ export function collide_debris(debris, cops, zombie_death_sfx, is_muted) {
                        if (!is_muted) {
                             zombie_death_sfx.cloneNode(false).play();
                        }
+
+                       // Give player extra 50 points for killing cop via debris.
+                       add_bonus_points(50, cop.x+(cop.width/2), cop.y+20);
                    }
                 }
             }
