@@ -39,7 +39,7 @@ export const player_names = [
     'wyatt',
     'dr ferr',
     'dillon',
-    'garret',
+    'garrett',
     'charles',
     'emile',
 ];
