@@ -211,7 +211,7 @@ export default class Sk8r extends Sprite {
 
           // Fall faster if ducking.
           if (this.isDucking) {
-              this.y -= 1.1;
+              this.y -= (1.1 * (1+now/25));
           }
 
           // If sk8r is alive, return to skating animation on landing.
