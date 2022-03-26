@@ -37,6 +37,7 @@ export const player_names = [
     'watheq',
     'blayne',
     'wyatt',
+    'dr ferr',
     'dillon',
     'garret',
     'charles',

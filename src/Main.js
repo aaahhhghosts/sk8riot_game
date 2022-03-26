@@ -269,6 +269,7 @@ const game = {
         this.road.reset_road();
 
         // Reset projectiles and effects.
+        this.bonus_points = [];
         this.zippies = [];
         this.bullets = [];
         this.explosions = [];
