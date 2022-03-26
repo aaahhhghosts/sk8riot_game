@@ -86,9 +86,6 @@ export function get_true_canvas_rect() {
 // Game Object.
 const game = {
 
-    // Game running boolean.
-    isRunning: true,
-
     // Initialize game.
     async init() {
 
@@ -758,8 +755,20 @@ const game = {
     // Main animating loop.
     async drawingLoop() {
 
-        // Set game frame rate.
-        await new Promise(r => setTimeout(r, 15));
+        // Request another animation frame.
+        requestAnimationFrame(game.drawingLoop);
+
+        // Get time since last frame.
+        now = Date.now();
+        elapsed = now - then;
+
+        // If not enough time has elapsed, bail and don't draw next frame.
+        if (elapsed <= fpsInterval) {
+            return;
+        }
+
+        //Else, continue to draw next animation frame, and update time since last frame.
+        then = now - (elapsed % fpsInterval);
 
         // If player dies, trigger game over.
         if (game.sk8r.isAlive == false) { game.game_over(); }
@@ -818,11 +827,6 @@ const game = {
 
         // Draw this frame to true canvas.
         game.trueContext.drawImage(game.canvas, 0, 0, game.canvas.width, game.canvas.height, 0, 0, scale_width, scale_height);
-
-        // As long as game is still running, create next game frame.
-        if (game.isRunning) {
-            requestAnimationFrame(game.drawingLoop);
-        }
     }
 };
 
@@ -1035,8 +1039,17 @@ window.addEventListener('keydown', function(e) {
     }
 });
 
+// Variables to control framerate.
+var fps, fpsInterval, startTime, now, then, elapsed;
+
 // Function to official start game.
 async function start_game() {
+
+    // Set variables for framerate.
+    fps = 60;
+    fpsInterval = 1000 / fps;
+    then = Date.now();
+    startTime = then;
 
     await game.init();
     create_key_listener(game);
