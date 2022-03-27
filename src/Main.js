@@ -860,7 +860,7 @@ export function attempt_to_throw_zippy() {
     if (game.sk8r.isAlive && game.time_since_last_zippy <= 0) {
 
         // Check if zippy cooldown bar has overheated yet, or player is ducking on the ground.
-        if (game.zcooldown_bar.is_frozen || game.sk8r.doing_duck_animation()) {
+        if (game.zcooldown_bar.is_frozen) {
 
             // If so, play zippy burnout sfx.
             if (!game.is_muted) {
