@@ -32,9 +32,9 @@ export async function save_highscore() {
         // If ajax call successful, inform player and update leaderboard.
         if (status == 'success') {
 
-            // Wait a second just to give database extra time to update.
+            // Wait 1/5th a second just to give database extra time to update.
             // I think this is totally unnecessary, but just to be safe.
-            await new Promise(r => setTimeout(r, 1000));
+            await new Promise(r => setTimeout(r, 200));
 
             // Get new and updated highscores.
             let saved_data_call = await get_highscores();
