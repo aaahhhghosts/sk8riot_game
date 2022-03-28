@@ -1,7 +1,15 @@
 export async function save_highscore() {
 
-    // Bail if inputbox doesn't exist or the name is empty.
-    if (this.inputbox == null || this.inputbox.text.length == 0) {
+    // Bail if inputbox doesn't exist.
+    if (this.inputbox == null) {
+        return;
+    }
+
+    // Get name from input box with leading/trailing white spaces removed.
+    // Bail if the trimmed name fails regex match, or score is zero.
+    let new_name = this.inputbox.text.trim();
+    let new_score = this.score;
+    if (new_score <= 0 || !new_name.match(/^\d*[a-zA-Z][a-zA-Z0-9\-!?]*$/g)) {
         return;
     }
 
@@ -19,18 +27,16 @@ export async function save_highscore() {
         attempt += 1;
 
         // Await the status of the ajax call which posts the highscore to the site.
-        let new_name = this.inputbox.text;
-        let new_score = this.score;
         let status = await post_highscore(new_name, new_score);
 
         // If ajax call successful, inform player and update leaderboard.
         if (status == 'success') {
 
-            // Wait 1/10 a second just to give database extra time to update.
+            // Wait a second just to give database extra time to update.
             // I think this is totally unnecessary, but just to be safe.
-            await new Promise(r => setTimeout(r, 100));
+            await new Promise(r => setTimeout(r, 1000));
 
-            // Get new and updated highscores;
+            // Get new and updated highscores.
             let saved_data_call = await get_highscores();
             if (saved_data_call != null && saved_data_call[0] == 'success') {
                 let save_data = JSON.parse(saved_data_call[1]);

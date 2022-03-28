@@ -5,7 +5,7 @@ export default class Inputbox {
 
   static src = ['/sprites/menu/input_box.png'];
 
-  constructor (x, y, context, background_image, font_image) {
+  constructor (x, y, context, background_image, font_image, player_savename) {
 
     this.width = 40;
     this.height = 10;
@@ -18,7 +18,12 @@ export default class Inputbox {
 
     // Set up font variables.
     this.small_font = new SMFont(context, font_image);
-    this.text = "yo-name";
+
+    // Set default name entered into inputbox.
+    this.text = player_savename;
+    if (player_savename == '') {this.text = "yo-name";}
+
+    // Input box letter vars.
     this.max_chars = 8;
     this.hold_shift = false;
     this.text_x = this.x+4;

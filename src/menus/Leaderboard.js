@@ -45,22 +45,26 @@ export default class Leaderboard {
 
     // Go to next page of leaderboard entries.
     next_page(saved_data) {
-        if (this.page < this.max_page) {
-            this.page += 1;
-        } else {
-            this.page = this.min_page;
+        if (!this.has_error()) {
+            if (this.page < this.max_page) {
+                this.page += 1;
+            } else {
+                this.page = this.min_page;
+            }
+            this.refresh_board();
         }
-        this.refresh_board();
     }
 
     // Go to previous page of leaderboard entries.
     prev_page(saved_data) {
-        if (this.page > this.min_page) {
-            this.page -= 1;
-        } else {
-            this.page = this.max_page;
+        if (!this.has_error()) {
+            if (this.page > this.min_page) {
+                this.page -= 1;
+            } else {
+                this.page = this.max_page;
+            }
+            this.refresh_board();
         }
-        this.refresh_board();
     }
 
     // Function to populate the leaderboard with entries.
@@ -124,6 +128,7 @@ export default class Leaderboard {
     // Functions to set leaderboard background.
     congrat_player() {this.row = 1;}
     display_error() {this.row = 2; this.entry_labels = [];}
+    has_error() {return this.row == 2;}
 
     render() {
         this.ctx.webkitImageSmoothingEnabled = false;

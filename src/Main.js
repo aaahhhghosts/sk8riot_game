@@ -172,6 +172,7 @@ const game = {
         // Create variables to contain gameover menu elements.
         this.leaderboard = null;
         this.inputbox = null;
+        this.player_savename = '';
         this.death_label = null;
 
         // Create lists to hold all projectiles and effects in game at any given time.
@@ -250,7 +251,12 @@ const game = {
         this.instructs = null;
         this.leaderboard = null;
         this.death_label = null;
-        this.inputbox = null;
+
+        // Remove input box, but first remember last entered name.
+        if (this.inputbox != null) {
+            game.player_savename = this.inputbox.text.trim();
+            this.inputbox = null;
+        }
 
         // Remove all buttons except for fullscreen button.
         this.buttons = this.buttons.filter(btn => (btn === this.fsbutton || btn === this.mutebutton));
@@ -681,7 +687,7 @@ const game = {
                 this.leaderboard.congrat_player();
 
                 // Create inputbox for entering player's name.
-                this.inputbox = new Inputbox(menu_xpos, menu_ypos-21, this.context, loader.images.inputbox[0], loader.images.smfont[0]);
+                this.inputbox = new Inputbox(menu_xpos, menu_ypos-21, this.context, loader.images.inputbox[0], loader.images.smfont[0], this.player_savename);
 
                 // Create save highscore button.
                 this.save_score_button = new SaveButton(menu_xpos+34, menu_ypos-20, this.context,
