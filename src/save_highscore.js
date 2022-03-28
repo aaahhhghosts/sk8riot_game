@@ -7,7 +7,7 @@ export async function save_highscore() {
 
     // Get name from input box with leading/trailing white spaces removed.
     // Bail if the trimmed name fails regex match, or score is zero.
-    let new_name = this.inputbox.text.trim();
+    let new_name = this.inputbox.text.trim().substring(0,8);
     let new_score = this.score;
     if (new_score <= 0 || !new_name.match(/^\d*[a-zA-Z][a-zA-Z0-9\-!?]*$/g)) {
         return;
